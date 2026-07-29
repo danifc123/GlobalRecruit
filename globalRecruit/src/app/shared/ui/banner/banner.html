@@ -1,0 +1,28 @@
+@if (!dismissed()) {
+  <div [class]="classes()">
+    @if (icon(); as iconName) {
+      <app-icon class="banner__icon" [name]="iconName" [size]="18" />
+    }
+
+    <div class="banner__body">
+      <div class="banner__message"><ng-content /></div>
+      <div class="banner__description"><ng-content select="[banner-description]" /></div>
+    </div>
+
+    <div class="banner__trailing">
+      <ng-content select="[banner-trailing]" />
+    </div>
+
+    @if (dismissible()) {
+      <app-button
+        variant="ghost"
+        size="sm"
+        [iconOnly]="true"
+        class="banner__dismiss"
+        (clicked)="dismiss()"
+      >
+        <app-icon name="close" [size]="14" />
+      </app-button>
+    }
+  </div>
+}
