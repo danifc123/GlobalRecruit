@@ -1,0 +1,16 @@
+<div class="page">
+  <div class="page__header">
+    <p class="page__description">Gestão de vagas operacionais, sincronizadas com o Google Sheets.</p>
+    <app-button variant="primary">
+      <app-icon name="plus" [size]="16" />
+      Nova Vaga (Grava no Sheets)
+    </app-button>
+  </div>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="true"
+    emptyIcon="briefcase"
+    emptyMessage="Nenhuma vaga cadastrada ainda. As vagas criadas aparecerão aqui, sincronizadas com o Google Sheets."
+  />
+</div>

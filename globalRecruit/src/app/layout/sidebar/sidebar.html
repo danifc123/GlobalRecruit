@@ -1,0 +1,16 @@
+<aside class="sidebar">
+  <a class="sidebar__logo" routerLink="/dashboard" aria-label="GlobalRecruit Ops">
+    <app-icon name="globe" [size]="20" />
+  </a>
+
+  <nav class="sidebar__nav">
+    @for (item of items(); track item.path) {
+      <a class="sidebar__item" [routerLink]="item.path" routerLinkActive="sidebar__item--active">
+        @if (item.icon) {
+          <app-icon [name]="item.icon" [size]="20" />
+        }
+        <span class="sidebar__label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</aside>
