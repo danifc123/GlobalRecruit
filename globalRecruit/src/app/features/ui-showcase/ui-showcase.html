@@ -1,0 +1,92 @@
+<div class="showcase">
+  <header class="showcase__intro">
+    <h1>GlobalRecruit — UI Kit</h1>
+    <p>
+      Componentes base do design system, prontos para compor as telas de gestão de vagas e
+      candidatos.
+    </p>
+  </header>
+
+  <section class="showcase__section">
+    <h2>Button</h2>
+    <div class="showcase__row">
+      @for (variant of buttonVariants; track variant) {
+        <app-button [variant]="variant">{{ variant }}</app-button>
+      }
+    </div>
+    <div class="showcase__row">
+      <app-button size="sm">Pequeno</app-button>
+      <app-button size="md">Médio</app-button>
+      <app-button size="lg">Grande</app-button>
+      <app-button [disabled]="true">Desabilitado</app-button>
+      <app-button [loading]="loadingDemo()" (clicked)="toggleLoadingDemo()">
+        {{ loadingDemo() ? 'Carregando…' : 'Simular loading' }}
+      </app-button>
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Input</h2>
+    <div class="showcase__row showcase__row--form">
+      <app-input
+        label="Nome do candidato"
+        placeholder="Ex.: Maria Souza"
+        hint="Como aparece no currículo"
+        [required]="true"
+        [formControl]="nameControl"
+      />
+      <app-input
+        label="E-mail"
+        type="email"
+        placeholder="nome@empresa.com"
+        errorMessage="Informe um e-mail válido"
+        [formControl]="emailControl"
+      />
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Badge</h2>
+    <div class="showcase__row">
+      @for (variant of badgeVariants; track variant) {
+        <app-badge [variant]="variant">{{ variant }}</app-badge>
+      }
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Icon</h2>
+    <div class="showcase__row">
+      @for (icon of iconNames; track icon) {
+        <div class="showcase__icon">
+          <app-icon [name]="icon" />
+          <small>{{ icon }}</small>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Spinner</h2>
+    <div class="showcase__row">
+      <app-spinner size="sm" />
+      <app-spinner size="md" />
+      <app-spinner size="lg" />
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Card</h2>
+    <div class="showcase__row">
+      <app-card>
+        <div card-header>
+          <h3>Vaga: Recrutador(a) Pleno</h3>
+        </div>
+        <p>Card simples usado para listar vagas, candidatos e outros resumos de conteúdo.</p>
+        <div card-footer>
+          <app-badge variant="success">Aberta</app-badge>
+        </div>
+      </app-card>
+    </div>
+  </section>
+</div>

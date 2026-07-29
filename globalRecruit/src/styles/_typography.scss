@@ -1,0 +1,25 @@
+// Escala tipográfica base para elementos de texto nativos. Componentes
+// específicos podem sobrescrever localmente quando necessário.
+
+h1 {
+  font-size: var(--gr-font-size-2xl);
+  font-weight: var(--gr-font-weight-semibold);
+  line-height: var(--gr-line-height-tight);
+}
+
+h2 {
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  line-height: var(--gr-line-height-tight);
+}
+
+h3 {
+  font-size: var(--gr-font-size-lg);
+  font-weight: var(--gr-font-weight-semibold);
+  line-height: var(--gr-line-height-tight);
+}
+
+small {
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
