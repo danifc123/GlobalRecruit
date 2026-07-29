@@ -8,24 +8,35 @@
   justify-content: center;
   gap: var(--gr-space-2);
   border: var(--gr-border-width) solid transparent;
-  border-radius: var(--gr-radius-md);
+  border-radius: var(--gr-radius-lg);
   font-weight: var(--gr-font-weight-medium);
   white-space: nowrap;
   transition:
     background-color var(--gr-transition-fast),
     border-color var(--gr-transition-fast),
     color var(--gr-transition-fast),
-    box-shadow var(--gr-transition-fast);
+    box-shadow var(--gr-transition-fast),
+    transform var(--gr-transition-press);
 
   &:focus-visible {
     outline: none;
     box-shadow: var(--gr-focus-ring);
   }
 
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
   }
+}
+
+.btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gr-space-2);
 }
 
 // ---- Tamanhos ---------------------------------------------------------
@@ -35,20 +46,27 @@
   font-size: var(--gr-font-size-sm);
 }
 
+// Alvo de toque mínimo recomendado para iPad (44pt).
 .btn--md {
-  height: 2.5rem;
+  height: 2.75rem;
   padding-inline: var(--gr-space-4);
   font-size: var(--gr-font-size-md);
 }
 
 .btn--lg {
-  height: 3rem;
-  padding-inline: var(--gr-space-5);
+  height: 3.25rem;
+  padding-inline: var(--gr-space-6);
   font-size: var(--gr-font-size-lg);
 }
 
 .btn--full {
   width: 100%;
+}
+
+.btn--icon {
+  padding-inline: 0;
+  border-radius: var(--gr-radius-full);
+  aspect-ratio: 1 / 1;
 }
 
 // ---- Variantes ---------------------------------------------------------

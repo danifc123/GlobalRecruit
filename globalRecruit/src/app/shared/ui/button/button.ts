@@ -17,6 +17,7 @@ export class Button {
   readonly disabled = input(false);
   readonly loading = input(false);
   readonly fullWidth = input(false);
+  readonly iconOnly = input(false);
 
   readonly clicked = output<MouseEvent>();
 
@@ -27,6 +28,7 @@ export class Button {
       `btn--${this.size()}`,
       this.loading() ? 'btn--loading' : '',
       this.fullWidth() ? 'btn--full' : '',
+      this.iconOnly() ? 'btn--icon' : '',
     ]
       .filter(Boolean)
       .join(' '),
