@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--gr-color-surface);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-lg);
+  box-shadow: var(--gr-shadow-sm);
+  overflow: hidden;
+}
+
+.card--padded .card__body {
+  padding: var(--gr-space-5);
+}
+
+// ::ng-deep é necessário aqui: conteúdo projetado via ng-content mantém o
+// encapsulamento de estilo do componente de origem, não o deste Card.
+::ng-deep [card-header] {
+  display: block;
+  padding: var(--gr-space-5) var(--gr-space-5) var(--gr-space-3);
+  border-bottom: var(--gr-border-width) solid var(--gr-color-border);
+}
+
+::ng-deep [card-footer] {
+  display: block;
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-5);
+  border-top: var(--gr-border-width) solid var(--gr-color-border);
+}

@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+// Ponto de entrada global de estilos. Mantém apenas tokens, reset e
+// tipografia base — estilos de componente vivem junto do próprio componente.
+@use 'styles/tokens';
+@use 'styles/reset';
+@use 'styles/typography';

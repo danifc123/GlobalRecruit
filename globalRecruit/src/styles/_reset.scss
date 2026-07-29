@@ -1,0 +1,66 @@
+// Reset mínimo, moderno. Mantido pequeno de propósito: apenas o necessário
+// para neutralizar inconsistências entre navegadores antes dos estilos dos
+// componentes assumirem o controle.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--gr-font-family-base);
+  font-size: var(--gr-font-size-md);
+  line-height: var(--gr-line-height-base);
+  color: var(--gr-color-text-primary);
+  background-color: var(--gr-color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}

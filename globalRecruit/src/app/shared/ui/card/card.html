@@ -1,0 +1,7 @@
+<div class="card" [class.card--padded]="padded()">
+  <ng-content select="[card-header]" />
+  <div class="card__body">
+    <ng-content />
+  </div>
+  <ng-content select="[card-footer]" />
+</div>
