@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+
+.table-card {
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+  padding: var(--gr-space-2) var(--gr-space-4);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+// ---- Base (tablet retrato): sem tabela — cada linha vira um card ---------
+// thead fica visualmente escondido (mas acessível), cada <td> mostra o
+// rótulo da coluna via `data-label` (convenção documentada em table.ts).
+.table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.table,
+.table tbody,
+.table tr,
+.table td {
+  display: block;
+  width: 100%;
+}
+
+.table tr {
+  padding: var(--gr-space-2) 0;
+
+  & + tr {
+    border-top: var(--gr-border-width) solid var(--gr-color-border);
+  }
+}
+
+.table td {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-1) 0;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-primary);
+  text-align: right;
+
+  &::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-weight: var(--gr-font-weight-medium);
+    color: var(--gr-color-text-secondary);
+    text-align: left;
+  }
+}
+
+// ---- 1024px+: volta a ser uma tabela tradicional --------------------------
+@media (min-width: 1024px) {
+  .table-card {
+    padding: 0;
+    overflow-x: auto;
+  }
+
+  .table {
+    display: table;
+    min-width: 640px;
+  }
+
+  .table thead {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .table tbody {
+    display: table-row-group;
+    width: auto;
+  }
+
+  .table tr {
+    display: table-row;
+    width: auto;
+    padding: 0;
+
+    & + tr {
+      border-top: none;
+    }
+  }
+
+  .table th {
+    padding: var(--gr-space-3) var(--gr-space-4);
+    background-color: var(--gr-color-primary-900);
+    color: var(--gr-color-text-inverse);
+    font-size: var(--gr-font-size-xs);
+    font-weight: var(--gr-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .table td {
+    display: table-cell;
+    width: auto;
+    padding: var(--gr-space-3) var(--gr-space-4);
+    border-top: var(--gr-border-width) solid var(--gr-color-border);
+    text-align: left;
+
+    &::before {
+      content: none;
+    }
+  }
+}

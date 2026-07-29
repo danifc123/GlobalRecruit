@@ -1,0 +1,18 @@
+<div class="table-card">
+  <table class="table">
+    <thead>
+      <tr>
+        @for (column of columns(); track column) {
+          <th>{{ column }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      <ng-content />
+    </tbody>
+  </table>
+
+  @if (isEmpty()) {
+    <app-empty-state [icon]="emptyIcon()" [description]="emptyMessage()" />
+  }
+</div>
