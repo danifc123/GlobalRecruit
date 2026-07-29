@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from '@an
 import { Button } from '../button/button';
 import { Icon, type IconName } from '../icon/icon';
 
-export type BannerTone = 'admin' | 'info' | 'success' | 'warning' | 'danger';
+export type BannerTone = 'info' | 'success' | 'warning' | 'danger';
 export type BannerLayout = 'bar' | 'boxed';
 
 @Component({

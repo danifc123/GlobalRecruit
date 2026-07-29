@@ -63,11 +63,10 @@ properties (nunca hex direto), trocar a paleta inteira é uma mudança só em
 ## Layout (shell)
 
 `src/app/layout/shell/` é o shell persistente: `Sidebar` lateral (navegação
-por rota, ícone+label) + uma topbar fina (título contextual da rota, badge
-"Sheets Live", `SegmentedControl` de visão, botão de refresh) + o `Banner`
-de contexto (modo administrador — dismissible) acima do `<router-outlet>`.
-`App` (`app.ts`/`app.html`) só renderiza `<app-shell />`, então toda
-`features/` nova aparece automaticamente dentro do mesmo chrome.
+por rota, ícone+label) + uma topbar fina (só o título contextual da rota,
+por enquanto) acima do `<router-outlet>`. `App` (`app.ts`/`app.html`) só
+renderiza `<app-shell />`, então toda `features/` nova aparece
+automaticamente dentro do mesmo chrome.
 
 `src/app/layout/sidebar/` é só a navegação lateral em si — recebe a lista de
 rotas (`TabItem[]`, mesmo tipo usado por `Tabs`) via input. Recolhida
@@ -85,21 +84,21 @@ Sistema de motion em `src/styles/_motion.scss`: guard global de
 `page-enter`, aplicado no `:host` de cada componente de `features/*`
 (`animation: page-enter var(--gr-transition-base);`). Feedback de toque
 (`:active { transform: scale(...) }`) fica só em elementos realmente
-interativos (Button, Sidebar, SegmentedControl) — nunca em cards/containers
-não clicáveis.
+interativos (Button, Sidebar) — nunca em cards/containers não clicáveis.
 
 ## UI Kit atual
 
 `src/app/shared/ui/`: `Button` (variante `iconOnly`, alvo de toque ≥44px em
 `md`/`lg`), `Input`, `Badge`, `Card`, `Icon` (biblioteca própria de ícones
 SVG inline, sem dependência externa), `Spinner`, `StatCard` (tile de KPI),
-`Banner` (aviso/contexto — `layout: 'bar'|'boxed'`, tom + barra de destaque
-lateral, `dismissible`), `Table` (header vira cada linha em card abaixo de
-1024px — quem projeta `<tr>` precisa repetir `data-label="Coluna"` em cada
-`<td>`, ver seção Table do `ui-showcase`), `Tabs` (navegação por rota via
-`routerLink` — hoje sem uso no shell, disponível para sub-navegação futura),
-`SegmentedControl` (toggle de 2+ opções com `model()`) e `EmptyState`
-(placeholder para listas/gráficos sem dado ainda, com animação de entrada).
+`Banner` (aviso/contexto — tons `info`/`success`/`warning`/`danger`,
+`layout: 'bar'|'boxed'`, barra de destaque lateral, `dismissible`), `Table`
+(header vira cada linha em card abaixo de 1024px — quem projeta `<tr>`
+precisa repetir `data-label="Coluna"` em cada `<td>`, ver seção Table do
+`ui-showcase`), `Tabs` e `SegmentedControl` (navegação por rota e toggle de
+2+ opções, respectivamente — hoje sem uso no shell, disponíveis no kit para
+quando surgir a necessidade) e `EmptyState` (placeholder para listas/
+gráficos sem dado ainda, com animação de entrada).
 
 Cards, stat-cards e tabelas usam só `box-shadow` (sem borda) — a cor de
 marca nunca aparece como bloco de fundo grande, só como destaque pontual
@@ -111,10 +110,12 @@ desenvolvimento, fora da navegação principal).
 
 ## Rotas atuais
 
-`dashboard`, `vagas-ativas`, `pipeline-candidatos` e `projetos-estela` já
-têm conteúdo real (grid de `StatCard`, `Table`, `Banner`). `banco-talentos`
-continua como placeholder (`Card` + `EmptyState`) — ainda sem tela de
-referência definida.
+`dashboard`, `vagas-ativas`, `pipeline-candidatos` e `projetos-parceiros` já
+têm conteúdo real (grid de `StatCard`, `Table`, `Banner`). `projetos-parceiros`
+é a visão restrita — hoje pensada para o acesso de parceiros em geral
+(controlado pelo administrador), não vinculada a uma pessoa específica.
+`banco-talentos` continua como placeholder (`Card` + `EmptyState`) — ainda
+sem tela de referência definida.
 
 ## Próximos passos sugeridos
 

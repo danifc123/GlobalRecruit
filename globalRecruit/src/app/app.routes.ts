@@ -14,10 +14,12 @@ export const routes: Routes = [
     title: 'Vagas Ativas — GlobalRecruit Ops',
   },
   {
-    path: 'projetos-estela',
+    path: 'projetos-parceiros',
     loadComponent: () =>
-      import('./features/projetos-estela/projetos-estela').then((m) => m.ProjetosEstela),
-    title: 'Projetos da Estela — GlobalRecruit Ops',
+      import('./features/projetos-parceiros/projetos-parceiros').then(
+        (m) => m.ProjetosParceiros,
+      ),
+    title: 'Projetos de Parceiros — GlobalRecruit Ops',
   },
   {
     path: 'pipeline-candidatos',

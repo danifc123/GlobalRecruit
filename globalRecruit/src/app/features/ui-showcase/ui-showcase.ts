@@ -92,10 +92,10 @@ export class UiShowcase {
     setTimeout(() => this.loadingDemo.set(false), 1500);
   }
 
-  protected readonly segmentedValue = signal<'admin' | 'estela'>('admin');
-  protected readonly segmentedOptions: SegmentedOption<'admin' | 'estela'>[] = [
-    { value: 'admin', label: 'Minha Visão (Admin)', icon: 'user' },
-    { value: 'estela', label: 'Visão da Estela', icon: 'users' },
+  protected readonly segmentedValue = signal<'lista' | 'grade'>('lista');
+  protected readonly segmentedOptions: SegmentedOption<'lista' | 'grade'>[] = [
+    { value: 'lista', label: 'Lista', icon: 'filter' },
+    { value: 'grade', label: 'Grade', icon: 'briefcase' },
   ];
 
   protected readonly tabItems: TabItem[] = [

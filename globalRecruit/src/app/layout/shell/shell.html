@@ -6,24 +6,7 @@
       <div class="shell__topbar-title">
         <h1>{{ pageTitle() }}</h1>
       </div>
-
-      <div class="shell__topbar-actions">
-        <app-badge variant="success">Sheets Live</app-badge>
-        <app-segmented-control [options]="viewOptions" [(value)]="viewMode" />
-        <app-button variant="secondary" [iconOnly]="true" (clicked)="refresh()">
-          <app-icon name="refresh" [size]="16" />
-        </app-button>
-      </div>
     </header>
-
-    <app-banner tone="admin" icon="shield" layout="bar" [dismissible]="true">
-      <strong>Modo Administrador Ativo:</strong>
-      Acesso total a comissões, faturamento, clientes e controlo da operação.
-      <div banner-trailing>
-        <app-icon name="database" [size]="14" />
-        <span>Conectado à sua planilha mestre</span>
-      </div>
-    </app-banner>
 
     <main class="shell__content">
       <router-outlet />
