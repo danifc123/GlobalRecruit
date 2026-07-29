@@ -1,0 +1,37 @@
+<div class="dashboard">
+  <div class="dashboard__grid">
+    <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Sincronizado" statusTone="success">
+      0
+    </app-stat-card>
+
+    <app-stat-card label="Candidatos no Pipeline" icon="users" tone="info" description="Em processo">
+      0
+    </app-stat-card>
+
+    <app-stat-card label="Clientes Ativos" icon="building" tone="moss" description="Empresas parceiras">
+      0
+    </app-stat-card>
+
+    <app-stat-card label="Modalidade Remota" icon="home" tone="neutral" description="Total de vagas">
+      0%
+    </app-stat-card>
+
+    <app-stat-card label="Estado da Conexão" icon="signal" tone="success" description="Google Apps Script API">
+      <span class="dashboard__status">
+        <span class="dashboard__status-dot"></span>
+        Online
+      </span>
+    </app-stat-card>
+  </div>
+
+  <app-card>
+    <div card-header class="dashboard__chart-header">
+      <app-icon name="pie-chart" [size]="18" />
+      <h3>Vagas por Idioma Exigido</h3>
+    </div>
+    <app-empty-state
+      icon="pie-chart"
+      description="Ainda não há vagas suficientes para gerar este gráfico."
+    />
+  </app-card>
+</div>

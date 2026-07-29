@@ -1,0 +1,15 @@
+<div class="page">
+  <app-banner tone="warning" icon="shield" layout="boxed">
+    <strong>Visão Restrita para Parceira Freelancer (Estela)</strong>
+    <span banner-description>
+      Esta tabela omite automaticamente colunas confidenciais de comissões e clientes.
+    </span>
+  </app-banner>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="true"
+    emptyIcon="users"
+    emptyMessage="Nenhum projeto atribuído a esta visão ainda."
+  />
+</div>

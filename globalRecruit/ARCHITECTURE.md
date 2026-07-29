@@ -19,8 +19,8 @@ src/
                     Spinner...). Reutilizáveis em qualquer feature.
       directives/  Diretivas reutilizáveis (criar quando surgir a necessidade)
       pipes/       Pipes reutilizáveis (criar quando surgir a necessidade)
-    layout/        Shell da aplicação: header, sidebar, layout autenticado
-                    (criar quando as telas internas começarem)
+    layout/        Shell da aplicação: sidebar de navegação + topbar (ver
+                    seção "Layout (shell)" abaixo)
     features/      Uma pasta por área de negócio (ex.: vagas, candidatos,
                     dashboard, auth). Cada feature é lazy-loaded via
                     `loadComponent`/`loadChildren` e só importa de `core` e
@@ -51,19 +51,77 @@ src/
   (ou `loadChildren` quando a feature crescer o suficiente para ter rotas
   próprias) a partir de `app.routes.ts`, mantendo o bundle inicial pequeno.
 
+## Paleta
+
+Marca em verde musgo (`--gr-color-primary-*`) com dourado como cor de destaque
+(`--gr-color-accent-*`), definidos em `src/styles/_tokens.scss`. Cores
+semânticas (success/warning/danger/info) são independentes da marca — não
+reutilize `primary` para status. Como os componentes só consomem as custom
+properties (nunca hex direto), trocar a paleta inteira é uma mudança só em
+`_tokens.scss`.
+
+## Layout (shell)
+
+`src/app/layout/shell/` é o shell persistente: `Sidebar` lateral (navegação
+por rota, ícone+label) + uma topbar fina (título contextual da rota, badge
+"Sheets Live", `SegmentedControl` de visão, botão de refresh) + o `Banner`
+de contexto (modo administrador — dismissible) acima do `<router-outlet>`.
+`App` (`app.ts`/`app.html`) só renderiza `<app-shell />`, então toda
+`features/` nova aparece automaticamente dentro do mesmo chrome.
+
+`src/app/layout/sidebar/` é só a navegação lateral em si — recebe a lista de
+rotas (`TabItem[]`, mesmo tipo usado por `Tabs`) via input. Recolhida
+(só ícone) abaixo de 1024px, expandida (ícone+label) a partir daí.
+
+## Responsividade e motion
+
+Design mobile-first a partir de tablet retrato (o dispositivo principal de
+uso é iPad), com uma única quebra em **`1024px`** (tablet paisagem/desktop) —
+ver `Sidebar`, `Table` e os grids de `features/dashboard` como referência do
+padrão (estilos base = tablet, `@media (min-width: 1024px)` = expansão).
+
+Sistema de motion em `src/styles/_motion.scss`: guard global de
+`prefers-reduced-motion` (não precisa repetir em componentes) e o keyframe
+`page-enter`, aplicado no `:host` de cada componente de `features/*`
+(`animation: page-enter var(--gr-transition-base);`). Feedback de toque
+(`:active { transform: scale(...) }`) fica só em elementos realmente
+interativos (Button, Sidebar, SegmentedControl) — nunca em cards/containers
+não clicáveis.
+
 ## UI Kit atual
 
-`src/app/shared/ui/`: `Button`, `Input`, `Badge`, `Card`, `Icon`, `Spinner`.
-Visualização de todos os componentes e variantes em `src/app/features/ui-showcase`,
-servida na rota raiz (`/`) enquanto não houver uma tela inicial definitiva.
+`src/app/shared/ui/`: `Button` (variante `iconOnly`, alvo de toque ≥44px em
+`md`/`lg`), `Input`, `Badge`, `Card`, `Icon` (biblioteca própria de ícones
+SVG inline, sem dependência externa), `Spinner`, `StatCard` (tile de KPI),
+`Banner` (aviso/contexto — `layout: 'bar'|'boxed'`, tom + barra de destaque
+lateral, `dismissible`), `Table` (header vira cada linha em card abaixo de
+1024px — quem projeta `<tr>` precisa repetir `data-label="Coluna"` em cada
+`<td>`, ver seção Table do `ui-showcase`), `Tabs` (navegação por rota via
+`routerLink` — hoje sem uso no shell, disponível para sub-navegação futura),
+`SegmentedControl` (toggle de 2+ opções com `model()`) e `EmptyState`
+(placeholder para listas/gráficos sem dado ainda, com animação de entrada).
+
+Cards, stat-cards e tabelas usam só `box-shadow` (sem borda) — a cor de
+marca nunca aparece como bloco de fundo grande, só como destaque pontual
+(logo, item ativo, botão primário).
+
+Visualização de todos os componentes e variantes em
+`src/app/features/ui-showcase`, servida em `/ui-kit` (rota de apoio ao
+desenvolvimento, fora da navegação principal).
+
+## Rotas atuais
+
+`dashboard`, `vagas-ativas`, `pipeline-candidatos` e `projetos-estela` já
+têm conteúdo real (grid de `StatCard`, `Table`, `Banner`). `banco-talentos`
+continua como placeholder (`Card` + `EmptyState`) — ainda sem tela de
+referência definida.
 
 ## Próximos passos sugeridos
 
-- Definir telas reais (dashboard, listagem de vagas, detalhe de vaga, pipeline
-  de candidatos) e criar as respectivas pastas em `features/`.
-- Criar `layout/` com o shell autenticado (header, navegação) assim que a
-  primeira tela interna for definida.
-- Criar `core/` com serviços de autenticação e cliente HTTP quando a API for
-  integrada.
-- Expandir o UI kit sob demanda (Select, Checkbox, Modal, Table, Toast...)
-  conforme as telas exigirem — evitar criar componentes especulativos.
+- Definir e construir a tela de `banco-talentos`.
+- Criar `core/` com serviços de autenticação e cliente HTTP quando a API/
+  integração com Google Sheets for implementada (hoje o shell só tem estado
+  local de UI, sem dados reais — as `Table` das telas reais ficam sempre
+  `isEmpty` até existir uma fonte de dados).
+- Expandir o UI kit sob demanda (Select, Checkbox, Modal, Toast...) conforme
+  as telas exigirem — evitar criar componentes especulativos.

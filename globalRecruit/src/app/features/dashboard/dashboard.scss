@@ -1,0 +1,70 @@
+:host {
+  display: block;
+  padding: var(--gr-space-4);
+  animation: page-enter var(--gr-transition-base);
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-4);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gr-space-4);
+
+  // com 5 cards em 2 colunas, o último fica sozinho — melhor ocupar a linha
+  // inteira do que ficar "pela metade" (some no tier de 1024px+ abaixo).
+  > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host {
+    padding: var(--gr-space-6);
+  }
+
+  .dashboard {
+    gap: var(--gr-space-5);
+  }
+
+  .dashboard__grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+    > :last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+  }
+}
+
+.dashboard__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  font-size: var(--gr-font-size-lg);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.dashboard__status-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background-color: var(--gr-color-success-500);
+}
+
+.dashboard__chart-header {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  color: var(--gr-color-primary-700);
+
+  h3 {
+    color: inherit;
+  }
+}
+

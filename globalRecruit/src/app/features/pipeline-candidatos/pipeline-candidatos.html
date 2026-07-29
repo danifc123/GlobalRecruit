@@ -1,0 +1,16 @@
+<div class="page">
+  <div class="page__header">
+    <p class="page__description">Acompanhamento de candidatos por etapa do processo seletivo.</p>
+    <app-button variant="primary">
+      <app-icon name="user-plus" [size]="16" />
+      Registar Candidato
+    </app-button>
+  </div>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="true"
+    emptyIcon="filter"
+    emptyMessage="Nenhum candidato no pipeline ainda."
+  />
+</div>
