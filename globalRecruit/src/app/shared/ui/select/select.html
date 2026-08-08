@@ -1,0 +1,32 @@
+<div class="form-field">
+  @if (label(); as labelText) {
+    <label class="form-field__label" [for]="selectId">
+      {{ labelText }}
+      @if (required()) {
+        <span class="form-field__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <select
+    class="form-field__control"
+    [class.form-field__control--error]="errorMessage() && touched()"
+    [id]="selectId"
+    [disabled]="disabled()"
+    [required]="required()"
+    [attr.aria-invalid]="(errorMessage() && touched()) || null"
+    (change)="handleChange($event)"
+    (blur)="handleBlur()"
+  >
+    <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
+    @for (option of options(); track option.value) {
+      <option [value]="option.value" [selected]="option.value === value()">{{ option.label }}</option>
+    }
+  </select>
+
+  @if (errorMessage() && touched()) {
+    <span class="form-field__message form-field__message--error">{{ errorMessage() }}</span>
+  } @else if (hint(); as hintText) {
+    <span class="form-field__message">{{ hintText }}</span>
+  }
+</div>

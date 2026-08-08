@@ -1,16 +1,88 @@
 <div class="page">
   <div class="page__header">
-    <p class="page__description">Gestão de vagas operacionais, sincronizadas com o Google Sheets.</p>
-    <app-button variant="primary">
+    <p class="page__description">Gestão de vagas operacionais.</p>
+    <app-button variant="primary" (clicked)="toggleForm()">
       <app-icon name="plus" [size]="16" />
-      Nova Vaga (Grava no Sheets)
+      Nova Vaga
     </app-button>
   </div>
 
+  @if (showForm()) {
+    <app-card>
+      <div card-header class="vagas__form-title">
+        <h3>Nova vaga</h3>
+      </div>
+
+      @if (errorMessage()) {
+        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="vagas__form">
+        <app-select
+          label="Projeto"
+          formControlName="projetoId"
+          [options]="projetoOptions()"
+          [required]="true"
+          [errorMessage]="
+            form.controls.projetoId.touched && form.controls.projetoId.invalid
+              ? 'Selecione o projeto'
+              : undefined
+          "
+        />
+        <app-input
+          label="Cliente"
+          formControlName="cliente"
+          [required]="true"
+          [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+        />
+        <app-input
+          label="Cargo"
+          formControlName="cargo"
+          [required]="true"
+          [errorMessage]="form.controls.cargo.touched && form.controls.cargo.invalid ? 'Obrigatório' : undefined"
+        />
+        <app-input label="Idioma" formControlName="idioma" />
+        <app-input label="País" formControlName="pais" />
+        <app-input label="Modalidade" formControlName="modalidade" />
+        <app-input label="Salário" type="number" formControlName="salario" />
+        <app-input label="Comissão" type="number" formControlName="comissao" />
+        <app-select
+          label="Prioridade"
+          formControlName="prioridade"
+          [options]="prioridadeOptions"
+          [required]="true"
+          [errorMessage]="
+            form.controls.prioridade.touched && form.controls.prioridade.invalid
+              ? 'Selecione a prioridade'
+              : undefined
+          "
+        />
+        <div class="vagas__form-actions">
+          <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+          <app-button type="submit" [loading]="submitting()">Criar vaga</app-button>
+        </div>
+      </form>
+    </app-card>
+  }
+
   <app-table
     [columns]="columns"
-    [isEmpty]="true"
+    [isEmpty]="isEmpty()"
     emptyIcon="briefcase"
-    emptyMessage="Nenhuma vaga cadastrada ainda. As vagas criadas aparecerão aqui, sincronizadas com o Google Sheets."
-  />
+    emptyMessage="Nenhuma vaga aberta no momento."
+  >
+    @for (vaga of vagas(); track vaga.id) {
+      <tr>
+        <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
+        <td data-label="Cliente">{{ vaga.cliente }}</td>
+        <td data-label="Cargo">{{ vaga.cargo }}</td>
+        <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
+        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
+        <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
+        <td data-label="Salário">{{ vaga.salario ?? '—' }}</td>
+        <td data-label="Comissão">{{ vaga.comissao ?? '—' }}</td>
+        <td data-label="Prioridade">{{ vaga.prioridade }}</td>
+      </tr>
+    }
+  </app-table>
 </div>

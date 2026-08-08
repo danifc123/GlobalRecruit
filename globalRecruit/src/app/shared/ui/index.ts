@@ -3,6 +3,7 @@
 // `import { Button, Input } from '@app/shared/ui'`.
 export * from './button/button';
 export * from './input/input';
+export * from './select/select';
 export * from './badge/badge';
 export * from './card/card';
 export * from './icon/icon';

@@ -55,6 +55,10 @@
   height: 0.6rem;
   border-radius: 50%;
   background-color: var(--gr-color-success-500);
+
+  &--error {
+    background-color: var(--gr-color-danger-500);
+  }
 }
 
 .dashboard__chart-header {

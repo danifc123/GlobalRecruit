@@ -24,21 +24,15 @@
   color: var(--gr-color-text-secondary);
 }
 
-.pipeline__form-title h3 {
+.usuarios__form-title h3 {
   color: var(--gr-color-text-primary);
 }
 
-.pipeline__form {
+.usuarios__form {
   display: flex;
   flex-direction: column;
   gap: var(--gr-space-3);
   max-width: 420px;
-}
-
-.pipeline__form-actions {
-  display: flex;
-  gap: var(--gr-space-3);
-  margin-top: var(--gr-space-2);
 }
 
 @media (min-width: 1024px) {

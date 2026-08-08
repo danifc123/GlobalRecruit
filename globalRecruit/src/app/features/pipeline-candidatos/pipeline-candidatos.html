@@ -1,16 +1,67 @@
 <div class="page">
   <div class="page__header">
     <p class="page__description">Acompanhamento de candidatos por etapa do processo seletivo.</p>
-    <app-button variant="primary">
+    <app-button variant="primary" (clicked)="toggleForm()">
       <app-icon name="user-plus" [size]="16" />
       Registar Candidato
     </app-button>
   </div>
 
+  @if (showForm()) {
+    <app-card>
+      <div card-header class="pipeline__form-title">
+        <h3>Novo candidato</h3>
+      </div>
+
+      @if (errorMessage()) {
+        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
+        <app-input
+          label="Nome"
+          formControlName="nome"
+          [required]="true"
+          [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+        />
+        <app-input
+          label="Email"
+          type="email"
+          formControlName="email"
+          [required]="true"
+          [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+        />
+        <app-select
+          label="Vaga alvo"
+          formControlName="vagaId"
+          [options]="vagaOptions()"
+          [required]="true"
+          [errorMessage]="
+            form.controls.vagaId.touched && form.controls.vagaId.invalid ? 'Selecione a vaga' : undefined
+          "
+        />
+        <div class="pipeline__form-actions">
+          <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+          <app-button type="submit" [loading]="submitting()">Registrar candidato</app-button>
+        </div>
+      </form>
+    </app-card>
+  }
+
   <app-table
     [columns]="columns"
-    [isEmpty]="true"
+    [isEmpty]="isEmpty()"
     emptyIcon="filter"
     emptyMessage="Nenhum candidato no pipeline ainda."
-  />
+  >
+    @for (row of rows(); track row.id) {
+      <tr>
+        <td data-label="Nome">{{ row.nome }}</td>
+        <td data-label="Email">{{ row.email }}</td>
+        <td data-label="Vaga Alvo">{{ row.vagaCargo }}</td>
+        <td data-label="Data">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
+        <td data-label="Status / Etapa">{{ row.estagioAtual ?? '—' }}</td>
+      </tr>
+    }
+  </app-table>
 </div>

@@ -1,0 +1,28 @@
+<div class="page">
+  <app-card class="login-card">
+    <h1 class="login-card__title">GlobalRecruit</h1>
+    <p class="login-card__subtitle">Entre com sua conta para continuar.</p>
+
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login-card__form">
+      <app-input
+        label="Email"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+      />
+      <app-input
+        label="Senha"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+      />
+      <app-button type="submit" [fullWidth]="true" [loading]="loading()">Entrar</app-button>
+    </form>
+  </app-card>
+</div>

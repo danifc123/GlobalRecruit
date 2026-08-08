@@ -8,8 +8,19 @@
 
   <app-table
     [columns]="columns"
-    [isEmpty]="true"
+    [isEmpty]="isEmpty()"
     emptyIcon="users"
     emptyMessage="Nenhum projeto atribuído a esta visão ainda."
-  />
+  >
+    @for (vaga of vagas(); track vaga.id) {
+      <tr>
+        <td data-label="Cargo">{{ vaga.cargo }}</td>
+        <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
+        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
+        <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
+        <td data-label="Prioridade">{{ vaga.prioridade }}</td>
+        <td data-label="Status">{{ vaga.status }}</td>
+      </tr>
+    }
+  </app-table>
 </div>

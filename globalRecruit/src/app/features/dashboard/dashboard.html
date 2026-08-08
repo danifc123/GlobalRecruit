@@ -1,25 +1,30 @@
 <div class="dashboard">
   <div class="dashboard__grid">
-    <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Sincronizado" statusTone="success">
-      0
+    <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Em aberto" statusTone="success">
+      {{ stats()?.vagasAbertas ?? '—' }}
     </app-stat-card>
 
     <app-stat-card label="Candidatos no Pipeline" icon="users" tone="info" description="Em processo">
-      0
+      {{ stats()?.candidatosEmPipeline ?? '—' }}
     </app-stat-card>
 
     <app-stat-card label="Clientes Ativos" icon="building" tone="moss" description="Empresas parceiras">
-      0
+      {{ stats()?.clientesAtivos ?? '—' }}
     </app-stat-card>
 
-    <app-stat-card label="Modalidade Remota" icon="home" tone="neutral" description="Total de vagas">
-      0%
+    <app-stat-card label="Modalidade Remota" icon="home" tone="neutral" description="Das vagas abertas">
+      {{ stats() ? stats()!.pctModalidadeRemota + '%' : '—' }}
     </app-stat-card>
 
-    <app-stat-card label="Estado da Conexão" icon="signal" tone="success" description="Google Apps Script API">
+    <app-stat-card
+      label="Estado da Conexão"
+      icon="signal"
+      [tone]="error() ? 'danger' : 'success'"
+      description="GlobalRecruit API"
+    >
       <span class="dashboard__status">
-        <span class="dashboard__status-dot"></span>
-        Online
+        <span class="dashboard__status-dot" [class.dashboard__status-dot--error]="error()"></span>
+        {{ error() ? 'Indisponível' : 'Online' }}
       </span>
     </app-stat-card>
   </div>

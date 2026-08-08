@@ -24,6 +24,23 @@
   color: var(--gr-color-text-secondary);
 }
 
+.vagas__form-title h3 {
+  color: var(--gr-color-text-primary);
+}
+
+.vagas__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+  max-width: 480px;
+}
+
+.vagas__form-actions {
+  display: flex;
+  gap: var(--gr-space-3);
+  margin-top: var(--gr-space-2);
+}
+
 @media (min-width: 1024px) {
   :host {
     padding: var(--gr-space-6);

@@ -1,15 +1,25 @@
-<div class="shell">
-  <app-sidebar [items]="navItems" />
+@if (isAuthRoute()) {
+  <router-outlet />
+} @else {
+  <div class="shell">
+    <app-sidebar [items]="navItems()" />
 
-  <div class="shell__main">
-    <header class="shell__topbar">
-      <div class="shell__topbar-title">
-        <h1>{{ pageTitle() }}</h1>
-      </div>
-    </header>
+    <div class="shell__main">
+      <header class="shell__topbar">
+        <div class="shell__topbar-title">
+          <h1>{{ pageTitle() }}</h1>
+        </div>
+        @if (auth.session(); as session) {
+          <div class="shell__topbar-user">
+            <span class="shell__topbar-email">{{ session.email }}</span>
+            <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
+          </div>
+        }
+      </header>
 
-    <main class="shell__content">
-      <router-outlet />
-    </main>
+      <main class="shell__content">
+        <router-outlet />
+      </main>
+    </div>
   </div>
-</div>
+}

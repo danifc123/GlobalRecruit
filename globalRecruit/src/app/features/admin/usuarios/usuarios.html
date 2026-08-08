@@ -1,0 +1,73 @@
+<div class="page">
+  <div class="page__header">
+    <p class="page__description">Gestão de contas e níveis de acesso.</p>
+  </div>
+
+  <app-card>
+    <div card-header class="usuarios__form-title">
+      <h3>Novo usuário</h3>
+    </div>
+
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
+    @if (successMessage()) {
+      <app-banner tone="success">{{ successMessage() }}</app-banner>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="usuarios__form">
+      <app-input
+        label="Email"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+      />
+      <app-input
+        label="Senha temporária"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+      />
+      <app-select
+        label="Papel"
+        formControlName="role"
+        [options]="roleOptions"
+        [required]="true"
+        [errorMessage]="form.controls.role.touched && form.controls.role.invalid ? 'Selecione um papel' : undefined"
+      />
+      @if (isPartnerRole()) {
+        <app-select
+          label="Projeto do parceiro"
+          formControlName="partnerProjectId"
+          [options]="projetoOptions()"
+          [required]="true"
+          hint="Obrigatório para o papel Parceiro — restringe o acesso a este projeto."
+          [errorMessage]="
+            form.controls.partnerProjectId.touched && form.controls.partnerProjectId.invalid
+              ? 'Selecione o projeto do parceiro'
+              : undefined
+          "
+        />
+      }
+      <app-button type="submit" [loading]="submitting()">Criar usuário</app-button>
+    </form>
+  </app-card>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="isEmpty()"
+    emptyIcon="users"
+    emptyMessage="Nenhum usuário cadastrado ainda."
+  >
+    @for (user of users(); track user.id) {
+      <tr>
+        <td data-label="Email">{{ user.email }}</td>
+        <td data-label="Papel">{{ roleLabel(user.role) }}</td>
+        <td data-label="Projeto Parceiro">{{ user.partnerProjectId ?? '—' }}</td>
+        <td data-label="Status">{{ user.isActive ? 'Ativo' : 'Inativo' }}</td>
+      </tr>
+    }
+  </app-table>
+</div>

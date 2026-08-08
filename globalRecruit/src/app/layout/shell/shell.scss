@@ -19,6 +19,8 @@
 .shell__topbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-3);
   padding: var(--gr-space-3) var(--gr-space-5);
   background-color: var(--gr-color-surface);
   border-bottom: var(--gr-border-width) solid var(--gr-color-border);
@@ -31,6 +33,17 @@
   font-size: var(--gr-font-size-lg);
   font-weight: var(--gr-font-weight-semibold);
   color: var(--gr-color-text-primary);
+}
+
+.shell__topbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+}
+
+.shell__topbar-email {
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
 }
 
 .shell__content {
