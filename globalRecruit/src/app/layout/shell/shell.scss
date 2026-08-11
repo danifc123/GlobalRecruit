@@ -29,21 +29,44 @@
   z-index: 10;
 }
 
+// min-width:0 + truncamento no título: sem isso, um título longo empurra o
+// botão "Sair" pra fora da viewport em telas estreitas (ele fica
+// inacessível, sem indicação de overflow) — flex items não encolhem abaixo
+// do conteúdo por padrão.
+.shell__topbar-title {
+  min-width: 0;
+  overflow: hidden;
+}
+
 .shell__topbar-title h1 {
+  overflow: hidden;
   font-size: var(--gr-font-size-lg);
   font-weight: var(--gr-font-weight-semibold);
   color: var(--gr-color-text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .shell__topbar-user {
   display: flex;
   align-items: center;
   gap: var(--gr-space-3);
+  flex-shrink: 0;
 }
 
+// escondido abaixo de 640px: e-mail + título + botão juntos não cabem numa
+// tela de celular sem cortar algo — "Sair" (ação) tem prioridade sobre o
+// e-mail (informação).
 .shell__topbar-email {
+  display: none;
   font-size: var(--gr-font-size-sm);
   color: var(--gr-color-text-secondary);
+}
+
+@media (min-width: 640px) {
+  .shell__topbar-email {
+    display: inline;
+  }
 }
 
 .shell__content {

@@ -4,6 +4,7 @@
       class="tabs__item"
       [routerLink]="item.path"
       routerLinkActive="tabs__item--active"
+      [ariaCurrentWhenActive]="'page'"
     >
       @if (item.icon) {
         <app-icon [name]="item.icon" [size]="16" />

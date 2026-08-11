@@ -5,7 +5,12 @@
 
   <nav class="sidebar__nav">
     @for (item of items(); track item.path) {
-      <a class="sidebar__item" [routerLink]="item.path" routerLinkActive="sidebar__item--active">
+      <a
+        class="sidebar__item"
+        [routerLink]="item.path"
+        routerLinkActive="sidebar__item--active"
+        [ariaCurrentWhenActive]="'page'"
+      >
         @if (item.icon) {
           <app-icon [name]="item.icon" [size]="20" />
         }

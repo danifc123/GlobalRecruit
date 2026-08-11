@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Card, EmptyState, Icon, StatCard } from '@app/shared/ui';
 import { DashboardService } from '@app/core/data/dashboard.service';
@@ -19,15 +20,18 @@ export class Dashboard {
   protected readonly error = signal(false);
 
   constructor() {
-    this.dashboardService.stats().subscribe({
-      next: (stats) => {
-        this.stats.set(stats);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set(true);
-        this.loading.set(false);
-      },
-    });
+    this.dashboardService
+      .stats()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (stats) => {
+          this.stats.set(stats);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set(true);
+          this.loading.set(false);
+        },
+      });
   }
 }

@@ -2,14 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   forwardRef,
+  inject,
   input,
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'search';
+import { IdGenerator } from '../../utils/id-generator';
 
-let nextId = 0;
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'search';
 
 @Component({
   selector: 'app-input',
@@ -32,7 +33,8 @@ export class Input implements ControlValueAccessor {
   readonly errorMessage = input<string>();
   readonly required = input(false);
 
-  protected readonly inputId = `app-input-${nextId++}`;
+  protected readonly inputId = inject(IdGenerator).next('app-input');
+  protected readonly messageId = `${this.inputId}-message`;
   protected readonly value = signal('');
   protected readonly disabled = signal(false);
   protected readonly touched = signal(false);

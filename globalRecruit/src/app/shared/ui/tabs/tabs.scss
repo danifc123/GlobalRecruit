@@ -32,6 +32,11 @@
     background-color: var(--gr-color-neutral-100);
     color: var(--gr-color-text-primary);
   }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
 }
 
 .tabs__item--active {

@@ -18,6 +18,7 @@ export class Button {
   readonly loading = input(false);
   readonly fullWidth = input(false);
   readonly iconOnly = input(false);
+  readonly ariaLabel = input<string>();
 
   readonly clicked = output<MouseEvent>();
 

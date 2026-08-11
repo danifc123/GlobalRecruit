@@ -1,11 +1,8 @@
-<div class="page">
-  <div class="page__header">
-    <p class="page__description">Gestão de vagas operacionais.</p>
-    <app-button variant="primary" (clicked)="toggleForm()">
-      <app-icon name="plus" [size]="16" />
-      Nova Vaga
-    </app-button>
-  </div>
+<app-page description="Gestão de vagas operacionais.">
+  <app-button page-actions variant="primary" (clicked)="toggleForm()">
+    <app-icon name="plus" [size]="16" />
+    Nova Vaga
+  </app-button>
 
   @if (showForm()) {
     <app-card>
@@ -85,4 +82,4 @@
       </tr>
     }
   </app-table>
-</div>
+</app-page>

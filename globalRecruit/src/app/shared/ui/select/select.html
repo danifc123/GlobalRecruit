@@ -15,6 +15,7 @@
     [disabled]="disabled()"
     [required]="required()"
     [attr.aria-invalid]="(errorMessage() && touched()) || null"
+    [attr.aria-describedby]="(errorMessage() && touched()) || hint() ? messageId : null"
     (change)="handleChange($event)"
     (blur)="handleBlur()"
   >
@@ -25,8 +26,8 @@
   </select>
 
   @if (errorMessage() && touched()) {
-    <span class="form-field__message form-field__message--error">{{ errorMessage() }}</span>
+    <span [id]="messageId" class="form-field__message form-field__message--error">{{ errorMessage() }}</span>
   } @else if (hint(); as hintText) {
-    <span class="form-field__message">{{ hintText }}</span>
+    <span [id]="messageId" class="form-field__message">{{ hintText }}</span>
   }
 </div>

@@ -26,15 +26,20 @@
   white-space: nowrap;
 }
 
+// ::ng-deep é necessário em tr/td (mesmo motivo documentado em card.scss):
+// as linhas são projetadas via <ng-content> a partir do componente pai, e
+// mantêm o encapsulamento de estilo *dele*, não o deste Table — sem
+// ::ng-deep essas regras nunca alcançam o <tr>/<td> real e a tabela nunca
+// vira "cards" abaixo de 1024px.
 .table,
-.table tbody,
-.table tr,
-.table td {
+.table tbody {
   display: block;
   width: 100%;
 }
 
-.table tr {
+::ng-deep .table tr {
+  display: block;
+  width: 100%;
   padding: var(--gr-space-2) 0;
 
   & + tr {
@@ -42,11 +47,12 @@
   }
 }
 
-.table td {
+::ng-deep .table td {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--gr-space-3);
+  width: 100%;
   padding: var(--gr-space-1) 0;
   font-size: var(--gr-font-size-sm);
   color: var(--gr-color-text-primary);
@@ -87,7 +93,7 @@
     width: auto;
   }
 
-  .table tr {
+  ::ng-deep .table tr {
     display: table-row;
     width: auto;
     padding: 0;
@@ -109,7 +115,7 @@
     white-space: nowrap;
   }
 
-  .table td {
+  ::ng-deep .table td {
     display: table-cell;
     width: auto;
     padding: var(--gr-space-3) var(--gr-space-4);

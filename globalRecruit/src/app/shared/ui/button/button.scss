@@ -70,12 +70,15 @@
 }
 
 // ---- Variantes ---------------------------------------------------------
+// primary-500 com texto branco só dá 4.39:1 (abaixo do 4.5:1 do WCAG AA para
+// texto normal) — por isso o estado padrão usa primary-600 (6.21:1) em vez
+// do valor "puro" da marca; hover fica um degrau mais escuro ainda.
 .btn--primary {
-  background-color: var(--gr-color-primary-500);
+  background-color: var(--gr-color-primary-600);
   color: var(--gr-color-text-inverse);
 
   &:hover:not(:disabled) {
-    background-color: var(--gr-color-primary-600);
+    background-color: var(--gr-color-primary-700);
   }
 }
 
@@ -98,9 +101,10 @@
   }
 }
 
+// mesmo motivo do btn--primary: primary-500 sobre branco só dá 4.39:1.
 .btn--ghost {
   background-color: transparent;
-  color: var(--gr-color-primary-500);
+  color: var(--gr-color-primary-600);
 
   &:hover:not(:disabled) {
     background-color: var(--gr-color-primary-50);

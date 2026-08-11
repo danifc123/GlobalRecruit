@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Banner, Button, Card, Icon, Input, Select, Table, type SelectOption } from '@app/shared/ui';
+import { Banner, Button, Card, Icon, Input, Page, Select, Table, type SelectOption } from '@app/shared/ui';
 import { VagasService } from '@app/core/data/vagas.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { Vaga } from '@app/core/models/vaga';
@@ -15,7 +16,7 @@ const PRIORIDADE_OPTIONS: SelectOption[] = [
 
 @Component({
   selector: 'app-vagas-ativas',
-  imports: [ReactiveFormsModule, Button, Icon, Table, Card, Input, Select, Banner],
+  imports: [ReactiveFormsModule, Button, Icon, Table, Card, Input, Page, Select, Banner],
   templateUrl: './vagas-ativas.html',
   styleUrl: './vagas-ativas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +25,7 @@ export class VagasAtivas {
   private readonly fb = inject(FormBuilder);
   private readonly vagasService = inject(VagasService);
   private readonly projetosService = inject(ProjetosParceirosService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly columns = [
     'ID Vaga',
@@ -65,7 +67,10 @@ export class VagasAtivas {
 
   constructor() {
     this.loadVagas();
-    this.projetosService.list().subscribe((projetos) => this.projetos.set(projetos));
+    this.projetosService
+      .list()
+      .pipe(takeUntilDestroyed())
+      .subscribe((projetos) => this.projetos.set(projetos));
   }
 
   protected toggleForm(): void {
@@ -95,6 +100,7 @@ export class VagasAtivas {
         comissao: raw.comissao ? Number(raw.comissao) : undefined,
         prioridade: raw.prioridade as Vaga['prioridade'],
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.submitting.set(false);
@@ -121,12 +127,15 @@ export class VagasAtivas {
 
   private loadVagas(): void {
     this.loading.set(true);
-    this.vagasService.list(0, 50, 'aberta').subscribe({
-      next: (page) => {
-        this.vagas.set(page.items);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.vagasService
+      .list(0, 50, 'aberta')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (page) => {
+          this.vagas.set(page.items);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 }

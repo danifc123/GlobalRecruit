@@ -1,12 +1,19 @@
-import { ChangeDetectionStrategy, Component, forwardRef, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+
+import { IdGenerator } from '../../utils/id-generator';
 
 export interface SelectOption {
   value: string;
   label: string;
 }
-
-let nextId = 0;
 
 @Component({
   selector: 'app-select',
@@ -29,7 +36,8 @@ export class Select implements ControlValueAccessor {
   readonly errorMessage = input<string>();
   readonly required = input(false);
 
-  protected readonly selectId = `app-select-${nextId++}`;
+  protected readonly selectId = inject(IdGenerator).next('app-select');
+  protected readonly messageId = `${this.selectId}-message`;
   protected readonly value = signal('');
   protected readonly disabled = signal(false);
   protected readonly touched = signal(false);

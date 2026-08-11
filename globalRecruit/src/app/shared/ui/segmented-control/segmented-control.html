@@ -4,6 +4,7 @@
       type="button"
       class="segmented__item"
       [class.segmented__item--active]="option.value === value()"
+      [attr.aria-pressed]="option.value === value()"
       (click)="select(option)"
     >
       @if (option.icon) {

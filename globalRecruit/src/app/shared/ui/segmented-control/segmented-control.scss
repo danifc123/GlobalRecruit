@@ -35,6 +35,11 @@
   &:active {
     transform: scale(0.96);
   }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
 }
 
 .segmented__item--active {

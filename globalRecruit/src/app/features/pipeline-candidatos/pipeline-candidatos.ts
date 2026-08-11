@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { Banner, Button, Card, Icon, Input, Select, Table, type SelectOption } from '@app/shared/ui';
+import { Banner, Button, Card, Icon, Input, Page, Select, Table, type SelectOption } from '@app/shared/ui';
 import { VagasService } from '@app/core/data/vagas.service';
 import { CandidatosService } from '@app/core/data/candidatos.service';
 import { Candidato } from '@app/core/models/candidato';
@@ -16,7 +17,7 @@ interface CandidatoRow extends Candidato {
 
 @Component({
   selector: 'app-pipeline-candidatos',
-  imports: [ReactiveFormsModule, Button, Icon, Table, DatePipe, Card, Input, Select, Banner],
+  imports: [ReactiveFormsModule, Button, Icon, Table, DatePipe, Card, Input, Page, Select, Banner],
   templateUrl: './pipeline-candidatos.html',
   styleUrl: './pipeline-candidatos.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +26,7 @@ export class PipelineCandidatos {
   private readonly fb = inject(FormBuilder);
   private readonly vagasService = inject(VagasService);
   private readonly candidatosService = inject(CandidatosService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly columns = ['Nome', 'Email', 'Vaga Alvo', 'Data', 'Status / Etapa'];
 
@@ -66,18 +68,21 @@ export class PipelineCandidatos {
     this.errorMessage.set(null);
     const { nome, email, vagaId } = this.form.getRawValue();
 
-    this.candidatosService.create({ nome, email, vagaId }).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.showForm.set(false);
-        this.form.reset({ nome: '', email: '', vagaId: '' });
-        this.loadRows();
-      },
-      error: () => {
-        this.errorMessage.set('Não foi possível registrar o candidato.');
-        this.submitting.set(false);
-      },
-    });
+    this.candidatosService
+      .create({ nome, email, vagaId })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.submitting.set(false);
+          this.showForm.set(false);
+          this.form.reset({ nome: '', email: '', vagaId: '' });
+          this.loadRows();
+        },
+        error: () => {
+          this.errorMessage.set('Não foi possível registrar o candidato.');
+          this.submitting.set(false);
+        },
+      });
   }
 
   private loadRows(): void {
@@ -101,6 +106,7 @@ export class PipelineCandidatos {
           return forkJoin(porVaga).pipe(map((grupos) => grupos.flat()));
         }),
         catchError(() => of([] as CandidatoRow[])),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((rows) => {
         this.rows.set(rows);

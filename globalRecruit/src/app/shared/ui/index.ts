@@ -14,3 +14,4 @@ export * from './tabs/tabs';
 export * from './segmented-control/segmented-control';
 export * from './empty-state/empty-state';
 export * from './table/table';
+export * from './page/page';

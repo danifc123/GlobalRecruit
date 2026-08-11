@@ -77,7 +77,9 @@
   color: var(--gr-color-text-secondary);
 }
 
+// success-500 sobre branco só dá 3.49:1 (abaixo do 4.5:1 exigido em texto
+// normal) — success-700 é o mesmo tom já usado como texto em badge/banner.
 .stat-card__description--success {
-  color: var(--gr-color-success-500);
+  color: var(--gr-color-success-700);
   font-weight: var(--gr-font-weight-medium);
 }

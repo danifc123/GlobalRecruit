@@ -1,11 +1,8 @@
-<div class="page">
-  <div class="page__header">
-    <p class="page__description">Acompanhamento de candidatos por etapa do processo seletivo.</p>
-    <app-button variant="primary" (clicked)="toggleForm()">
-      <app-icon name="user-plus" [size]="16" />
-      Registar Candidato
-    </app-button>
-  </div>
+<app-page description="Acompanhamento de candidatos por etapa do processo seletivo.">
+  <app-button page-actions variant="primary" (clicked)="toggleForm()">
+    <app-icon name="user-plus" [size]="16" />
+    Registar Candidato
+  </app-button>
 
   @if (showForm()) {
     <app-card>
@@ -64,4 +61,4 @@
       </tr>
     }
   </app-table>
-</div>
+</app-page>

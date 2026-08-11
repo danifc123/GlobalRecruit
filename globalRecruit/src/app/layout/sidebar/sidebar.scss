@@ -27,6 +27,11 @@
   color: var(--gr-color-text-inverse);
   flex-shrink: 0;
   text-decoration: none;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
 }
 
 .sidebar__nav {
@@ -59,6 +64,11 @@
 
   &:active {
     transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
   }
 }
 

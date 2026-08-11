@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Banner, Button, Card, Input, Select, Table, type SelectOption } from '@app/shared/ui';
+import { Banner, Button, Card, Input, Page, Select, Table, type SelectOption } from '@app/shared/ui';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { AppUser } from '@app/core/models/user';
@@ -20,7 +21,7 @@ const ROLE_LABELS: Record<string, string> = Object.fromEntries(
 
 @Component({
   selector: 'app-usuarios',
-  imports: [ReactiveFormsModule, Banner, Button, Card, Input, Select, Table],
+  imports: [ReactiveFormsModule, Banner, Button, Card, Input, Page, Select, Table],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,7 +60,7 @@ export class Usuarios {
     this.loadUsers();
     this.projetosService.list().subscribe((projetos) => this.projetos.set(projetos));
 
-    this.form.controls.role.valueChanges.subscribe((role) => {
+    this.form.controls.role.valueChanges.pipe(takeUntilDestroyed()).subscribe((role) => {
       const partnerCtrl = this.form.controls.partnerProjectId;
       if (role === 'partner') {
         partnerCtrl.setValidators([Validators.required]);

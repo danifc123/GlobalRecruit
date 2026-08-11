@@ -60,7 +60,10 @@
   --gr-color-surface: var(--gr-color-neutral-0);
   --gr-color-border: var(--gr-color-neutral-200);
   --gr-color-text-primary: var(--gr-color-neutral-900);
-  --gr-color-text-secondary: var(--gr-color-neutral-500);
+  // neutral-600, não neutral-500: neutral-500 fica abaixo de 4.5:1 (WCAG AA)
+  // contra --gr-color-background (4.49:1) — falha por margem mínima em texto
+  // normal, então subimos um degrau na escala para ficar com folga (7.4:1+).
+  --gr-color-text-secondary: var(--gr-color-neutral-600);
   --gr-color-text-inverse: var(--gr-color-neutral-0);
 
   // ---- Tipografia ----------------------------------------------------------
@@ -116,5 +119,8 @@
   --gr-transition-base: 200ms var(--gr-ease-out);
   --gr-transition-press: 100ms var(--gr-ease-out);
 
-  --gr-focus-ring: 0 0 0 3px var(--gr-color-primary-200);
+  // primary-200 (usado antes) só tem 1.58:1 contra fundos claros — abaixo do
+  // mínimo de 3:1 do WCAG 1.4.11 para indicadores de foco. primary-500 fica
+  // em ~4.4:1, visível também sobre --gr-color-background e neutral-100.
+  --gr-focus-ring: 0 0 0 3px var(--gr-color-primary-500);
 }

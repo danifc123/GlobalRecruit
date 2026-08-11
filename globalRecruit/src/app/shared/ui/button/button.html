@@ -3,6 +3,7 @@
   [type]="type()"
   [disabled]="disabled() || loading()"
   [attr.aria-busy]="loading() || null"
+  [attr.aria-label]="ariaLabel() || null"
   (click)="onClick($event)"
 >
   @if (loading()) {

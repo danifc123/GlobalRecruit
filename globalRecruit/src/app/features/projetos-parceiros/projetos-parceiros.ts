@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { Banner, Table } from '@app/shared/ui';
+import { Banner, Page, Table } from '@app/shared/ui';
 import { VagasService } from '@app/core/data/vagas.service';
 import { Vaga } from '@app/core/models/vaga';
 
 @Component({
   selector: 'app-projetos-parceiros',
-  imports: [Banner, Table],
+  imports: [Banner, Page, Table],
   templateUrl: './projetos-parceiros.html',
   styleUrl: './projetos-parceiros.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,12 +24,15 @@ export class ProjetosParceiros {
   protected readonly isEmpty = computed(() => !this.loading() && this.vagas().length === 0);
 
   constructor() {
-    this.vagasService.list(0, 50).subscribe({
-      next: (page) => {
-        this.vagas.set(page.items);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.vagasService
+      .list(0, 50)
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (page) => {
+          this.vagas.set(page.items);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 }
