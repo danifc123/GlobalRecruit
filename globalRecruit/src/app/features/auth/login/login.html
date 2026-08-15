@@ -1,3 +1,48 @@
+<div class="login-mobile">
+  <span class="login-mobile__glow login-mobile__glow--1"></span>
+  <span class="login-mobile__glow login-mobile__glow--2"></span>
+
+  <div class="login-mobile__content">
+    <div class="login-mobile__brand">
+      <span class="login-mobile__logo">G</span>
+      <span class="login-mobile__title">GlobalRecruit</span>
+      <span class="login-mobile__subtitle">Operação de vagas internacionais, no seu bolso.</span>
+    </div>
+
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login-mobile__form">
+      <label class="login-mobile__field">
+        <span class="login-mobile__label">E-mail</span>
+        <input class="login-mobile__input" type="email" formControlName="email" autocomplete="email" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="login-mobile__error">Informe um email válido</span>
+        }
+      </label>
+      <label class="login-mobile__field">
+        <span class="login-mobile__label">Senha</span>
+        <input
+          class="login-mobile__input"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="login-mobile__error">Mínimo de 8 caracteres</span>
+        }
+      </label>
+      <button type="submit" class="login-mobile__submit" [disabled]="loading()">
+        @if (loading()) {
+          <span class="login-mobile__spinner"></span>
+        }
+        Entrar
+      </button>
+    </form>
+  </div>
+</div>
+
 <div class="page">
   <app-card class="login-card">
     <h1 class="login-card__title">GlobalRecruit</h1>
