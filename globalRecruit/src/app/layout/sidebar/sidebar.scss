@@ -1,6 +1,14 @@
+// abaixo de 640px a navegação é a BottomNav (ver layout/bottom-nav) — a
+// Sidebar só existe a partir do tier de tablet retrato
 :host {
-  display: block;
+  display: none;
   flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  :host {
+    display: block;
+  }
 }
 
 .sidebar {

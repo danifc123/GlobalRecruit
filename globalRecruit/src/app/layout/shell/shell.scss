@@ -16,8 +16,11 @@
   min-width: 0;
 }
 
+// escondida abaixo de 640px: cada tela nova do celular já tem seu próprio
+// header cheio (`.mobile-header`) com título, e "Sair" mora em `/conta`
+// agora — a topbar antiga só duplicava (e não cabia na largura de celular).
 .shell__topbar {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: space-between;
   gap: var(--gr-space-3);
@@ -27,6 +30,12 @@
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+@media (min-width: 640px) {
+  .shell__topbar {
+    display: flex;
+  }
 }
 
 // min-width:0 + truncamento no título: sem isso, um título longo empurra o
@@ -69,6 +78,23 @@
   }
 }
 
+.shell__topbar-email {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .shell__content {
   flex: 1;
+  // espaço pra bottom nav fixa + home indicator do iPhone não cobrir conteúdo;
+  // some a partir de 640px, onde a bottom nav também some (ver bottom-nav.scss)
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 640px) {
+  .shell__content {
+    padding-bottom: 0;
+  }
 }
