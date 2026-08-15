@@ -1,0 +1,94 @@
+<div class="projetos-mobile">
+  <div class="mobile-header">
+    <span class="projetos-mobile__breadcrumb">Administração</span>
+    <div class="projetos-mobile__title">Projetos parceiros</div>
+    <p class="projetos-mobile__subtitle">Cadastro de projetos de clientes — vinculados a recrutadores em Usuários.</p>
+  </div>
+
+  <div class="projetos-mobile__list">
+    @if (loading()) {
+      <app-skeleton height="66px" radius="18px" />
+      <app-skeleton height="66px" radius="18px" />
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar os projetos" description="Verifique sua conexão e tente de novo." />
+    } @else if (isEmpty()) {
+      <app-empty-state icon="briefcase" description="Nenhum projeto parceiro cadastrado ainda." />
+    } @else {
+      @for (projeto of projetos(); track projeto.id) {
+        <div class="projetos-mobile__row">
+          <span class="projetos-mobile__icon"><app-icon name="building" [size]="18" /></span>
+          <div class="projetos-mobile__row-body">
+            <div class="projetos-mobile__nome">{{ projeto.nome }}</div>
+            <div class="projetos-mobile__meta">
+              {{ projeto.cliente }} · {{ projeto.status === 'ativo' ? ('desde ' + (projeto.createdAt | date: 'dd/MM/yyyy')) : 'pausado' }}
+            </div>
+          </div>
+          @if (projeto.status === 'ativo') {
+            <div class="projetos-mobile__count">
+              <div class="projetos-mobile__count-value">{{ projeto.vagasCount }}</div>
+              <div class="projetos-mobile__count-label">vagas</div>
+            </div>
+          } @else {
+            <span class="projetos-mobile__paused">Pausado</span>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <div class="projetos-mobile__footer">
+    <button type="button" class="projetos-mobile__novo" (click)="toggleForm()">
+      <app-icon name="plus" [size]="17" />
+      Novo projeto
+    </button>
+  </div>
+</div>
+
+<app-page description="Cadastro dos projetos de clientes parceiros, vinculados a recrutadores em Usuários.">
+  <app-button page-actions variant="primary" (clicked)="toggleForm()">
+    <app-icon name="plus" [size]="16" />
+    Novo projeto
+  </app-button>
+
+  @if (successMessage()) {
+    <app-banner tone="success">{{ successMessage() }}</app-banner>
+  }
+
+  <app-sheet [open]="showForm()" title="Novo projeto" (closed)="toggleForm()">
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="projetos-admin__form">
+      <app-input
+        label="Nome do projeto"
+        formControlName="nome"
+        [required]="true"
+        [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+      />
+      <app-input
+        label="Cliente"
+        formControlName="cliente"
+        [required]="true"
+        [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+      />
+      <app-button type="submit" [loading]="submitting()">Criar projeto</app-button>
+    </form>
+  </app-sheet>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="isEmpty()"
+    emptyIcon="briefcase"
+    emptyMessage="Nenhum projeto parceiro cadastrado ainda."
+  >
+    @for (projeto of projetos(); track projeto.id) {
+      <tr>
+        <td data-label="Nome">{{ projeto.nome }}</td>
+        <td data-label="Cliente">{{ projeto.cliente }}</td>
+        <td data-label="Status">{{ projeto.status }}</td>
+        <td data-label="Criado em">{{ projeto.createdAt | date: 'dd/MM/yyyy' }}</td>
+      </tr>
+    }
+  </app-table>
+</app-page>
