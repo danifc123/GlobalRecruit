@@ -19,3 +19,9 @@ export interface UserCreate {
   role: Role;
   projetoIds?: string[];
 }
+
+export const ROLE_LABELS: Record<Role, string> = {
+  admin: 'Admin',
+  recruiter: 'Recrutador',
+  developer: 'Developer',
+};

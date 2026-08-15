@@ -16,11 +16,18 @@
   flex-direction: column;
   align-items: center;
   width: 4.5rem;
-  height: 100%;
+  // fixa na viewport em vez de rolar junto com o conteúdo — `.shell` cresce
+  // mais alto que a tela conforme a página tem mais conteúdo, e sem isso a
+  // Sidebar (que é só um irmão flex dentro dele) crescia e rolava junto
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  align-self: flex-start;
   padding-block: var(--gr-space-4);
   gap: var(--gr-space-2);
   background-color: var(--gr-color-surface);
   border-right: var(--gr-border-width) solid var(--gr-color-border);
+  overflow-y: auto;
 }
 
 .sidebar__logo {
@@ -84,6 +91,12 @@
   display: none;
 }
 
+.sidebar__brand,
+.sidebar__count,
+.sidebar__user {
+  display: none;
+}
+
 .sidebar__item--active {
   background-color: var(--gr-color-primary-100);
   border-left-color: var(--gr-color-primary-500);
@@ -95,26 +108,141 @@
   }
 }
 
+// ==== ≥1024px: identidade nova — fundo verde-escuro cheio, badges e bloco
+// de usuário fixo embaixo (design "GlobalRecruit Desktop"). 640–1023px
+// continua com o visual claro de ícone, acima, sem alteração.
 @media (min-width: 1024px) {
   .sidebar {
     width: 15rem;
     align-items: stretch;
     padding-inline: var(--gr-space-3);
+    background-color: var(--gr-color-primary-900);
+    border-right: none;
   }
 
   .sidebar__logo {
     align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-3);
+    width: auto;
+    height: auto;
     margin-inline-start: var(--gr-space-1);
+    background-color: transparent;
+    border-radius: 0;
+
+    app-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.125rem;
+      height: 2.125rem;
+      border-radius: var(--gr-radius-md);
+      background-color: var(--gr-color-primary-400);
+      color: var(--gr-color-primary-900);
+    }
+  }
+
+  .sidebar__brand {
+    display: inline;
+    font-size: var(--gr-font-size-md);
+    font-weight: var(--gr-font-weight-semibold);
+    color: var(--gr-color-text-inverse);
+    letter-spacing: -0.01em;
   }
 
   .sidebar__item {
     justify-content: flex-start;
     padding-inline: var(--gr-space-3);
+    border-left: none;
+    color: rgba(255, 255, 255, 0.62);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--gr-color-text-inverse);
+    }
   }
 
   .sidebar__label {
     display: inline;
     font-size: var(--gr-font-size-sm);
     font-weight: var(--gr-font-weight-medium);
+  }
+
+  .sidebar__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    height: 1.25rem;
+    padding-inline: 8px;
+    border-radius: var(--gr-radius-full);
+    font-size: 11px;
+    font-weight: var(--gr-font-weight-semibold);
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .sidebar__item--active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--gr-color-text-inverse);
+    font-weight: var(--gr-font-weight-semibold);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--gr-color-text-inverse);
+    }
+
+    .sidebar__count {
+      color: var(--gr-color-primary-300);
+      background-color: rgba(74, 191, 117, 0.16);
+    }
+  }
+
+  .sidebar__item:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--gr-color-primary-400);
+  }
+
+  .sidebar__user {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    margin-top: auto;
+    padding: var(--gr-space-2);
+    border-radius: var(--gr-radius-lg);
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .sidebar__user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: var(--gr-color-text-inverse);
+    font-size: 12px;
+    font-weight: var(--gr-font-weight-semibold);
+  }
+
+  .sidebar__user-info {
+    min-width: 0;
+  }
+
+  .sidebar__user-email {
+    font-size: 12.5px;
+    font-weight: var(--gr-font-weight-semibold);
+    color: var(--gr-color-text-inverse);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sidebar__user-role {
+    font-size: 10.5px;
+    font-weight: var(--gr-font-weight-medium);
+    color: var(--gr-color-primary-300);
   }
 }

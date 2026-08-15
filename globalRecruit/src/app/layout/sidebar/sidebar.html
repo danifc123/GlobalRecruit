@@ -1,6 +1,7 @@
 <aside class="sidebar">
   <a class="sidebar__logo" routerLink="/dashboard" aria-label="GlobalRecruit Ops">
     <app-icon name="globe" [size]="20" />
+    <span class="sidebar__brand">GlobalRecruit</span>
   </a>
 
   <nav class="sidebar__nav">
@@ -15,7 +16,20 @@
           <app-icon [name]="item.icon" [size]="20" />
         }
         <span class="sidebar__label">{{ item.label }}</span>
+        @if (item.count !== undefined) {
+          <span class="sidebar__count">{{ item.count }}</span>
+        }
       </a>
     }
   </nav>
+
+  @if (userEmail(); as email) {
+    <div class="sidebar__user">
+      <span class="sidebar__user-avatar">{{ userInitials() }}</span>
+      <div class="sidebar__user-info">
+        <div class="sidebar__user-email">{{ email }}</div>
+        <div class="sidebar__user-role">{{ userRoleLabel() }}</div>
+      </div>
+    </div>
+  }
 </aside>

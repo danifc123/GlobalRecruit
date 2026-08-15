@@ -1,12 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 import type { TabItem } from '@app/shared/ui';
-import { Button } from '@app/shared/ui';
+import { Button, Icon } from '@app/shared/ui';
 import { AuthService } from '@app/core/auth/auth.service';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
+import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { DashboardService } from '@app/core/data/dashboard.service';
+import { UsersService } from '@app/core/data/users.service';
+import { ROLE_LABELS } from '@app/core/models/user';
+import { getEmailInitials } from '@app/shared/utils/initials';
 
 import { BottomNav } from '../bottom-nav/bottom-nav';
 import { Sidebar } from '../sidebar/sidebar';
@@ -50,7 +55,7 @@ const RECRUTADOR_PHONE_ITEMS: TabItem[] = [
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, Sidebar, BottomNav, Button],
+  imports: [RouterOutlet, RouterLink, Sidebar, BottomNav, Button, Icon],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,16 +64,72 @@ export class Shell {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   private readonly quickCreate = inject(QuickCreateService);
+  protected readonly topbarActions = inject(TopbarActionsService);
+  private readonly dashboardService = inject(DashboardService);
+  private readonly usersService = inject(UsersService);
+  // capturado aqui (contexto de injeção válido) pra poder ser passado
+  // explicitamente pro takeUntilDestroyed() dentro do effect() abaixo —
+  // dentro do effect não é mais contexto de injeção, take UntilDestroyed()
+  // sem argumento aí quebra com NG0203 (é isso que deixava a tela em
+  // branco depois do login: o effect lançava e derrubava a change detection)
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly isStaff = computed(() => {
     const role = this.auth.session()?.role;
     return role === 'admin' || role === 'developer';
   });
 
+  protected readonly userInitials = computed(() => getEmailInitials(this.auth.session()?.email ?? ''));
+  protected readonly userRoleLabel = computed(() => {
+    const role = this.auth.session()?.role;
+    return role ? ROLE_LABELS[role] : '';
+  });
+
+  // badges da Sidebar ≥1024px — busca uma vez, reaproveitando endpoints que
+  // já existem (o mesmo agregado que o Dashboard usa; a mesma listagem que
+  // a tela Conta já usa pra contar usuários)
+  private readonly vagasCount = signal<number | null>(null);
+  private readonly pipelineCount = signal<number | null>(null);
+  private readonly usuariosCount = signal<number | null>(null);
+  private countsFetched = false;
+
+  constructor() {
+    effect(() => {
+      if (!this.isStaff() || this.countsFetched) return;
+      this.countsFetched = true;
+      this.dashboardService
+        .stats()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((stats) => {
+          this.vagasCount.set(stats.vagasAbertas);
+          this.pipelineCount.set(stats.candidatosEmPipeline);
+        });
+      this.usersService
+        .list()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((users) => this.usuariosCount.set(users.length));
+    });
+  }
+
   protected readonly navItems = computed<TabItem[]>(() => [
     ...BASE_NAV_ITEMS,
-    ...(this.isStaff() ? STAFF_NAV_ITEMS : []),
-    ...(this.isStaff() ? ADMIN_NAV_ITEMS : []),
+    ...(this.isStaff()
+      ? STAFF_NAV_ITEMS.map((item) => ({
+          ...item,
+          count:
+            item.path === 'vagas-ativas'
+              ? (this.vagasCount() ?? undefined)
+              : item.path === 'pipeline-candidatos'
+                ? (this.pipelineCount() ?? undefined)
+                : undefined,
+        }))
+      : []),
+    ...(this.isStaff()
+      ? ADMIN_NAV_ITEMS.map((item) => ({
+          ...item,
+          count: item.path === 'admin/usuarios' ? (this.usuariosCount() ?? undefined) : undefined,
+        }))
+      : []),
   ]);
 
   protected readonly phoneNav = computed<{ left: TabItem[]; right: TabItem[]; showFab: boolean }>(
@@ -107,6 +168,10 @@ export class Shell {
 
   protected logout(): void {
     this.auth.logout();
+    this.countsFetched = false;
+    this.vagasCount.set(null);
+    this.pipelineCount.set(null);
+    this.usuariosCount.set(null);
     this.router.navigateByUrl('/login');
   }
 
