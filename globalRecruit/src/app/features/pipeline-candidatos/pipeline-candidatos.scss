@@ -2,19 +2,190 @@
   display: block;
 }
 
-.pipeline__form-title h3 {
-  color: var(--gr-color-text-primary);
+// <app-page> é o wrapper da tela "de sempre" (form flat + Table) — só existe
+// a partir de 640px; abaixo disso quem mostra o conteúdo é `.pipeline-mobile`.
+app-page {
+  display: none;
 }
 
 .pipeline__form {
   display: flex;
   flex-direction: column;
   gap: var(--gr-space-3);
-  max-width: 420px;
 }
 
 .pipeline__form-actions {
   display: flex;
   gap: var(--gr-space-3);
   margin-top: var(--gr-space-2);
+}
+
+// ==== mobile (<640px) =======================================================
+.pipeline-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-surface);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-3);
+  flex-shrink: 0;
+}
+
+.pipeline-mobile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--gr-space-1);
+}
+
+.pipeline-mobile__title {
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.pipeline-mobile__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--gr-color-text-inverse);
+  cursor: pointer;
+}
+
+.pipeline-mobile__chips {
+  display: block;
+  margin-top: var(--gr-space-4);
+}
+
+.pipeline-mobile__list {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.pipeline-mobile__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-2);
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.pipeline-mobile__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3) var(--gr-space-5);
+  border-top: var(--gr-border-width) solid var(--gr-color-neutral-100);
+  text-decoration: none;
+  color: inherit;
+}
+
+.pipeline-mobile__row--parado {
+  background-color: var(--gr-color-warning-100);
+}
+
+.pipeline-mobile__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--gr-color-primary-50);
+  color: var(--gr-color-primary-700);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.pipeline-mobile__avatar--parado {
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-warning-700);
+}
+
+.pipeline-mobile__row-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.pipeline-mobile__row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gr-space-2);
+}
+
+.pipeline-mobile__row-nome {
+  font-size: 0.9375rem;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.pipeline-mobile__row-tempo {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.pipeline-mobile__row--parado .pipeline-mobile__row-tempo {
+  color: var(--gr-color-warning-700);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.pipeline-mobile__row-meta {
+  margin-top: 3px;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.pipeline__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-sm);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--gr-color-primary-700);
+    border-color: var(--gr-color-primary-300);
+  }
+}
+
+.pipeline__row--parado {
+  background-color: var(--gr-color-warning-100);
+}
+
+.pipeline__chips {
+  margin-bottom: var(--gr-space-3);
+}
+
+// ==== ≥640px: mantém tabela de hoje =========================================
+@media (min-width: 640px) {
+  .pipeline-mobile {
+    display: none;
+  }
+
+  app-page {
+    display: flex;
+  }
+
+  .pipeline__form {
+    max-width: 420px;
+  }
 }
