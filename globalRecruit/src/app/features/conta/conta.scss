@@ -1,0 +1,237 @@
+:host {
+  display: block;
+}
+
+.conta {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-background);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-5);
+  flex-shrink: 0;
+}
+
+.conta__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-4);
+  margin-top: var(--gr-space-2);
+}
+
+.conta__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.14);
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.conta__email {
+  font-size: var(--gr-font-size-lg);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.conta__role-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  margin-top: var(--gr-space-2);
+  padding-inline: var(--gr-space-2);
+  border-radius: var(--gr-radius-full);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-semibold);
+  background-color: rgba(74, 191, 117, 0.18);
+  color: var(--gr-color-primary-300);
+}
+
+.conta__role-badge--admin {
+  background-color: rgba(230, 98, 51, 0.2);
+  color: var(--gr-color-accent-100);
+}
+
+.conta__role-badge--developer {
+  background-color: rgba(37, 134, 217, 0.22);
+  color: var(--gr-color-info-100);
+}
+
+.conta__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gr-space-4) var(--gr-space-5) calc(96px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-5);
+}
+
+.conta__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.conta__section-title {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gr-color-text-secondary);
+}
+
+.conta__card {
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+  overflow: hidden;
+}
+
+.conta__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  height: 56px;
+  padding-inline: var(--gr-space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+.conta__row-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--gr-radius-md);
+}
+
+.conta__row-icon--moss {
+  background-color: var(--gr-color-primary-50);
+  color: var(--gr-color-primary-700);
+}
+
+.conta__row-icon--accent {
+  background-color: var(--gr-color-accent-100);
+  color: var(--gr-color-accent-700);
+}
+
+.conta__row-label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--gr-font-size-md);
+  color: var(--gr-color-text-primary);
+}
+
+.conta__row-count {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.conta__row-chevron {
+  transform: rotate(-90deg);
+  color: var(--gr-color-neutral-400);
+}
+
+.conta__divider {
+  height: 1px;
+  background-color: var(--gr-color-neutral-100);
+  margin-inline: var(--gr-space-4);
+}
+
+.conta__status {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-success-700);
+}
+
+.conta__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background-color: var(--gr-color-success-500);
+}
+
+.conta__status--offline {
+  color: var(--gr-color-danger-700);
+
+  .conta__status-dot {
+    background-color: var(--gr-color-danger-500);
+  }
+}
+
+.conta__logout {
+  height: 52px;
+  margin-top: var(--gr-space-2);
+  border: var(--gr-border-width) solid var(--gr-color-danger-100);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-danger-700);
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+}
+
+// no desktop, "Conta" é alcançada pelo e-mail na topbar (ver shell.html)
+@media (min-width: 640px) {
+  .conta {
+    min-height: 0;
+  }
+
+  .mobile-header {
+    border-radius: var(--gr-radius-xl);
+    margin: var(--gr-space-6) auto 0;
+    max-width: 640px;
+  }
+
+  .conta__body {
+    max-width: 640px;
+    margin-inline: auto;
+    padding: var(--gr-space-4) var(--gr-space-5) var(--gr-space-6);
+  }
+}
+
+// ≥1024px, staff: Dados + Sistema numa coluna, Administração (a área que
+// mais importa pro admin) na outra — em vez de 3 cards empilhados numa
+// coluna estreita de 640px
+@media (min-width: 1024px) {
+  .mobile-header,
+  .conta__body {
+    max-width: 900px;
+  }
+
+  .conta__body--staff {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'dados admin'
+      'sistema admin';
+    align-content: start;
+  }
+
+  .conta__section--dados {
+    grid-area: dados;
+  }
+
+  .conta__section--admin {
+    grid-area: admin;
+  }
+
+  .conta__section--sistema {
+    grid-area: sistema;
+  }
+}

@@ -1,0 +1,60 @@
+:host {
+  display: block;
+  animation: page-enter var(--gr-transition-base);
+}
+
+// ==== mobile (<640px) =======================================================
+.talentos-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-background);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-4);
+  flex-shrink: 0;
+}
+
+.talentos-mobile__title {
+  margin-top: var(--gr-space-1);
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.talentos-mobile__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: var(--gr-space-5);
+}
+
+// ==== ≥640px: card centralizado (padrão já usado nas outras telas) =========
+.page {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  :host {
+    padding: var(--gr-space-4);
+  }
+
+  .talentos-mobile {
+    display: none;
+  }
+
+  .page {
+    display: block;
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host {
+    padding: var(--gr-space-6);
+  }
+}
