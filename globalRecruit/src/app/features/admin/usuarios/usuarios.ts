@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, Table, type SelectOption } from '@app/shared/ui';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
-import { AppUser } from '@app/core/models/user';
+import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { AppUser, ROLE_LABELS as ROLE_LABELS_CURTO } from '@app/core/models/user';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 import { getInitials } from '@app/shared/utils/initials';
 
@@ -43,6 +44,8 @@ export class Usuarios {
   private readonly fb = inject(FormBuilder);
   private readonly usersService = inject(UsersService);
   private readonly projetosService = inject(ProjetosParceirosService);
+  private readonly topbarActions = inject(TopbarActionsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly roleOptions = ROLE_OPTIONS;
   protected readonly columns = ['Email', 'Papel', 'Projetos', 'Status'];
@@ -63,16 +66,21 @@ export class Usuarios {
     ];
   });
 
+  // busca do topbar (≥1024px) — mesmo padrão de Vagas Ativas/Pipeline
+  protected readonly search = signal('');
+
   protected readonly usersFiltrados = computed(() => {
     const users = this.users();
-    switch (this.filtro()) {
-      case 'recruiter':
-        return users.filter((u) => u.role === 'recruiter');
-      case 'inativos':
-        return users.filter((u) => !u.isActive);
-      default:
-        return users;
-    }
+    const porFiltro =
+      this.filtro() === 'recruiter'
+        ? users.filter((u) => u.role === 'recruiter')
+        : this.filtro() === 'inativos'
+          ? users.filter((u) => !u.isActive)
+          : users;
+
+    const termo = this.search().trim().toLowerCase();
+    if (!termo) return porFiltro;
+    return porFiltro.filter((u) => u.email.toLowerCase().includes(termo));
   });
 
   protected readonly showForm = signal(false);
@@ -101,15 +109,32 @@ export class Usuarios {
     this.form.controls.role.valueChanges.pipe(takeUntilDestroyed()).subscribe((role) => {
       if (role !== 'recruiter') this.selectedProjetoIds.set(new Set());
     });
+
+    this.topbarActions.setAction({
+      label: 'Novo usuário',
+      icon: 'plus',
+      onClick: () => this.toggleForm(),
+    });
+    this.topbarActions.setSearch({ placeholder: 'E-mail do usuário', query: this.search });
+    this.destroyRef.onDestroy(() => {
+      this.topbarActions.clearAction();
+      this.topbarActions.clearSearch();
+    });
   }
 
   protected roleLabel(role: string): string {
     return ROLE_LABELS[role] ?? role;
   }
 
-  // usado pelos 2 cards grandes do seletor de papel no celular (só
-  // admin/recrutador — developer é criado via seed, não por essa tela)
-  protected selecionarRole(role: 'admin' | 'recruiter'): void {
+  // label curto (Admin/Recrutador/Developer) — usado no segmentado ≥1024px,
+  // onde o texto verbose de roleLabel() não cabe
+  protected roleLabelCurto(role: string): string {
+    return ROLE_LABELS_CURTO[role as AppUser['role']] ?? role;
+  }
+
+  // usado pelos cards do celular (só admin/recrutador — developer é criado
+  // via seed) e pelo segmentado ≥1024px (os 3 papéis)
+  protected selecionarRole(role: 'admin' | 'recruiter' | 'developer'): void {
     this.form.controls.role.setValue(role);
   }
 

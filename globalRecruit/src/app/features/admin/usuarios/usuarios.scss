@@ -304,6 +304,35 @@ app-page {
   margin-bottom: var(--gr-space-3);
 }
 
+.usuarios__role-segmented {
+  display: none;
+}
+
+.usuarios__segmented {
+  display: flex;
+  padding: 4px;
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-neutral-100);
+}
+
+.usuarios__segment {
+  flex: 1;
+  height: 40px;
+  border: none;
+  border-radius: var(--gr-radius-md);
+  background: none;
+  color: var(--gr-color-text-secondary);
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+}
+
+.usuarios__segment--active {
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  box-shadow: var(--gr-shadow-sm);
+}
+
 // ==== ≥640px: mantém tabela + select de papel de hoje =======================
 @media (min-width: 640px) {
   .usuarios-mobile {
@@ -324,5 +353,18 @@ app-page {
 
   .usuarios__role-cards {
     display: none;
+  }
+}
+
+// ==== ≥1024px: drawer (ver Sheet) + segmentado de 3 papéis ==================
+@media (min-width: 1024px) {
+  .usuarios__role-select {
+    display: none;
+  }
+
+  .usuarios__role-segmented {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
   }
 }
