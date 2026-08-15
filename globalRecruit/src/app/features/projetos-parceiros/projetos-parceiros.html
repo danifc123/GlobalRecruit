@@ -65,9 +65,9 @@
     [columns]="columns"
     [isEmpty]="isEmpty()"
     emptyIcon="users"
-    emptyMessage="Nenhum projeto atribuído a esta visão ainda."
+    emptyMessage="Nenhuma vaga encontrada."
   >
-    @for (vaga of vagas(); track vaga.id) {
+    @for (vaga of vagasFiltradas(); track vaga.id) {
       <tr>
         <td data-label="Cargo">{{ vaga.cargo }}</td>
         <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
