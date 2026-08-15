@@ -1,20 +1,82 @@
+<div class="vagas-mobile">
+  <div class="mobile-header">
+    <div class="vagas-mobile__top">
+      <span class="vagas-mobile__title">Vagas ativas</span>
+      <button type="button" class="vagas-mobile__add" aria-label="Nova vaga" (click)="toggleForm()">
+        <app-icon name="plus" [size]="18" />
+      </button>
+    </div>
+    @if (!loading() && !error()) {
+      <div class="vagas-mobile__stats">
+        <div><div class="vagas-mobile__stat-value">{{ vagas().length }}</div><div class="vagas-mobile__stat-label">abertas</div></div>
+        <div><div class="vagas-mobile__stat-value vagas-mobile__stat-value--accent">{{ filtroOptions()[1].count }}</div><div class="vagas-mobile__stat-label">prioridade alta</div></div>
+      </div>
+      <app-chip-filter class="vagas-mobile__chips" [options]="filtroOptions()" [(selected)]="filtro" />
+    }
+  </div>
+
+  <div class="vagas-mobile__list">
+    @if (loading()) {
+      <div class="vagas-mobile__skeleton-row">
+        <app-skeleton width="62%" height="14px" />
+        <app-skeleton width="80%" height="11px" />
+      </div>
+      <div class="vagas-mobile__skeleton-row">
+        <app-skeleton width="48%" height="14px" />
+        <app-skeleton width="72%" height="11px" />
+      </div>
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar as vagas" description="Verifique sua conexão e tente de novo." />
+    } @else if (isEmpty()) {
+      <app-empty-state icon="briefcase" description="Nenhuma vaga encontrada para esse filtro." />
+    } @else {
+      @for (vaga of vagasFiltradas(); track vaga.id) {
+        <app-swipe-row [actions]="swipeActions" (action)="handleSwipeAction(vaga.id, $event)">
+          <a class="vagas-mobile__row" [routerLink]="['/vagas-ativas', vaga.id]">
+            <span class="vagas-mobile__row-bar vagas-mobile__row-bar--{{ vaga.prioridade }}"></span>
+            <div class="vagas-mobile__row-body">
+              <div class="vagas-mobile__row-top">
+                <span class="vagas-mobile__row-cargo">{{ vaga.cargo }}</span>
+              </div>
+              <div class="vagas-mobile__row-meta">{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }@if (vaga.idioma) { · {{ vaga.idioma }} }</div>
+              <div class="vagas-mobile__row-tags">
+                <span class="vagas-mobile__tag vagas-mobile__tag--prioridade-{{ vaga.prioridade }}">{{ vaga.prioridade }}</span>
+                @if (vaga.candidatosCount === 0) {
+                  <span class="vagas-mobile__tag vagas-mobile__tag--warning">sem candidato</span>
+                } @else {
+                  <span class="vagas-mobile__tag">{{ vaga.candidatosCount }} no pipeline</span>
+                }
+              </div>
+            </div>
+          </a>
+        </app-swipe-row>
+      }
+    }
+  </div>
+</div>
+
 <app-page description="Gestão de vagas operacionais.">
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
     Nova Vaga
   </app-button>
 
-  @if (showForm()) {
-    <app-card>
-      <div card-header class="vagas__form-title">
-        <h3>Nova vaga</h3>
+  <app-sheet [open]="showForm()" title="Nova vaga" (closed)="toggleForm()">
+    <div class="vagas-wizard__progress">
+      <div class="vagas-wizard__steps">
+        <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 1"></span>
+        <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 2"></span>
+        <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 3"></span>
       </div>
+      <span class="vagas-wizard__step-label">Etapa {{ currentStep() }} de 3</span>
+    </div>
 
-      @if (errorMessage()) {
-        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
-      }
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="vagas__form">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="vagas__form">
+      <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 1">
         <app-select
           label="Projeto"
           formControlName="projetoId"
@@ -27,21 +89,41 @@
           "
         />
         <app-input
-          label="Cliente"
-          formControlName="cliente"
-          [required]="true"
-          [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
-        />
-        <app-input
           label="Cargo"
           formControlName="cargo"
           [required]="true"
           [errorMessage]="form.controls.cargo.touched && form.controls.cargo.invalid ? 'Obrigatório' : undefined"
         />
-        <app-input label="Idioma" formControlName="idioma" />
+        <app-input
+          label="Cliente"
+          formControlName="cliente"
+          [required]="true"
+          [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+        />
+      </div>
+
+      <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 2">
         <app-input label="País" formControlName="pais" />
-        <app-input label="Modalidade" formControlName="modalidade" />
+        <app-input label="Idioma" formControlName="idioma" />
+        <div class="vagas-wizard__field">
+          <span class="vagas-wizard__field-label">Modalidade</span>
+          <div class="vagas-wizard__segmented">
+            @for (opcao of modalidadeOpcoes; track opcao) {
+              <button
+                type="button"
+                class="vagas-wizard__segment"
+                [class.vagas-wizard__segment--active]="form.controls.modalidade.value === opcao"
+                (click)="selecionarModalidade(opcao)"
+              >
+                {{ opcao }}
+              </button>
+            }
+          </div>
+        </div>
         <app-input label="Salário" type="number" formControlName="salario" />
+      </div>
+
+      <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 3">
         <app-input label="Comissão" type="number" formControlName="comissao" />
         <app-select
           label="Prioridade"
@@ -54,12 +136,35 @@
               : undefined
           "
         />
-        <div class="vagas__form-actions">
-          <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
-          <app-button type="submit" [loading]="submitting()">Criar vaga</app-button>
-        </div>
-      </form>
-    </app-card>
+      </div>
+
+      <div class="vagas-wizard__nav">
+        @if (currentStep() > 1) {
+          <button type="button" class="vagas-wizard__back" aria-label="Etapa anterior" (click)="prevStep()">
+            <app-icon name="chevron-down" [size]="18" class="vagas-wizard__back-icon" />
+          </button>
+        }
+        @if (currentStep() < 3) {
+          <button type="button" class="vagas-wizard__continue" (click)="nextStep()">Continuar</button>
+        } @else {
+          <button type="submit" class="vagas-wizard__continue" [disabled]="submitting()">
+            @if (submitting()) {
+              <span class="vagas-wizard__spinner"></span>
+            }
+            Criar vaga
+          </button>
+        }
+      </div>
+
+      <div class="vagas__form-actions">
+        <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+        <app-button type="submit" [loading]="submitting()">Criar vaga</app-button>
+      </div>
+    </form>
+  </app-sheet>
+
+  @if (!loading() && !error()) {
+    <app-chip-filter class="vagas__chips" [options]="filtroOptions()" [(selected)]="filtro" />
   }
 
   <app-table
@@ -68,7 +173,7 @@
     emptyIcon="briefcase"
     emptyMessage="Nenhuma vaga aberta no momento."
   >
-    @for (vaga of vagas(); track vaga.id) {
+    @for (vaga of vagasFiltradas(); track vaga.id) {
       <tr>
         <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
         <td data-label="Cliente">{{ vaga.cliente }}</td>
@@ -79,6 +184,27 @@
         <td data-label="Salário">{{ vaga.salario ?? '—' }}</td>
         <td data-label="Comissão">{{ vaga.comissao ?? '—' }}</td>
         <td data-label="Prioridade">{{ vaga.prioridade }}</td>
+        <td data-label="Ações" class="vagas__actions">
+          <a class="vagas__action" [routerLink]="['/vagas-ativas', vaga.id]" aria-label="Ver detalhes da vaga">
+            <app-icon name="search" [size]="15" />
+          </a>
+          <button
+            type="button"
+            class="vagas__action"
+            aria-label="Priorizar vaga"
+            (click)="handleSwipeAction(vaga.id, 'priorizar')"
+          >
+            <app-icon name="flame" [size]="15" />
+          </button>
+          <button
+            type="button"
+            class="vagas__action"
+            aria-label="Indicar candidato para esta vaga"
+            (click)="handleSwipeAction(vaga.id, 'indicar')"
+          >
+            <app-icon name="user-plus" [size]="15" />
+          </button>
+        </td>
       </tr>
     }
   </app-table>

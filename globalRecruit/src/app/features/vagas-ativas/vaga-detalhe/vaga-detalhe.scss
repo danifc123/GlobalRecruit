@@ -1,0 +1,343 @@
+:host {
+  display: block;
+}
+
+.vaga-detalhe {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-background);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-5);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.vaga-detalhe__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--gr-color-text-inverse);
+  cursor: pointer;
+}
+
+.vaga-detalhe__back-icon {
+  transform: rotate(90deg);
+}
+
+.vaga-detalhe__badges {
+  display: flex;
+  gap: var(--gr-space-2);
+  margin-top: var(--gr-space-2);
+}
+
+.vaga-detalhe__badge {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding-inline: var(--gr-space-2);
+  border-radius: var(--gr-radius-sm);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  text-transform: capitalize;
+  background-color: rgba(74, 191, 117, 0.16);
+  color: var(--gr-color-primary-300);
+}
+
+.vaga-detalhe__badge--pausada {
+  background-color: rgba(217, 154, 27, 0.2);
+  color: var(--gr-color-warning-100);
+}
+
+.vaga-detalhe__badge--fechada {
+  background-color: rgba(154, 144, 132, 0.24);
+  color: var(--gr-color-neutral-200);
+}
+
+.vaga-detalhe__badge--prioridade-alta {
+  background-color: rgba(230, 98, 51, 0.2);
+  color: var(--gr-color-accent-100);
+}
+
+.vaga-detalhe__title {
+  margin: 0;
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.vaga-detalhe__subtitle {
+  margin: 0;
+  font-size: var(--gr-font-size-sm);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.vaga-detalhe__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gr-space-4) var(--gr-space-5) calc(112px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-4);
+}
+
+.vaga-detalhe__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gr-space-3);
+}
+
+.vaga-detalhe__stat {
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-lg);
+  box-shadow: var(--gr-shadow-sm);
+  padding: var(--gr-space-3);
+}
+
+.vaga-detalhe__stat-label {
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-detalhe__stat-value {
+  margin-top: 3px;
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-detalhe__card {
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+  padding: var(--gr-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+.vaga-detalhe__card--flush {
+  padding: 0;
+}
+
+.vaga-detalhe__card--flush .vaga-detalhe__card-header {
+  padding: var(--gr-space-4) var(--gr-space-4) 0;
+}
+
+.vaga-detalhe__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-detalhe__card-count {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-primary-700);
+}
+
+.vaga-detalhe__pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.vaga-detalhe__pipeline-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  font-size: var(--gr-font-size-sm);
+}
+
+.vaga-detalhe__pipeline-label {
+  flex: 1;
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-detalhe__pipeline-count {
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-detalhe__pipeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.vaga-detalhe__pipeline-dot--triagem {
+  background-color: var(--gr-color-primary-400);
+}
+
+.vaga-detalhe__pipeline-dot--entrevista {
+  background-color: var(--gr-color-warning-500);
+}
+
+.vaga-detalhe__pipeline-dot--proposta {
+  background-color: var(--gr-color-info-500);
+}
+
+.vaga-detalhe__pipeline-dot--contratado {
+  background-color: var(--gr-color-primary-600);
+}
+
+.vaga-detalhe__candidato {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3) var(--gr-space-4);
+  border-top: var(--gr-border-width) solid var(--gr-color-neutral-100);
+  text-decoration: none;
+  color: inherit;
+
+  &:first-of-type {
+    border-top: none;
+  }
+}
+
+.vaga-detalhe__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--gr-color-accent-100);
+  color: var(--gr-color-accent-700);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.vaga-detalhe__candidato-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.vaga-detalhe__candidato-nome {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-detalhe__candidato-meta {
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-detalhe__footer {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--gr-border-width) solid var(--gr-color-border);
+  padding: var(--gr-space-3) var(--gr-space-5) calc(var(--gr-space-3) + env(safe-area-inset-bottom, 0px) + 4.5rem);
+  z-index: 20;
+}
+
+.vaga-detalhe__indicar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gr-space-2);
+  height: 50px;
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-primary-600);
+  color: var(--gr-color-text-inverse);
+  text-decoration: none;
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-medium);
+}
+
+.vaga-detalhe__error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: var(--gr-space-5);
+}
+
+.vaga-detalhe__retry {
+  height: 44px;
+  padding-inline: var(--gr-space-4);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+}
+
+// ≥640px: mesmo header/cards do celular (já são o "chrome" da página, não
+// precisa de Page em cima) — só reaproveita mais largura de tela e vira
+// grid de 2 colunas a partir de 1024px, em vez de ficar numa coluna
+// estreita de 640px sobrando espaço vazio nas laterais.
+@media (min-width: 640px) {
+  .mobile-header {
+    border-radius: var(--gr-radius-xl);
+    max-width: 640px;
+    margin: var(--gr-space-6) auto 0;
+  }
+
+  .vaga-detalhe__body {
+    max-width: 640px;
+    margin-inline: auto;
+    padding-bottom: var(--gr-space-6);
+  }
+
+  .vaga-detalhe__footer {
+    position: static;
+    max-width: 640px;
+    margin-inline: auto;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-top: none;
+    padding: 0 var(--gr-space-5) var(--gr-space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-header,
+  .vaga-detalhe__body,
+  .vaga-detalhe__footer {
+    max-width: 1040px;
+  }
+
+  .vaga-detalhe__body {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-areas:
+      'stats candidatos'
+      'pipeline candidatos';
+    align-items: start;
+  }
+
+  .vaga-detalhe__grid {
+    grid-area: stats;
+  }
+
+  .vaga-detalhe__card:not(.vaga-detalhe__card--flush) {
+    grid-area: pipeline;
+  }
+
+  .vaga-detalhe__card--flush {
+    grid-area: candidatos;
+    align-self: stretch;
+  }
+}
