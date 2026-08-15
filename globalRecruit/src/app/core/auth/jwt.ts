@@ -3,7 +3,6 @@ import { Role } from '@app/core/models/auth';
 interface AccessTokenClaims {
   sub: string;
   role: Role;
-  partner_project_id: string | null;
   exp: number;
 }
 

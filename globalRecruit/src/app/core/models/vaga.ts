@@ -14,6 +14,7 @@ export interface Vaga {
   prioridade: Prioridade;
   status: StatusVaga;
   createdAt: string;
+  candidatosCount: number;
 }
 
 export interface VagaPage {
@@ -22,6 +23,8 @@ export interface VagaPage {
   pageSize: number;
   total: number;
 }
+
+export const PRIORIDADE_ORDEM: Record<Prioridade, number> = { alta: 0, media: 1, baixa: 2 };
 
 export interface VagaCreate {
   projetoId: string;

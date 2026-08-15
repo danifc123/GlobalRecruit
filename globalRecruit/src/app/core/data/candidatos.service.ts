@@ -12,6 +12,7 @@ interface CandidatoApi {
   vaga_id: string;
   created_at: string;
   estagio_atual: Estagio | null;
+  historico: { id: string; estagio: Estagio; updated_at: string }[];
 }
 
 function toCandidato(api: CandidatoApi): Candidato {
@@ -22,6 +23,7 @@ function toCandidato(api: CandidatoApi): Candidato {
     vagaId: api.vaga_id,
     createdAt: api.created_at,
     estagioAtual: api.estagio_atual,
+    historico: (api.historico ?? []).map((h) => ({ id: h.id, estagio: h.estagio, updatedAt: h.updated_at })),
   };
 }
 
@@ -29,6 +31,10 @@ function toCandidato(api: CandidatoApi): Candidato {
 export class CandidatosService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/candidatos`;
+
+  get(id: string): Observable<Candidato> {
+    return this.http.get<CandidatoApi>(`${this.baseUrl}/${id}`).pipe(map(toCandidato));
+  }
 
   listByVaga(vagaId: string): Observable<Candidato[]> {
     const params = new HttpParams().set('vaga_id', vagaId);

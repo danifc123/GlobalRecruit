@@ -21,6 +21,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/vagas-ativas/vagas-ativas').then((m) => m.VagasAtivas),
     title: 'Vagas Ativas — GlobalRecruit Ops',
+    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+  },
+  {
+    path: 'vagas-ativas/:id',
+    loadComponent: () =>
+      import('./features/vagas-ativas/vaga-detalhe/vaga-detalhe').then((m) => m.VagaDetalhe),
+    title: 'Detalhe da vaga — GlobalRecruit Ops',
     canActivate: [authGuard],
   },
   {
@@ -29,7 +36,7 @@ export const routes: Routes = [
       import('./features/projetos-parceiros/projetos-parceiros').then(
         (m) => m.ProjetosParceiros,
       ),
-    title: 'Projetos de Parceiros — GlobalRecruit Ops',
+    title: 'Visão do Recrutador — GlobalRecruit Ops',
     canActivate: [authGuard],
   },
   {
@@ -39,6 +46,21 @@ export const routes: Routes = [
         (m) => m.PipelineCandidatos,
       ),
     title: 'Pipeline Candidatos — GlobalRecruit Ops',
+    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+  },
+  {
+    path: 'pipeline-candidatos/:id',
+    loadComponent: () =>
+      import('./features/pipeline-candidatos/candidato-detalhe/candidato-detalhe').then(
+        (m) => m.CandidatoDetalhe,
+      ),
+    title: 'Candidato — GlobalRecruit Ops',
+    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+  },
+  {
+    path: 'conta',
+    loadComponent: () => import('./features/conta/conta').then((m) => m.Conta),
+    title: 'Conta — GlobalRecruit Ops',
     canActivate: [authGuard],
   },
   {
@@ -52,6 +74,13 @@ export const routes: Routes = [
     path: 'admin/usuarios',
     loadComponent: () => import('./features/admin/usuarios/usuarios').then((m) => m.Usuarios),
     title: 'Usuários — GlobalRecruit Ops',
+    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+  },
+  {
+    path: 'admin/projetos',
+    loadComponent: () =>
+      import('./features/admin/projetos/projetos-admin').then((m) => m.ProjetosAdmin),
+    title: 'Projetos Parceiros — GlobalRecruit Ops',
     canActivate: [authGuard, roleGuard(['admin', 'developer'])],
   },
   {

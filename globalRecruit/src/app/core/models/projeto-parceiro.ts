@@ -4,4 +4,5 @@ export interface ProjetoParceiro {
   cliente: string;
   status: string;
   createdAt: string;
+  vagasCount: number;
 }

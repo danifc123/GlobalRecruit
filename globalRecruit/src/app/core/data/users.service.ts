@@ -9,7 +9,7 @@ interface UserApi {
   id: string;
   email: string;
   role: AppUser['role'];
-  partner_project_id: string | null;
+  projetos: { id: string; nome: string }[];
   is_active: boolean;
 }
 
@@ -18,7 +18,7 @@ function toUser(api: UserApi): AppUser {
     id: api.id,
     email: api.email,
     role: api.role,
-    partnerProjectId: api.partner_project_id,
+    projetos: api.projetos,
     isActive: api.is_active,
   };
 }
@@ -38,7 +38,7 @@ export class UsersService {
         email: user.email,
         password: user.password,
         role: user.role,
-        partner_project_id: user.partnerProjectId ?? null,
+        project_ids: user.projetoIds ?? [],
       })
       .pipe(map(toUser));
   }

@@ -107,7 +107,6 @@ export class AuthService {
             userId: claims.sub,
             email: '',
             role: claims.role,
-            partnerProjectId: claims.partner_project_id,
           }
         : null,
     );

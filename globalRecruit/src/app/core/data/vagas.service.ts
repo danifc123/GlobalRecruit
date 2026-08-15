@@ -18,6 +18,7 @@ interface VagaApi {
   prioridade: Vaga['prioridade'];
   status: StatusVaga;
   created_at: string;
+  candidatos_count: number;
 }
 
 interface VagaPageApi {
@@ -41,6 +42,7 @@ function toVaga(api: VagaApi): Vaga {
     prioridade: api.prioridade,
     status: api.status,
     createdAt: api.created_at,
+    candidatosCount: api.candidatos_count,
   };
 }
 
@@ -48,6 +50,10 @@ function toVaga(api: VagaApi): Vaga {
 export class VagasService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/vagas`;
+
+  get(id: string): Observable<Vaga> {
+    return this.http.get<VagaApi>(`${this.baseUrl}/${id}`).pipe(map(toVaga));
+  }
 
   list(page = 0, pageSize = 20, status?: StatusVaga): Observable<VagaPage> {
     let params = new HttpParams().set('page', page).set('page_size', pageSize);
@@ -63,6 +69,12 @@ export class VagasService {
           total: res.total,
         })),
       );
+  }
+
+  updatePrioridade(id: string, prioridade: Vaga['prioridade']): Observable<Vaga> {
+    return this.http
+      .patch<VagaApi>(`${this.baseUrl}/${id}/prioridade`, { prioridade })
+      .pipe(map(toVaga));
   }
 
   create(vaga: VagaCreate): Observable<Vaga> {

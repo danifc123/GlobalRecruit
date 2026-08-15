@@ -11,10 +11,18 @@ interface ProjetoParceiroApi {
   cliente: string;
   status: string;
   created_at: string;
+  vagas_count: number;
 }
 
 function toProjeto(api: ProjetoParceiroApi): ProjetoParceiro {
-  return { id: api.id, nome: api.nome, cliente: api.cliente, status: api.status, createdAt: api.created_at };
+  return {
+    id: api.id,
+    nome: api.nome,
+    cliente: api.cliente,
+    status: api.status,
+    createdAt: api.created_at,
+    vagasCount: api.vagas_count,
+  };
 }
 
 @Injectable({ providedIn: 'root' })
