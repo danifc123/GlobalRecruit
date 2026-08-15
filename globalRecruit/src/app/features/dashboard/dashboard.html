@@ -108,7 +108,13 @@
 
 <div class="dashboard">
   <div class="dashboard__grid">
-    <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Em aberto" statusTone="success">
+    <app-stat-card
+      label="Vagas Ativas"
+      icon="flame"
+      tone="accent"
+      [description]="stats() ? '+' + stats()!.vagasNovasSemana + ' nesta semana' : 'Em aberto'"
+      statusTone="success"
+    >
       {{ stats()?.vagasAbertas ?? '—' }}
     </app-stat-card>
 
@@ -120,26 +126,24 @@
       {{ stats()?.clientesAtivos ?? '—' }}
     </app-stat-card>
 
-    <app-stat-card label="Modalidade Remota" icon="home" tone="neutral" description="Das vagas abertas">
-      {{ stats() ? stats()!.pctModalidadeRemota + '%' : '—' }}
-    </app-stat-card>
-
-    <app-stat-card
-      label="Estado da Conexão"
-      icon="signal"
-      [tone]="error() ? 'danger' : 'success'"
-      description="GlobalRecruit API"
-    >
-      <span class="dashboard__status">
-        <span class="dashboard__status-dot" [class.dashboard__status-dot--error]="error()"></span>
-        {{ error() ? 'Indisponível' : 'Online' }}
-      </span>
-    </app-stat-card>
+    @if (isDeveloper()) {
+      <app-stat-card
+        label="Estado da Conexão"
+        icon="signal"
+        [tone]="error() ? 'danger' : 'success'"
+        description="GlobalRecruit API"
+      >
+        <span class="dashboard__status">
+          <span class="dashboard__status-dot" [class.dashboard__status-dot--error]="error()"></span>
+          {{ error() ? 'Indisponível' : 'Online' }}
+        </span>
+      </app-stat-card>
+    }
   </div>
 
   @if (stats(); as s) {
-    @if (s.candidatosParados.length > 0 || s.vagasSemCandidato.length > 0) {
-      <app-card>
+    @if (s.candidatosParados.length > 0 || s.vagasSemCandidato.length > 0 || s.propostasAguardando.length > 0) {
+      <app-card class="dashboard__attention-card">
         <div card-header class="dashboard__chart-header">
           <app-icon name="clock" [size]="18" />
           <h3>Precisa de você hoje</h3>
@@ -167,12 +171,23 @@
               </div>
             </a>
           }
+          @for (p of s.propostasAguardando; track p.id) {
+            <a class="dashboard-mobile__attention dashboard__attention" [routerLink]="['/pipeline-candidatos', p.id]">
+              <span class="dashboard-mobile__attention-icon dashboard-mobile__attention-icon--info">
+                <app-icon name="filter" [size]="16" />
+              </span>
+              <div class="dashboard-mobile__attention-body">
+                <div class="dashboard-mobile__attention-title">{{ p.nome }} — proposta aguardando resposta</div>
+                <div class="dashboard-mobile__attention-meta">{{ p.vagaCargo }} · enviada em {{ p.enviadaEm | date: 'dd/MM' }}</div>
+              </div>
+            </a>
+          }
         </div>
       </app-card>
     }
   }
 
-  <app-card>
+  <app-card class="dashboard__idioma-card">
     <div card-header class="dashboard__chart-header">
       <app-icon name="pie-chart" [size]="18" />
       <h3>Vagas por Idioma Exigido</h3>
@@ -198,4 +213,28 @@
       />
     }
   </app-card>
+
+  @if (stats(); as s) {
+    <app-card class="dashboard__funil-card">
+      <div card-header class="dashboard__chart-header">
+        <app-icon name="filter" [size]="18" />
+        <h3>Funil geral</h3>
+      </div>
+      <div class="dashboard__funil">
+        @for (item of s.funilPorEtapa; track item.estagio) {
+          <div class="dashboard__funil-row">
+            <span class="dashboard__funil-label">{{ estagioLabels[item.estagio] }}</span>
+            <div class="dashboard__funil-track">
+              <div
+                class="dashboard__funil-fill dashboard__funil-fill--{{ item.estagio }}"
+                [style.width.%]="maiorEtapa() ? (item.count / maiorEtapa()) * 100 : 0"
+              >
+                {{ item.count }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </app-card>
+  }
 </div>

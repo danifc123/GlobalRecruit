@@ -171,6 +171,11 @@
   color: var(--gr-color-accent-700);
 }
 
+.dashboard-mobile__attention-icon--info {
+  background-color: var(--gr-color-info-100);
+  color: var(--gr-color-info-700);
+}
+
 .dashboard-mobile__attention-title {
   font-size: var(--gr-font-size-sm);
   font-weight: var(--gr-font-weight-semibold);
@@ -259,6 +264,10 @@
   display: none;
 }
 
+.dashboard__funil-card {
+  display: none;
+}
+
 @media (min-width: 640px) {
   .dashboard-mobile {
     display: none;
@@ -292,19 +301,117 @@
   }
 }
 
+// ---- ≥1024px: KPIs em linha única + 2 colunas (atenção | idioma/funil) ---
+// "attention" ocupa as duas linhas de baixo inteiras — cresce até a borda
+// inferior da página em vez de só a altura do próprio conteúdo (linha do
+// meio vira 1fr, absorve o espaço sobrando; a página ainda cresce/rola
+// normalmente se o conteúdo for maior que a tela — isso é só o mínimo).
 @media (min-width: 1024px) {
   .dashboard {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'stats stats'
+      'attention idioma'
+      'attention funil';
     gap: var(--gr-space-5);
     padding: var(--gr-space-6);
+    min-height: calc(100dvh - 4rem);
   }
 
   .dashboard__grid {
+    grid-area: stats;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 
     > :last-child:nth-child(odd) {
       grid-column: auto;
     }
   }
+
+  .dashboard__attention-card {
+    grid-area: attention;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .dashboard__attention-list {
+    flex: 1;
+  }
+
+  .dashboard__idioma-card {
+    grid-area: idioma;
+    align-self: start;
+  }
+
+  .dashboard__funil-card {
+    grid-area: funil;
+    display: block;
+    align-self: end;
+  }
+}
+
+.dashboard__funil {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+.dashboard__funil-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+}
+
+.dashboard__funil-label {
+  width: 6.5rem;
+  flex-shrink: 0;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.dashboard__funil-track {
+  flex: 1;
+  height: 1.625rem;
+  border-radius: var(--gr-radius-sm);
+  background-color: var(--gr-color-neutral-100);
+  overflow: hidden;
+}
+
+.dashboard__funil-fill {
+  height: 100%;
+  min-width: 2ch;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding-inline-start: var(--gr-space-2);
+  font-size: 11.5px;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-inverse);
+  background-color: var(--gr-color-primary-600);
+  white-space: nowrap;
+}
+
+.dashboard__funil-fill--triagem {
+  background-color: var(--gr-color-primary-400);
+  color: var(--gr-color-primary-900);
+}
+
+.dashboard__funil-fill--entrevista {
+  background-color: var(--gr-color-warning-500);
+}
+
+.dashboard__funil-fill--proposta {
+  background-color: var(--gr-color-info-500);
+}
+
+.dashboard__funil-fill--contratado {
+  background-color: var(--gr-color-primary-600);
+}
+
+.dashboard__funil-fill--rejeitado {
+  background-color: var(--gr-color-danger-500);
 }
 
 .dashboard__status {
