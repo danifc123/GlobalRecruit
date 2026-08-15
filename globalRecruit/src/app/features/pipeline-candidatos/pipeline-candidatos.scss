@@ -189,3 +189,193 @@ app-page {
     max-width: 420px;
   }
 }
+
+// ==== Kanban (≥1024px) — troca a tabela por um quadro de verdade ===========
+.pipeline__kanban-view {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pipeline__table-view {
+    display: none;
+  }
+
+  .pipeline__kanban-view {
+    display: block;
+    // header/chips saíram pro topbar (TopbarActionsService) — o board usa a
+    // largura toda logo abaixo do <app-page>
+    margin-top: calc(-1 * var(--gr-space-3));
+  }
+}
+
+.pipeline__kanban {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gr-space-3);
+  align-items: start;
+}
+
+.pipeline__kanban-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  min-height: 0;
+}
+
+.pipeline__kanban-col-header {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  padding-inline: 2px;
+}
+
+.pipeline__kanban-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background-color: var(--gr-color-neutral-400);
+}
+
+.pipeline__kanban-dot--triagem {
+  background-color: var(--gr-color-primary-400);
+}
+
+.pipeline__kanban-dot--entrevista {
+  background-color: var(--gr-color-warning-500);
+}
+
+.pipeline__kanban-dot--proposta {
+  background-color: var(--gr-color-info-500);
+}
+
+.pipeline__kanban-dot--contratado {
+  background-color: var(--gr-color-primary-600);
+}
+
+.pipeline__kanban-dot--rejeitado {
+  background-color: var(--gr-color-danger-500);
+}
+
+.pipeline__kanban-col-title {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.pipeline__kanban-col-count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-secondary);
+  background-color: var(--gr-color-neutral-100);
+  border-radius: var(--gr-radius-full);
+  padding: 2px 8px;
+}
+
+.pipeline__kanban-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  min-height: 120px;
+  padding: var(--gr-space-2);
+  border-radius: var(--gr-radius-lg);
+  background-color: rgba(33, 28, 23, 0.035);
+  transition: background-color var(--gr-transition-fast);
+}
+
+.pipeline__kanban-col--over .pipeline__kanban-col-body {
+  background-color: var(--gr-color-primary-50);
+  outline: 1.5px dashed var(--gr-color-primary-400);
+  outline-offset: -1px;
+}
+
+.pipeline__kanban-empty {
+  padding: var(--gr-space-3);
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+  text-align: center;
+}
+
+.pipeline__kanban-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  padding: var(--gr-space-3);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  box-shadow: var(--gr-shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.pipeline__kanban-card--parado {
+  background-color: var(--gr-color-warning-100);
+  box-shadow: none;
+}
+
+.pipeline__kanban-card--dragging {
+  opacity: 0.4;
+}
+
+.pipeline__kanban-card-top {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+}
+
+.pipeline__kanban-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--gr-color-primary-50);
+  color: var(--gr-color-primary-700);
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.pipeline__kanban-avatar--parado {
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-warning-700);
+}
+
+.pipeline__kanban-card-info {
+  min-width: 0;
+}
+
+.pipeline__kanban-card-nome {
+  font-size: 12.5px;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pipeline__kanban-card-meta {
+  font-size: 11px;
+  color: var(--gr-color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pipeline__kanban-card-tempo {
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.pipeline__kanban-card-tempo--parado {
+  color: var(--gr-color-warning-700);
+  font-weight: var(--gr-font-weight-semibold);
+}
