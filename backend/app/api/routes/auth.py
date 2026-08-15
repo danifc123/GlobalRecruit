@@ -35,7 +35,7 @@ async def login(request: Request, payload: LoginRequest, db: AsyncSession = Depe
     if user is None or not user.is_active or not verify_password(payload.password, user.hashed_password):
         raise invalid_credentials
 
-    access_token = create_access_token(user.id, user.role.value, user.partner_project_id)
+    access_token = create_access_token(user.id, user.role.value)
     refresh_token = create_refresh_token(user.id)
     return LoginResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -58,7 +58,7 @@ async def refresh(
     if user is None or not user.is_active:
         raise unauthorized
 
-    access_token = create_access_token(user.id, user.role.value, user.partner_project_id)
+    access_token = create_access_token(user.id, user.role.value)
     return TokenResponse(access_token=access_token)
 
 

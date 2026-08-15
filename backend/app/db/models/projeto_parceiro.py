@@ -18,3 +18,6 @@ class ProjetoParceiro(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     vagas: Mapped[list["Vaga"]] = relationship(back_populates="projeto")
+    recrutadores: Mapped[list["User"]] = relationship(
+        secondary="user_projetos_parceiros", back_populates="projetos"
+    )

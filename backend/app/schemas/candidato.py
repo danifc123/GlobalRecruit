@@ -27,6 +27,7 @@ class CandidatoOut(BaseModel):
     vaga_id: uuid.UUID
     created_at: datetime
     estagio_atual: Estagio | None
+    historico: list[PipelineStageOut] = []
 
     model_config = {"from_attributes": True}
 

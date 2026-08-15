@@ -3,6 +3,7 @@ import uuid
 from pydantic import BaseModel, EmailStr, Field
 
 from app.db.models.user import Role
+from app.schemas.projeto_parceiro import ProjetoParceiroMini
 
 
 class LoginRequest(BaseModel):
@@ -29,6 +30,6 @@ class CurrentUserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
     role: Role
-    partner_project_id: uuid.UUID | None
+    projetos: list[ProjetoParceiroMini]
 
     model_config = {"from_attributes": True}

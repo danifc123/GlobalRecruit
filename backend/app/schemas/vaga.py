@@ -31,8 +31,13 @@ class VagaOut(BaseModel):
     prioridade: Prioridade
     status: StatusVaga
     created_at: datetime
+    candidatos_count: int = 0
 
     model_config = {"from_attributes": True}
+
+
+class VagaPrioridadeUpdate(BaseModel):
+    prioridade: Prioridade
 
 
 class VagaPage(BaseModel):

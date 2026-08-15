@@ -44,12 +44,12 @@ def _create_token(subject: uuid.UUID, token_type: TokenType, expires_delta: time
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
-def create_access_token(user_id: uuid.UUID, role: str, partner_project_id: uuid.UUID | None) -> str:
+def create_access_token(user_id: uuid.UUID, role: str) -> str:
     return _create_token(
         user_id,
         TokenType.ACCESS,
         timedelta(minutes=settings.access_token_expire_minutes),
-        {"role": role, "partner_project_id": str(partner_project_id) if partner_project_id else None},
+        {"role": role},
     )
 
 

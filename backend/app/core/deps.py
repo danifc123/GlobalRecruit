@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.security import TokenType, decode_token
 from app.db.base import get_db
@@ -34,11 +35,26 @@ async def get_current_user(
     if payload.get("type") != TokenType.ACCESS.value:
         raise unauthorized
 
-    user = await db.get(User, uuid.UUID(payload["sub"]))
+    # eager-load de `projetos` — SQLAlchemy async não permite lazy-load
+    # implícito fora de um contexto awaited, e as rotas que fazem escopo por
+    # recrutador leem essa relationship depois que a sessão já seguiu adiante
+    stmt = (
+        select(User)
+        .where(User.id == uuid.UUID(payload["sub"]))
+        .options(selectinload(User.projetos))
+    )
+    user = (await db.execute(stmt)).scalar_one_or_none()
     if user is None or not user.is_active:
         raise unauthorized
 
     return user
+
+
+def scoped_projeto_ids(user: User) -> list[uuid.UUID] | None:
+    """None = sem restrição (admin/developer); lista = projetos do recrutador."""
+    if user.role != Role.RECRUITER:
+        return None
+    return [projeto.id for projeto in user.projetos]
 
 
 def require_roles(*roles: Role) -> Callable:

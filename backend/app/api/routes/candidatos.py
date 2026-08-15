@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import get_current_user, get_db, require_roles
+from app.core.deps import get_current_user, get_db, require_roles, scoped_projeto_ids
 from app.db.models.candidato import Candidato
 from app.db.models.pipeline_stage import Estagio, PipelineStage
 from app.db.models.user import Role, User
@@ -24,6 +24,9 @@ def _to_out(candidato: Candidato) -> CandidatoOut:
         vaga_id=candidato.vaga_id,
         created_at=candidato.created_at,
         estagio_atual=atual,
+        # pipeline_stages já vem ordenado desc (ver relationship em Candidato) —
+        # é o histórico completo, não só o estágio atual
+        historico=list(candidato.pipeline_stages),
     )
 
 
@@ -34,10 +37,11 @@ async def list_candidatos(
     db: AsyncSession = Depends(get_db),
 ) -> list[CandidatoOut]:
     # confirma que a vaga pertence ao escopo do usuário antes de listar
-    # candidatos dela (partner não pode enumerar candidatos trocando vaga_id)
+    # candidatos dela (recrutador não pode enumerar candidatos trocando vaga_id)
     vaga_stmt = select(Vaga.id).where(Vaga.id == vaga_id)
-    if user.role == Role.PARTNER:
-        vaga_stmt = vaga_stmt.where(Vaga.projeto_id == user.partner_project_id)
+    ids = scoped_projeto_ids(user)
+    if ids is not None:
+        vaga_stmt = vaga_stmt.where(Vaga.projeto_id.in_(ids))
     if (await db.execute(vaga_stmt)).scalar_one_or_none() is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
 
@@ -53,10 +57,29 @@ async def list_candidatos(
     return [_to_out(c) for c in candidatos]
 
 
+@router.get("/{candidato_id}", response_model=CandidatoOut)
+async def get_candidato(
+    candidato_id: uuid.UUID, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+) -> CandidatoOut:
+    stmt = (
+        select(Candidato)
+        .join(Vaga, Vaga.id == Candidato.vaga_id)
+        .where(Candidato.id == candidato_id)
+        .options(selectinload(Candidato.pipeline_stages))
+    )
+    ids = scoped_projeto_ids(user)
+    if ids is not None:
+        stmt = stmt.where(Vaga.projeto_id.in_(ids))
+    candidato = (await db.execute(stmt)).scalar_one_or_none()
+    if candidato is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidato não encontrado")
+    return _to_out(candidato)
+
+
 @router.post("", response_model=CandidatoOut, status_code=status.HTTP_201_CREATED)
 async def create_candidato(
     payload: CandidatoCreate,
-    user: User = Depends(require_roles(Role.ADMIN, Role.RECRUITER)),
+    user: User = Depends(require_roles(Role.ADMIN)),
     db: AsyncSession = Depends(get_db),
 ) -> CandidatoOut:
     vaga = await db.get(Vaga, payload.vaga_id)
@@ -76,7 +99,7 @@ async def create_candidato(
 async def update_pipeline_stage(
     candidato_id: uuid.UUID,
     payload: PipelineStageUpdate,
-    user: User = Depends(require_roles(Role.ADMIN, Role.RECRUITER)),
+    user: User = Depends(require_roles(Role.ADMIN)),
     db: AsyncSession = Depends(get_db),
 ) -> CandidatoOut:
     stmt = (

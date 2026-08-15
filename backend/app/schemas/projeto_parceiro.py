@@ -15,5 +15,13 @@ class ProjetoParceiroOut(BaseModel):
     cliente: str
     status: str
     created_at: datetime
+    vagas_count: int = 0
+
+    model_config = {"from_attributes": True}
+
+
+class ProjetoParceiroMini(BaseModel):
+    id: uuid.UUID
+    nome: str
 
     model_config = {"from_attributes": True}

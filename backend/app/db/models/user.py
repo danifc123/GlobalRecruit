@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, func
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Table, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,8 +12,22 @@ from app.db.base import Base
 class Role(str, enum.Enum):
     ADMIN = "admin"
     RECRUITER = "recruiter"
-    PARTNER = "partner"
     DEVELOPER = "developer"
+
+
+# tabela associativa N:N — um recrutador pode estar vinculado a vários
+# projetos parceiros ao mesmo tempo (e ver os dados de todos eles)
+user_projetos_parceiros = Table(
+    "user_projetos_parceiros",
+    Base.metadata,
+    Column("user_id", UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "projeto_parceiro_id",
+        UUID(as_uuid=True),
+        ForeignKey("projetos_parceiros.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
 
 
 class User(Base):
@@ -28,12 +42,10 @@ class User(Base):
     )
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
 
-    # só preenchido quando role == PARTNER; toda query de dados desse
-    # usuário é filtrada por esta coluna, nunca por um valor vindo do client
-    partner_project_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("projetos_parceiros.id"), nullable=True
-    )
-
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    partner_project: Mapped["ProjetoParceiro | None"] = relationship()
+    # só relevante quando role == RECRUITER; toda query de dados desse
+    # usuário é filtrada por estes ids, nunca por um valor vindo do client
+    projetos: Mapped[list["ProjetoParceiro"]] = relationship(
+        secondary=user_projetos_parceiros, back_populates="recrutadores"
+    )
