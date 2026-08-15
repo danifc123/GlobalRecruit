@@ -9,7 +9,10 @@ import { environment } from '@env';
 import { AuthService } from '@app/core/auth/auth.service';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
+import { getEmailInitials } from '@app/shared/utils/initials';
 
+// caixa alta deliberada — visual do badge desta tela (não é o mesmo
+// ROLE_LABELS de core/models/user.ts, que é usado como texto normal)
 const ROLE_LABELS: Record<string, string> = {
   admin: 'ADMIN',
   recruiter: 'RECRUTADOR',
@@ -35,12 +38,7 @@ export class Conta {
     return role === 'admin' || role === 'developer';
   });
 
-  protected readonly initials = computed(() => {
-    const email = this.auth.session()?.email ?? '';
-    const local = email.split('@')[0] ?? '';
-    const partes = local.split(/[._-]+/).filter(Boolean);
-    return (partes.length > 1 ? partes[0][0] + partes[1][0] : local.slice(0, 2)).toUpperCase();
-  });
+  protected readonly initials = computed(() => getEmailInitials(this.auth.session()?.email ?? ''));
 
   protected readonly roleLabel = computed(() => ROLE_LABELS[this.auth.session()?.role ?? ''] ?? '');
 

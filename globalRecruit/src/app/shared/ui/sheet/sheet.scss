@@ -121,3 +121,40 @@
     overflow-y: visible;
   }
 }
+
+// ---- 1024px+: variante drawer (painel lateral, não bloco inline) --------
+@media (min-width: 1024px) {
+  .sheet__backdrop--drawer {
+    display: block;
+  }
+
+  .sheet--drawer {
+    position: fixed;
+    inset-block: 0;
+    right: 0;
+    left: auto;
+    width: 440px;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: -16px 0 40px rgba(33, 28, 23, 0.16);
+    animation: sheet-drawer-in var(--gr-transition-base);
+  }
+
+  .sheet--drawer .sheet__close {
+    display: inline-flex;
+  }
+
+  .sheet--drawer .sheet__body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+@keyframes sheet-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

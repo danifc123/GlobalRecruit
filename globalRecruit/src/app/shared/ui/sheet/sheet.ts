@@ -29,6 +29,10 @@ import { IdGenerator } from '../../utils/id-generator';
 export class Sheet {
   readonly open = input(false);
   readonly title = input<string>();
+  // ≥1024px: vira painel lateral fixo em vez do bloco inline padrão desse
+  // tier — usado onde o formulário precisa ficar "sobre" a lista, não
+  // substituí-la (ex.: Novo usuário). Abaixo de 1024px, sem efeito.
+  readonly drawer = input(false);
   readonly closed = output<void>();
 
   @ViewChild('closeButton') private readonly closeButtonRef?: ElementRef<HTMLButtonElement>;
