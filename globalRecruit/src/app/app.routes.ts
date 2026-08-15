@@ -22,13 +22,25 @@ export const routes: Routes = [
       import('./features/vagas-ativas/vagas-ativas').then((m) => m.VagasAtivas),
     title: 'Vagas Ativas — GlobalRecruit Ops',
     canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+    children: [
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./features/vagas-ativas/vaga-detalhe/vaga-detalhe').then((m) => m.VagaDetalhe),
+        title: 'Detalhe da vaga — GlobalRecruit Ops',
+        // ≥1024px: renderizado dentro do próprio VagasAtivas como painel
+        // lateral (master-detail); <1024px, VagasAtivas esconde a lista e
+        // deixa só esse outlet visível, em tela cheia (ver vagas-ativas.ts)
+        data: { panelMode: true },
+      },
+    ],
   },
   {
-    path: 'vagas-ativas/:id',
+    path: 'vagas-desativadas',
     loadComponent: () =>
-      import('./features/vagas-ativas/vaga-detalhe/vaga-detalhe').then((m) => m.VagaDetalhe),
-    title: 'Detalhe da vaga — GlobalRecruit Ops',
-    canActivate: [authGuard],
+      import('./features/vagas-desativadas/vagas-desativadas').then((m) => m.VagasDesativadas),
+    title: 'Vagas Desativadas — GlobalRecruit Ops',
+    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
   },
   {
     path: 'projetos-parceiros',

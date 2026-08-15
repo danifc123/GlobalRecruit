@@ -1,0 +1,89 @@
+<div class="vagas-desat-mobile">
+  <div class="mobile-header">
+    <div class="vagas-desat-mobile__top">
+      <a class="vagas-desat-mobile__voltar" routerLink="/vagas-ativas" aria-label="Voltar pra vagas ativas">
+        <app-icon name="chevron-down" [size]="16" class="vagas-desat-mobile__voltar-icon" />
+      </a>
+      <span class="vagas-desat-mobile__title">Vagas desativadas</span>
+    </div>
+    <app-input
+      class="vagas-desat-mobile__search"
+      placeholder="Buscar por cliente, cargo ou país"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+  </div>
+
+  <div class="vagas-desat-mobile__banner">
+    <app-icon name="signal" [size]="16" />
+    <span>Vagas pausadas ou fechadas — fora da operação ativa, mantidas aqui só pra consulta.</span>
+  </div>
+
+  <div class="vagas-desat-mobile__list">
+    @if (loading()) {
+      <div class="vagas-desat-mobile__skeleton-row">
+        <app-skeleton width="62%" height="14px" />
+        <app-skeleton width="80%" height="11px" />
+      </div>
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar as vagas" description="Verifique sua conexão e tente de novo." />
+    } @else if (isEmpty()) {
+      <app-empty-state icon="briefcase" description="Nenhuma vaga desativada encontrada." />
+    } @else {
+      @for (vaga of desativadasFiltradas(); track vaga.id) {
+        <a class="vagas-desat-mobile__row" [routerLink]="['/vagas-ativas', vaga.id]">
+          <span class="vagas-desat-mobile__row-bar vagas-desat-mobile__row-bar--{{ vaga.status }}"></span>
+          <div class="vagas-desat-mobile__row-body">
+            <span class="vagas-desat-mobile__row-cargo">{{ vaga.cargo }}</span>
+            <div class="vagas-desat-mobile__row-meta">{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }</div>
+          </div>
+          <span class="vagas-desat-mobile__tag vagas-desat-mobile__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] }}</span>
+        </a>
+      }
+    }
+  </div>
+</div>
+
+<app-page description="Vagas pausadas ou fechadas — fora da operação ativa.">
+  <a page-actions class="vagas-desat__voltar" routerLink="/vagas-ativas">
+    <app-icon name="chevron-down" [size]="15" class="vagas-desat__voltar-icon" />
+    Vagas ativas
+  </a>
+
+  <app-banner tone="warning" icon="signal">
+    Esta tela reúne vagas <strong>pausadas</strong> ou <strong>fechadas</strong> — elas não aparecem mais em Vagas
+    Ativas nem entram nas contagens do dashboard. Use a busca abaixo pra encontrar uma vaga específica.
+  </app-banner>
+
+  <app-input
+    class="vagas-desat__search"
+    label="Buscar"
+    placeholder="Cliente, cargo ou país"
+    [ngModel]="search()"
+    (ngModelChange)="search.set($event)"
+  />
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="isEmpty()"
+    emptyIcon="briefcase"
+    emptyMessage="Nenhuma vaga desativada encontrada."
+  >
+    @for (vaga of desativadasFiltradas(); track vaga.id) {
+      <tr>
+        <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
+        <td data-label="Cliente">{{ vaga.cliente }}</td>
+        <td data-label="Cargo">{{ vaga.cargo }}</td>
+        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
+        <td data-label="Status">
+          <span class="vagas-desat__tag vagas-desat__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] }}</span>
+        </td>
+        <td data-label="Ações" class="vagas-desat__actions">
+          <a class="vagas-desat__action" [routerLink]="['/vagas-ativas', vaga.id]" aria-label="Ver detalhes da vaga">
+            <app-icon name="search" [size]="15" />
+          </a>
+        </td>
+      </tr>
+    }
+  </app-table>
+</app-page>
