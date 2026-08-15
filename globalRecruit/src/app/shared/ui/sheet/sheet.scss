@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+
+.sheet__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border: none;
+  padding: 0;
+  background-color: rgba(33, 28, 23, 0.4);
+  cursor: default;
+  animation: sheet-backdrop-in var(--gr-transition-base);
+}
+
+.sheet {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  max-height: 92dvh;
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl) var(--gr-radius-xl) 0 0;
+  box-shadow: var(--gr-shadow-lg);
+  animation: sheet-slide-in var(--gr-transition-base);
+}
+
+@keyframes sheet-slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-4) var(--gr-space-5);
+  border-bottom: var(--gr-border-width) solid var(--gr-color-border);
+  flex-shrink: 0;
+}
+
+.sheet__title {
+  margin: 0;
+  font-size: var(--gr-font-size-lg);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.sheet__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--gr-radius-full);
+  background-color: transparent;
+  color: var(--gr-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--gr-transition-fast);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+.sheet__body {
+  padding: var(--gr-space-5);
+  overflow-y: auto;
+}
+
+// ---- 640px+: vira bloco inline, visual igual ao Card de hoje --------------
+@media (min-width: 640px) {
+  .sheet__backdrop {
+    display: none;
+  }
+
+  .sheet {
+    position: static;
+    max-height: none;
+    border-radius: var(--gr-radius-xl);
+    box-shadow: var(--gr-shadow-sm);
+    animation: none;
+  }
+
+  .sheet__close {
+    display: none;
+  }
+
+  .sheet__header {
+    padding: var(--gr-space-5) var(--gr-space-5) var(--gr-space-3);
+  }
+
+  .sheet__body {
+    overflow-y: visible;
+  }
+}

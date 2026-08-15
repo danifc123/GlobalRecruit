@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe-row {
+  position: relative;
+}
+
+.swipe-row__actions {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  display: flex;
+}
+
+.swipe-row__action {
+  width: 68px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-inverse);
+  cursor: pointer;
+}
+
+.swipe-row__action--primary {
+  background-color: var(--gr-color-primary-600);
+}
+
+.swipe-row__action--accent {
+  background-color: var(--gr-color-accent-500);
+}
+
+.swipe-row__content {
+  position: relative;
+  z-index: 1;
+  background-color: var(--gr-color-surface);
+  touch-action: pan-y;
+  transition: transform 200ms var(--gr-ease-out);
+}
+
+.swipe-row__content--dragging {
+  transition: none;
+}

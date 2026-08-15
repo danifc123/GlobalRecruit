@@ -6,7 +6,13 @@
   background-color: var(--gr-color-surface);
   border-radius: var(--gr-radius-xl);
   box-shadow: var(--gr-shadow-sm);
-  padding: var(--gr-space-2) var(--gr-space-4);
+  padding: var(--gr-space-2) var(--gr-space-3);
+}
+
+@media (min-width: 640px) {
+  .table-card {
+    padding: var(--gr-space-2) var(--gr-space-4);
+  }
 }
 
 .table {

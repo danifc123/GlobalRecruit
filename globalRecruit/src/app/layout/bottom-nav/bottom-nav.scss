@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding-block-start: var(--gr-space-1);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  background-color: var(--gr-color-surface);
+  border-top: var(--gr-border-width) solid var(--gr-color-border);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gr-space-1);
+  min-height: 3.25rem;
+  padding-block: var(--gr-space-1);
+  border: none;
+  background: none;
+  color: var(--gr-color-text-secondary);
+  text-decoration: none;
+  font-family: inherit;
+  transition:
+    color var(--gr-transition-fast),
+    transform var(--gr-transition-press);
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+    border-radius: var(--gr-radius-md);
+  }
+}
+
+.bottom-nav__label {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+}
+
+.bottom-nav__item--active {
+  color: var(--gr-color-primary-700);
+}
+
+.bottom-nav__fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: var(--gr-space-1);
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-primary-600);
+  color: var(--gr-color-text-inverse);
+  box-shadow: 0 8px 24px rgba(40, 128, 72, 0.35);
+  cursor: pointer;
+  transition: transform var(--gr-transition-press);
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 8px 24px rgba(40, 128, 72, 0.35),
+      var(--gr-focus-ring);
+  }
+}
+
+// só existe no celular — a partir daqui a Sidebar assume a navegação
+@media (min-width: 640px) {
+  :host {
+    display: none;
+  }
+}

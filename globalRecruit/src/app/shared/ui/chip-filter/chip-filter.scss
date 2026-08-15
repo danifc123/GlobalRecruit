@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+.chip-filter {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chip-filter__chip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding-inline: var(--gr-space-3);
+  border: none;
+  border-radius: var(--gr-radius-sm);
+  background-color: var(--gr-color-neutral-100);
+  color: var(--gr-color-text-secondary);
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  white-space: nowrap;
+  transition:
+    background-color var(--gr-transition-fast),
+    color var(--gr-transition-fast);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+}
+
+.chip-filter__chip--active {
+  background-color: var(--gr-color-neutral-900);
+  color: var(--gr-color-text-inverse);
+}
+
+// dentro de um header escuro (--gr-color-primary-900), o chip inativo vira
+// um vidro translúcido e o ativo vira branco — mesma lógica dos mockups
+:host-context(.mobile-header) {
+  .chip-filter__chip {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .chip-filter__chip--active {
+    background-color: var(--gr-color-surface);
+    color: var(--gr-color-primary-900);
+  }
+}

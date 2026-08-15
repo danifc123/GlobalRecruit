@@ -1,0 +1,27 @@
+<div class="swipe-row">
+  @if (actions().length > 0) {
+    <div class="swipe-row__actions">
+      @for (item of actions(); track item.id) {
+        <button
+          type="button"
+          class="swipe-row__action swipe-row__action--{{ item.tone }}"
+          (click)="trigger(item.id)"
+        >
+          <app-icon [name]="item.icon" [size]="18" />
+          {{ item.label }}
+        </button>
+      }
+    </div>
+  }
+  <div
+    class="swipe-row__content"
+    [class.swipe-row__content--dragging]="dragging()"
+    [style.transform]="'translateX(' + offset() + 'px)'"
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()"
+    (touchcancel)="onTouchEnd()"
+  >
+    <ng-content />
+  </div>
+</div>
