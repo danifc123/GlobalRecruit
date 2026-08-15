@@ -8,7 +8,7 @@ from app.core.deps import get_current_user, get_db, require_roles, scoped_projet
 from app.db.models.candidato import Candidato
 from app.db.models.user import Role, User
 from app.db.models.vaga import StatusVaga, Vaga
-from app.schemas.vaga import VagaCreate, VagaOut, VagaPage, VagaPrioridadeUpdate
+from app.schemas.vaga import VagaCreate, VagaOut, VagaPage, VagaPrioridadeUpdate, VagaStatusUpdate, VagaUpdate
 
 router = APIRouter(prefix="/vagas", tags=["vagas"])
 
@@ -109,6 +109,43 @@ async def get_vaga(
     if row is None:
         # 404, não 403 — não confirmar pra um recrutador que a vaga existe em outro projeto
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
+    return VagaOut.model_validate(row)
+
+
+@router.patch("/{vaga_id}", response_model=VagaOut)
+async def update_vaga(
+    vaga_id: uuid.UUID,
+    payload: VagaUpdate,
+    user: User = Depends(require_roles(Role.ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> VagaOut:
+    vaga = await db.get(Vaga, vaga_id)
+    if vaga is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
+
+    for field, value in payload.model_dump().items():
+        setattr(vaga, field, value)
+    await db.commit()
+
+    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
+    return VagaOut.model_validate(row)
+
+
+@router.patch("/{vaga_id}/status", response_model=VagaOut)
+async def update_status(
+    vaga_id: uuid.UUID,
+    payload: VagaStatusUpdate,
+    user: User = Depends(require_roles(Role.ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> VagaOut:
+    vaga = await db.get(Vaga, vaga_id)
+    if vaga is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
+
+    vaga.status = payload.status
+    await db.commit()
+
+    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
     return VagaOut.model_validate(row)
 
 
