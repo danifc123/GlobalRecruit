@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-5);
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+}
+
+.stat-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-2);
+}
+
+.stat-card__label {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.stat-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--gr-radius-full);
+  flex-shrink: 0;
+}
+
+.stat-card__icon--moss {
+  background-color: var(--gr-color-primary-100);
+  color: var(--gr-color-primary-700);
+}
+
+.stat-card__icon--accent {
+  background-color: var(--gr-color-accent-100);
+  color: var(--gr-color-accent-700);
+}
+
+.stat-card__icon--info {
+  background-color: var(--gr-color-info-100);
+  color: var(--gr-color-info-700);
+}
+
+.stat-card__icon--success {
+  background-color: var(--gr-color-success-100);
+  color: var(--gr-color-success-700);
+}
+
+.stat-card__icon--danger {
+  background-color: var(--gr-color-danger-100);
+  color: var(--gr-color-danger-700);
+}
+
+.stat-card__icon--neutral {
+  background-color: var(--gr-color-neutral-100);
+  color: var(--gr-color-neutral-600);
+}
+
+.stat-card__value {
+  font-size: var(--gr-font-size-2xl);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+  line-height: var(--gr-line-height-tight);
+}
+
+.stat-card__description {
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+// success-500 sobre branco só dá 3.49:1 (abaixo do 4.5:1 exigido em texto
+// normal) — success-700 é o mesmo tom já usado como texto em badge/banner.
+.stat-card__description--success {
+  color: var(--gr-color-success-700);
+  font-weight: var(--gr-font-weight-medium);
+}

@@ -1,0 +1,375 @@
+:host {
+  display: block;
+}
+
+// <app-page> é o wrapper da tela "de sempre" (form flat + Table) — só existe
+// a partir de 640px; abaixo disso quem mostra o conteúdo é `.vagas-mobile`.
+// Sem isso os dois ficam renderizados juntos, empilhados.
+app-page {
+  display: none;
+}
+
+// ==== formulário (Sheet) — comum aos dois tiers =============================
+.vagas__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+// desktop/tablet-only: botões simples embaixo do form flat
+.vagas__form-actions {
+  display: none;
+  gap: var(--gr-space-3);
+  margin-top: var(--gr-space-2);
+}
+
+// ==== wizard (<640px) =======================================================
+.vagas-wizard__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  margin-bottom: var(--gr-space-4);
+}
+
+.vagas-wizard__steps {
+  display: flex;
+  gap: var(--gr-space-2);
+}
+
+.vagas-wizard__step-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--gr-color-neutral-200);
+}
+
+.vagas-wizard__step-bar--done {
+  background-color: var(--gr-color-primary-400);
+}
+
+.vagas-wizard__step-label {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.vagas-wizard__step {
+  display: none;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+.vagas-wizard__step--active {
+  display: flex;
+}
+
+.vagas-wizard__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.vagas-wizard__field-label {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.vagas-wizard__segmented {
+  display: flex;
+  padding: 4px;
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-neutral-100);
+}
+
+.vagas-wizard__segment {
+  flex: 1;
+  height: 40px;
+  border: none;
+  border-radius: var(--gr-radius-md);
+  background: none;
+  color: var(--gr-color-text-secondary);
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+}
+
+.vagas-wizard__segment--active {
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  box-shadow: var(--gr-shadow-sm);
+}
+
+.vagas-wizard__nav {
+  display: flex;
+  gap: var(--gr-space-3);
+  margin-top: var(--gr-space-2);
+}
+
+.vagas-wizard__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 50px;
+  flex-shrink: 0;
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  cursor: pointer;
+}
+
+.vagas-wizard__back-icon {
+  transform: rotate(90deg);
+}
+
+.vagas-wizard__continue {
+  flex: 1;
+  height: 50px;
+  border: none;
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-primary-600);
+  color: var(--gr-color-text-inverse);
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gr-space-2);
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.vagas-wizard__spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: vagas-spin 0.6s linear infinite;
+}
+
+@keyframes vagas-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ==== lista mobile (<640px) =================================================
+.vagas-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-surface);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-3);
+  flex-shrink: 0;
+}
+
+.vagas-mobile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--gr-space-1);
+}
+
+.vagas-mobile__title {
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.vagas-mobile__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--gr-color-text-inverse);
+  cursor: pointer;
+}
+
+.vagas-mobile__stats {
+  display: flex;
+  gap: var(--gr-space-5);
+  margin-top: var(--gr-space-4);
+}
+
+.vagas-mobile__stat-value {
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.vagas-mobile__stat-value--accent {
+  color: var(--gr-color-accent-400);
+}
+
+.vagas-mobile__stat-label {
+  margin-top: 2px;
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.vagas-mobile__chips {
+  display: block;
+  margin-top: var(--gr-space-3);
+}
+
+.vagas-mobile__list {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.vagas-mobile__skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  padding: var(--gr-space-4) var(--gr-space-5);
+  border-bottom: var(--gr-border-width) solid var(--gr-color-neutral-100);
+}
+
+.vagas-mobile__row {
+  display: flex;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3) var(--gr-space-5);
+  text-decoration: none;
+  color: inherit;
+  border-bottom: var(--gr-border-width) solid var(--gr-color-neutral-100);
+  background-color: var(--gr-color-surface);
+}
+
+.vagas-mobile__row-bar {
+  width: 4px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background-color: var(--gr-color-neutral-300);
+}
+
+.vagas-mobile__row-bar--alta {
+  background-color: var(--gr-color-accent-500);
+}
+
+.vagas-mobile__row-bar--media {
+  background-color: var(--gr-color-warning-500);
+}
+
+.vagas-mobile__row-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.vagas-mobile__row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gr-space-2);
+}
+
+.vagas-mobile__row-cargo {
+  font-size: 0.9375rem;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vagas-mobile__row-meta {
+  margin-top: 4px;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.vagas-mobile__row-tags {
+  display: flex;
+  gap: var(--gr-space-2);
+  margin-top: var(--gr-space-2);
+}
+
+.vagas-mobile__tag {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+  background-color: var(--gr-color-neutral-100);
+  border-radius: var(--gr-radius-sm);
+  padding: 3px 7px;
+  text-transform: capitalize;
+}
+
+.vagas-mobile__tag--prioridade-alta {
+  color: var(--gr-color-accent-700);
+  background-color: var(--gr-color-accent-100);
+}
+
+.vagas-mobile__tag--warning {
+  color: var(--gr-color-warning-700);
+  background-color: var(--gr-color-warning-100);
+}
+
+// ==== ações por linha (Ver/Priorizar/Indicar) — só ≥640px ===================
+.vagas__actions {
+  display: flex;
+  gap: var(--gr-space-2);
+}
+
+.vagas__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-sm);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--gr-color-primary-700);
+    border-color: var(--gr-color-primary-300);
+  }
+}
+
+.vagas__chips {
+  margin-bottom: var(--gr-space-3);
+}
+
+// ==== ≥640px: mantém form flat + tabela de hoje ============================
+@media (min-width: 640px) {
+  .vagas-mobile {
+    display: none;
+  }
+
+  app-page {
+    display: flex;
+  }
+
+  .vagas__form {
+    max-width: 480px;
+  }
+
+  .vagas__form-actions {
+    display: flex;
+  }
+
+  .vagas-wizard__progress,
+  .vagas-wizard__nav {
+    display: none;
+  }
+
+  .vagas-wizard__step {
+    display: flex;
+  }
+}

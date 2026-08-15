@@ -1,0 +1,81 @@
+<div class="recrutador-mobile">
+  <div class="mobile-header">
+    <div class="recrutador-mobile__top">
+      <div>
+        <div class="recrutador-mobile__eyebrow">Recrutador @if (primeiroNome()) { · {{ primeiroNome() }} }</div>
+        <div class="recrutador-mobile__title">Minhas vagas</div>
+      </div>
+    </div>
+    @if (!loading() && !error()) {
+      <div class="recrutador-mobile__stats">
+        <div><div class="recrutador-mobile__stat-value">{{ totalVagas() }}</div><div class="recrutador-mobile__stat-label">vagas visíveis</div></div>
+        <div><div class="recrutador-mobile__stat-value recrutador-mobile__stat-value--accent">{{ totalProjetos() }}</div><div class="recrutador-mobile__stat-label">projetos</div></div>
+      </div>
+    }
+  </div>
+
+  <div class="recrutador-mobile__body">
+    @if (loading()) {
+      <app-skeleton height="90px" radius="16px" />
+      <app-skeleton height="90px" radius="16px" />
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar suas vagas" description="Verifique sua conexão e tente de novo." />
+    } @else if (isEmpty()) {
+      <app-empty-state icon="users" description="Nenhum projeto atribuído a você ainda." />
+    } @else {
+      <div class="recrutador-mobile__notice">
+        <app-icon name="shield" [size]="18" />
+        <span><strong>Visão restrita.</strong> Comissão e cliente ficam ocultos; você vê apenas projetos vinculados ao seu acesso.</span>
+      </div>
+
+      @for (grupo of grupos(); track grupo.projeto.id) {
+        <div class="recrutador-mobile__group">
+          <div class="recrutador-mobile__group-header">
+            <span>Projeto {{ grupo.projeto.nome }}</span>
+            <span class="recrutador-mobile__group-count">{{ grupo.vagas.length }} vagas</span>
+          </div>
+          <div class="recrutador-mobile__card">
+            @for (vaga of grupo.vagas; track vaga.id) {
+              <a class="recrutador-mobile__row" [routerLink]="['/vagas-ativas', vaga.id]">
+                <span class="recrutador-mobile__flag">{{ vaga.pais ? vaga.pais.slice(0, 2).toUpperCase() : '—' }}</span>
+                <div class="recrutador-mobile__row-body">
+                  <div class="recrutador-mobile__cargo">{{ vaga.cargo }}</div>
+                  <div class="recrutador-mobile__meta">{{ vaga.idioma ?? '—' }} · {{ vaga.modalidade ?? '—' }}</div>
+                </div>
+                <span class="recrutador-mobile__tag recrutador-mobile__tag--{{ vaga.prioridade }}">{{ vaga.prioridade }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<app-page>
+  <app-banner tone="warning" icon="shield" layout="boxed">
+    <strong>Visão do Recrutador</strong>
+    <span banner-description>
+      Vagas de todos os projetos vinculados a você. Esta tabela omite automaticamente colunas
+      confidenciais de comissões e clientes.
+    </span>
+  </app-banner>
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="isEmpty()"
+    emptyIcon="users"
+    emptyMessage="Nenhum projeto atribuído a esta visão ainda."
+  >
+    @for (vaga of vagas(); track vaga.id) {
+      <tr>
+        <td data-label="Cargo">{{ vaga.cargo }}</td>
+        <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
+        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
+        <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
+        <td data-label="Prioridade">{{ vaga.prioridade }}</td>
+        <td data-label="Status">{{ vaga.status }}</td>
+      </tr>
+    }
+  </app-table>
+</app-page>

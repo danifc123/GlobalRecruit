@@ -4,27 +4,38 @@
 // do :root global).
 
 :root {
-  // ---- Cor de marca ------------------------------------------------------
-  --gr-color-primary-50: #eef4ff;
-  --gr-color-primary-100: #d9e6ff;
-  --gr-color-primary-200: #b3ccff;
-  --gr-color-primary-400: #4f7cff;
-  --gr-color-primary-500: #2f5eff;
-  --gr-color-primary-600: #1d47e0;
-  --gr-color-primary-700: #1636ad;
+  // ---- Cor de marca: verde-folha (vivo, não mais oliva/musgo apagado) ------
+  --gr-color-primary-50: #eef7f1;
+  --gr-color-primary-100: #d8eee0;
+  --gr-color-primary-200: #afdec1;
+  --gr-color-primary-300: #7ece9b;
+  --gr-color-primary-400: #4abf75;
+  --gr-color-primary-500: #339958;
+  --gr-color-primary-600: #288048;
+  --gr-color-primary-700: #22673c;
+  --gr-color-primary-800: #1c4a2d;
+  --gr-color-primary-900: #152e1e;
 
-  // ---- Cores neutras -------------------------------------------------------
+  // ---- Cor de destaque: coral/terracota — presença real, não só um traço --
+  // fino de acento. Par quente que dá personalidade ao lado do verde-folha.
+  --gr-color-accent-100: #f5d7cc;
+  --gr-color-accent-400: #e78155;
+  --gr-color-accent-500: #e66233;
+  --gr-color-accent-600: #bd461f;
+  --gr-color-accent-700: #92371c;
+
+  // ---- Cores neutras (taupe quente, não mais cinza-azulado frio) -----------
   --gr-color-neutral-0: #ffffff;
-  --gr-color-neutral-50: #f7f8fa;
-  --gr-color-neutral-100: #eef0f3;
-  --gr-color-neutral-200: #e2e5ea;
-  --gr-color-neutral-300: #cbd0d9;
-  --gr-color-neutral-400: #9aa2b1;
-  --gr-color-neutral-500: #6b7280;
-  --gr-color-neutral-600: #4b5160;
-  --gr-color-neutral-700: #343a46;
-  --gr-color-neutral-800: #20242c;
-  --gr-color-neutral-900: #14161b;
+  --gr-color-neutral-50: #f9f7f6;
+  --gr-color-neutral-100: #f2f0ed;
+  --gr-color-neutral-200: #e7e3df;
+  --gr-color-neutral-300: #d7d1cc;
+  --gr-color-neutral-400: #bab3ab;
+  --gr-color-neutral-500: #9a9084;
+  --gr-color-neutral-600: #6f6458;
+  --gr-color-neutral-700: #5d5246;
+  --gr-color-neutral-800: #3b342b;
+  --gr-color-neutral-900: #211c17;
 
   // ---- Cores semânticas ------------------------------------------------
   --gr-color-success-100: #d9f5e3;
@@ -44,11 +55,16 @@
   --gr-color-info-700: #185a91;
 
   // ---- Superfícies e texto -------------------------------------------------
-  --gr-color-background: var(--gr-color-neutral-50);
+  // Fundo quente (harmoniza com os neutros taupe e a marca) — a marca só
+  // entra como destaque pontual, nunca como bloco de fundo grande.
+  --gr-color-background: #f7f5f2;
   --gr-color-surface: var(--gr-color-neutral-0);
   --gr-color-border: var(--gr-color-neutral-200);
   --gr-color-text-primary: var(--gr-color-neutral-900);
-  --gr-color-text-secondary: var(--gr-color-neutral-500);
+  // neutral-600, não neutral-500: neutral-500 fica abaixo de 4.5:1 (WCAG AA)
+  // contra --gr-color-background (4.49:1) — falha por margem mínima em texto
+  // normal, então subimos um degrau na escala para ficar com folga (7.4:1+).
+  --gr-color-text-secondary: var(--gr-color-neutral-600);
   --gr-color-text-inverse: var(--gr-color-neutral-0);
 
   // ---- Tipografia ----------------------------------------------------------
@@ -82,20 +98,35 @@
   --gr-space-12: 3rem;
 
   // ---- Raio, sombra e borda -------------------------------------------------
-  --gr-radius-sm: 0.25rem;
-  --gr-radius-md: 0.5rem;
-  --gr-radius-lg: 0.75rem;
+  // Mais arredondado que antes — reforça a sensação acolhedora/humana em vez
+  // de técnica/angular.
+  --gr-radius-sm: 0.375rem;
+  --gr-radius-md: 0.625rem;
+  --gr-radius-lg: 1rem;
+  --gr-radius-xl: 1.25rem; // cards, stat-cards, tabelas — o raio "flutuante"
   --gr-radius-full: 999px;
 
-  --gr-shadow-sm: 0 1px 2px rgba(20, 22, 27, 0.06);
-  --gr-shadow-md: 0 4px 12px rgba(20, 22, 27, 0.08);
-  --gr-shadow-lg: 0 12px 32px rgba(20, 22, 27, 0.12);
+  // Sombras mais difusas e suaves (blur maior, opacidade menor) — substituem
+  // a combinação borda+sombra por um único sinal de elevação mais leve.
+  // Tom baseado no neutral-900 novo (rgb 33,28,23) em vez do antigo
+  // primary-900 — mantém o mesmo efeito "quente", mas segue a mudança de
+  // paleta em vez de ficar preso ao verde antigo.
+  --gr-shadow-sm: 0 2px 8px rgba(33, 28, 23, 0.06);
+  --gr-shadow-md: 0 8px 24px rgba(33, 28, 23, 0.08);
+  --gr-shadow-lg: 0 16px 40px rgba(33, 28, 23, 0.12);
 
   --gr-border-width: 1px;
 
-  // ---- Transições e camadas ------------------------------------------------
-  --gr-transition-fast: 120ms ease;
-  --gr-transition-base: 200ms ease;
+  // ---- Transições, easing e camadas ----------------------------------------
+  --gr-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --gr-ease-in: cubic-bezier(0.4, 0, 1, 1);
 
-  --gr-focus-ring: 0 0 0 3px var(--gr-color-primary-200);
+  --gr-transition-fast: 120ms ease;
+  --gr-transition-base: 200ms var(--gr-ease-out);
+  --gr-transition-press: 100ms var(--gr-ease-out);
+
+  // primary-200 (usado antes) só tem 1.58:1 contra fundos claros — abaixo do
+  // mínimo de 3:1 do WCAG 1.4.11 para indicadores de foco. primary-500 fica
+  // em ~4.4:1, visível também sobre --gr-color-background e neutral-100.
+  --gr-focus-ring: 0 0 0 3px var(--gr-color-primary-500);
 }

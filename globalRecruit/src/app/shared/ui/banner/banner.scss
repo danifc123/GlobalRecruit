@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3) var(--gr-space-4);
+  border-left: 3px solid transparent;
+  font-size: var(--gr-font-size-sm);
+}
+
+.banner__icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-1);
+  flex: 1;
+}
+
+.banner__message {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gr-space-2);
+  font-weight: var(--gr-font-weight-medium);
+}
+
+.banner__description:not(:empty) {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.banner__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  font-size: var(--gr-font-size-xs);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.banner__dismiss {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity var(--gr-transition-fast);
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// ---- Layout: barra cheia (mensagens de largura total) ---------------------
+.banner--bar {
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .banner__body {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+// ---- Layout: card contido (usado dentro do conteúdo da página) ----------
+.banner--boxed {
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+}
+
+// ---- Tons: fundo claro + barra de destaque à esquerda --------------------
+// (nenhum tom usa preenchimento sólido escuro — a cor entra só como acento)
+.banner--info {
+  background-color: var(--gr-color-info-100);
+  border-left-color: var(--gr-color-info-500);
+  color: var(--gr-color-info-700);
+}
+
+.banner--success {
+  background-color: var(--gr-color-success-100);
+  border-left-color: var(--gr-color-success-500);
+  color: var(--gr-color-success-700);
+}
+
+.banner--warning {
+  background-color: var(--gr-color-warning-100);
+  border-left-color: var(--gr-color-warning-500);
+  color: var(--gr-color-warning-700);
+}
+
+.banner--danger {
+  background-color: var(--gr-color-danger-100);
+  border-left-color: var(--gr-color-danger-500);
+  color: var(--gr-color-danger-700);
+}

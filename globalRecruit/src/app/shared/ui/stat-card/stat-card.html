@@ -1,0 +1,18 @@
+<div class="stat-card">
+  <div class="stat-card__header">
+    <span class="stat-card__label">{{ label() }}</span>
+    @if (icon(); as iconName) {
+      <span [class]="iconClasses()">
+        <app-icon [name]="iconName" [size]="18" />
+      </span>
+    }
+  </div>
+
+  <div class="stat-card__value">
+    <ng-content />
+  </div>
+
+  @if (description(); as desc) {
+    <span [class]="descriptionClasses()">{{ desc }}</span>
+  }
+</div>

@@ -1,0 +1,15 @@
+# Segurança básica — nunca versionar segredos/variáveis de ambiente reais,
+# mesmo que criados fora de backend/ ou globalRecruit/ por engano.
+*.env
+!.env.example
+
+# Arquivos de sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.idea/

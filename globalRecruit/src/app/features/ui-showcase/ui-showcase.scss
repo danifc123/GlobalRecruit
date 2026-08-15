@@ -43,6 +43,29 @@
   }
 }
 
+.showcase__row--stats {
+  align-items: stretch;
+
+  app-stat-card {
+    flex: 1 1 220px;
+  }
+}
+
+.showcase__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.showcase__hint {
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.showcase__row app-table {
+  width: 100%;
+}
+
 .showcase__icon {
   display: flex;
   flex-direction: column;

@@ -9,7 +9,22 @@ export type IconName =
   | 'check'
   | 'chevron-down'
   | 'briefcase'
-  | 'user';
+  | 'user'
+  | 'users'
+  | 'home'
+  | 'globe'
+  | 'refresh'
+  | 'shield'
+  | 'database'
+  | 'flame'
+  | 'building'
+  | 'signal'
+  | 'pie-chart'
+  | 'filter'
+  | 'clock'
+  | 'plus'
+  | 'user-plus'
+  | 'more-horizontal';
 
 @Component({
   selector: 'app-icon',

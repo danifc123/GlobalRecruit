@@ -1,0 +1,178 @@
+<div class="usuarios-mobile">
+  <div class="mobile-header">
+    <div class="usuarios-mobile__top">
+      <span class="usuarios-mobile__breadcrumb">Administração</span>
+    </div>
+    <div class="usuarios-mobile__title">Usuários e acessos</div>
+    @if (!loading() && !error()) {
+      <app-chip-filter class="usuarios-mobile__chips" [options]="filtroOptions()" [(selected)]="filtro" />
+    }
+  </div>
+
+  <div class="usuarios-mobile__list">
+    @if (loading()) {
+      <app-skeleton height="70px" radius="18px" />
+      <app-skeleton height="70px" radius="18px" />
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar os usuários" description="Verifique sua conexão e tente de novo." />
+    } @else if (usersFiltrados().length === 0) {
+      <app-empty-state icon="users" description="Nenhum usuário encontrado para esse filtro." />
+    } @else {
+      @for (user of usersFiltrados(); track user.id) {
+        <div class="usuarios-mobile__card" [class.usuarios-mobile__card--inativo]="!user.isActive">
+          <div class="usuarios-mobile__row">
+            <span class="usuarios-mobile__avatar">{{ getInitials(user.email) }}</span>
+            <div class="usuarios-mobile__row-body">
+              <div class="usuarios-mobile__email" [class.usuarios-mobile__email--riscado]="!user.isActive">{{ user.email }}</div>
+              <div class="usuarios-mobile__meta">
+                @if (!user.isActive) {
+                  Inativo
+                } @else if (user.projetos.length) {
+                  {{ user.projetos.length }} projeto{{ user.projetos.length > 1 ? 's' : '' }} vinculado{{ user.projetos.length > 1 ? 's' : '' }}
+                } @else {
+                  Acesso total
+                }
+              </div>
+            </div>
+            <span class="usuarios-mobile__badge usuarios-mobile__badge--{{ user.role }}">{{ roleLabel(user.role) }}</span>
+          </div>
+          @if (user.projetos.length) {
+            <div class="usuarios-mobile__tags">
+              @for (projeto of user.projetos; track projeto.id) {
+                <span class="usuarios-mobile__tag">{{ projeto.nome }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <div class="usuarios-mobile__footer">
+    <button type="button" class="usuarios-mobile__novo" (click)="toggleForm()">
+      <app-icon name="plus" [size]="17" />
+      Novo usuário
+    </button>
+  </div>
+</div>
+
+<app-page description="Gestão de contas e níveis de acesso.">
+  <app-button page-actions variant="primary" (clicked)="toggleForm()">
+    <app-icon name="plus" [size]="16" />
+    Novo usuário
+  </app-button>
+
+  @if (successMessage()) {
+    <app-banner tone="success">{{ successMessage() }}</app-banner>
+  }
+
+  <app-sheet [open]="showForm()" title="Novo usuário" (closed)="toggleForm()">
+    @if (errorMessage()) {
+      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="usuarios__form">
+      <app-input
+        label="Email"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+      />
+      <app-input
+        label="Senha temporária"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+      />
+
+      <div class="usuarios__role-select">
+        <app-select
+          label="Papel"
+          formControlName="role"
+          [options]="roleOptions"
+          [required]="true"
+          [errorMessage]="form.controls.role.touched && form.controls.role.invalid ? 'Selecione um papel' : undefined"
+        />
+      </div>
+
+      <div class="usuarios__role-cards">
+        <span class="usuarios__field-label">Papel</span>
+        <button
+          type="button"
+          class="usuarios__role-card"
+          [class.usuarios__role-card--active]="form.controls.role.value === 'recruiter'"
+          (click)="selecionarRole('recruiter')"
+        >
+          <span class="usuarios__role-check">
+            @if (form.controls.role.value === 'recruiter') {
+              <app-icon name="check" [size]="13" />
+            }
+          </span>
+          <span>
+            <span class="usuarios__role-card-title">Recrutador</span>
+            <span class="usuarios__role-card-desc">Só leitura, restrito aos projetos vinculados.</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          class="usuarios__role-card"
+          [class.usuarios__role-card--active]="form.controls.role.value === 'admin'"
+          (click)="selecionarRole('admin')"
+        >
+          <span class="usuarios__role-check">
+            @if (form.controls.role.value === 'admin') {
+              <app-icon name="check" [size]="13" />
+            }
+          </span>
+          <span>
+            <span class="usuarios__role-card-title">Admin</span>
+            <span class="usuarios__role-card-desc">Cria vagas, candidatos, projetos e usuários.</span>
+          </span>
+        </button>
+      </div>
+
+      @if (isRecrutadorRole()) {
+        <fieldset class="usuarios__checkbox-group">
+          <legend>
+            <span>Projetos vinculados <span class="usuarios__required">*</span></span>
+            <span class="usuarios__checkbox-count">{{ selectedProjetoIds().size }} de {{ projetos().length }}</span>
+          </legend>
+          <p class="usuarios__hint">Obrigatório ao menos um — restringe os dados que este recrutador enxerga.</p>
+          @for (projeto of projetos(); track projeto.id) {
+            <label class="usuarios__checkbox">
+              <input
+                type="checkbox"
+                [checked]="selectedProjetoIds().has(projeto.id)"
+                (change)="toggleProjeto(projeto.id)"
+              />
+              {{ projeto.nome }} — {{ projeto.cliente }}
+            </label>
+          }
+        </fieldset>
+      }
+      <app-button type="submit" [loading]="submitting()">Criar usuário</app-button>
+    </form>
+  </app-sheet>
+
+  @if (!loading() && !error()) {
+    <app-chip-filter class="usuarios__chips" [options]="filtroOptions()" [(selected)]="filtro" />
+  }
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="!loading() && usersFiltrados().length === 0"
+    emptyIcon="users"
+    emptyMessage="Nenhum usuário encontrado para esse filtro."
+  >
+    @for (user of usersFiltrados(); track user.id) {
+      <tr>
+        <td data-label="Email">{{ user.email }}</td>
+        <td data-label="Papel">{{ roleLabel(user.role) }}</td>
+        <td data-label="Projetos">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
+        <td data-label="Status">{{ user.isActive ? 'Ativo' : 'Inativo' }}</td>
+      </tr>
+    }
+  </app-table>
+</app-page>

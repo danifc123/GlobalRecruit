@@ -1,0 +1,95 @@
+<div class="candidato-detalhe">
+  @if (loading()) {
+    <div class="mobile-header">
+      <button type="button" class="candidato-detalhe__back" (click)="goBack()">
+        <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
+      </button>
+      <app-skeleton width="60%" height="24px" />
+    </div>
+    <div class="candidato-detalhe__body">
+      <app-skeleton height="90px" radius="18px" />
+      <app-skeleton height="120px" radius="18px" />
+    </div>
+  } @else if (error() || !candidato()) {
+    <div class="candidato-detalhe__error">
+      <app-empty-state icon="signal" title="Não conseguimos carregar esse candidato" description="Verifique sua conexão e tente de novo.">
+        <button type="button" class="candidato-detalhe__retry" (click)="goBack()">Voltar</button>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="mobile-header">
+      <button type="button" class="candidato-detalhe__back" (click)="goBack()">
+        <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
+      </button>
+      <div class="candidato-detalhe__profile">
+        <span class="candidato-detalhe__avatar">{{ getInitials(candidato()!.nome) }}</span>
+        <div>
+          <div class="candidato-detalhe__nome">{{ candidato()!.nome }}</div>
+          <div class="candidato-detalhe__email">{{ candidato()!.email }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="candidato-detalhe__body">
+      @if (vaga(); as v) {
+        <div class="candidato-detalhe__card">
+          <div class="candidato-detalhe__card-title">Vaga alvo</div>
+          <div class="candidato-detalhe__vaga">
+            <span class="candidato-detalhe__vaga-flag">{{ v.pais ? v.pais.slice(0, 2).toUpperCase() : '—' }}</span>
+            <div>
+              <div class="candidato-detalhe__vaga-cargo">{{ v.cargo }}</div>
+              <div class="candidato-detalhe__vaga-meta">{{ v.cliente }}@if (v.idioma) { · {{ v.idioma }} }</div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="candidato-detalhe__card">
+        <div class="candidato-detalhe__card-header">
+          <span class="candidato-detalhe__card-title">Histórico</span>
+        </div>
+        <div class="candidato-detalhe__timeline">
+          @for (item of candidato()!.historico; track item.id; let last = $last) {
+            <div class="candidato-detalhe__timeline-row">
+              <div class="candidato-detalhe__timeline-marker">
+                <span class="candidato-detalhe__timeline-dot" [class.candidato-detalhe__timeline-dot--current]="$first"></span>
+                @if (!last) {
+                  <span class="candidato-detalhe__timeline-line"></span>
+                }
+              </div>
+              <div class="candidato-detalhe__timeline-content">
+                <div class="candidato-detalhe__timeline-label">{{ estagioLabels[item.estagio] }}</div>
+                <div class="candidato-detalhe__timeline-date">{{ item.updatedAt | date: 'dd/MM' }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="candidato-detalhe__footer">
+      <button type="button" class="candidato-detalhe__mover" (click)="moverOpen.set(true)">
+        Mover etapa
+      </button>
+    </div>
+
+    <app-sheet [open]="moverOpen()" title="Mover para" (closed)="moverOpen.set(false)">
+      <div class="candidato-detalhe__opcoes">
+        @for (opcao of opcoes(); track opcao.estagio) {
+          <button
+            type="button"
+            class="candidato-detalhe__opcao candidato-detalhe__opcao--{{ opcao.estagio }}"
+            [disabled]="moving()"
+            (click)="mover(opcao.estagio)"
+          >
+            <span class="candidato-detalhe__opcao-dot"></span>
+            {{ opcao.label }}
+            @if (opcao.recomendado) {
+              <span class="candidato-detalhe__opcao-tag">recomendado</span>
+            }
+          </button>
+        }
+      </div>
+    </app-sheet>
+  }
+</div>

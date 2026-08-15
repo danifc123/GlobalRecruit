@@ -1,0 +1,188 @@
+:host {
+  display: block;
+}
+
+// <app-page> é o wrapper da tela "de sempre" (Banner + Table) — só existe a
+// partir de 640px; abaixo disso quem mostra o conteúdo é `.recrutador-mobile`.
+app-page {
+  display: none;
+}
+
+// ==== mobile (<640px) =======================================================
+.recrutador-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-surface);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-3);
+  flex-shrink: 0;
+}
+
+.recrutador-mobile__top {
+  margin-top: var(--gr-space-1);
+}
+
+.recrutador-mobile__eyebrow {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.recrutador-mobile__title {
+  margin-top: 4px;
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.recrutador-mobile__stats {
+  display: flex;
+  gap: var(--gr-space-5);
+  margin-top: var(--gr-space-4);
+}
+
+.recrutador-mobile__stat-value {
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.recrutador-mobile__stat-value--accent {
+  color: var(--gr-color-primary-300);
+}
+
+.recrutador-mobile__stat-label {
+  margin-top: 2px;
+  font-size: var(--gr-font-size-xs);
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.recrutador-mobile__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gr-space-3) var(--gr-space-5) calc(96px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-4);
+}
+
+.recrutador-mobile__notice {
+  display: flex;
+  gap: var(--gr-space-2);
+  align-items: flex-start;
+  background-color: var(--gr-color-warning-100);
+  color: var(--gr-color-warning-700);
+  border-radius: var(--gr-radius-lg);
+  padding: var(--gr-space-3);
+  font-size: var(--gr-font-size-sm);
+  line-height: 1.5;
+}
+
+.recrutador-mobile__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.recrutador-mobile__group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.recrutador-mobile__group-count {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+  background-color: var(--gr-color-neutral-100);
+  border-radius: var(--gr-radius-full);
+  padding: 2px 8px;
+}
+
+.recrutador-mobile__card {
+  background-color: var(--gr-color-surface);
+  border-radius: var(--gr-radius-xl);
+  box-shadow: var(--gr-shadow-sm);
+  overflow: hidden;
+}
+
+.recrutador-mobile__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3) var(--gr-space-4);
+  border-top: var(--gr-border-width) solid var(--gr-color-neutral-100);
+  text-decoration: none;
+  color: inherit;
+
+  &:first-of-type {
+    border-top: none;
+  }
+}
+
+.recrutador-mobile__flag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-primary-50);
+  color: var(--gr-color-primary-700);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-semibold);
+}
+
+.recrutador-mobile__row-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.recrutador-mobile__cargo {
+  font-size: 0.9375rem;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.recrutador-mobile__meta {
+  margin-top: 2px;
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.recrutador-mobile__tag {
+  flex-shrink: 0;
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+  background-color: var(--gr-color-neutral-100);
+  border-radius: var(--gr-radius-full);
+  padding: 4px 9px;
+  text-transform: capitalize;
+}
+
+.recrutador-mobile__tag--alta {
+  color: var(--gr-color-accent-700);
+  background-color: var(--gr-color-accent-100);
+}
+
+// ==== ≥640px: mantém tabela de hoje =========================================
+@media (min-width: 640px) {
+  .recrutador-mobile {
+    display: none;
+  }
+
+  app-page {
+    display: flex;
+  }
+}

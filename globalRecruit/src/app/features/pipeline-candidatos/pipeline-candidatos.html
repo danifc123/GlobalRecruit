@@ -1,0 +1,121 @@
+<div class="pipeline-mobile">
+  <div class="mobile-header">
+    <div class="pipeline-mobile__top">
+      <span class="pipeline-mobile__title">Pipeline</span>
+      <button type="button" class="pipeline-mobile__add" aria-label="Registrar candidato" (click)="toggleForm()">
+        <app-icon name="user-plus" [size]="18" />
+      </button>
+    </div>
+    @if (!loading() && !error()) {
+      <app-chip-filter class="pipeline-mobile__chips" [options]="estagioOptions()" [(selected)]="estagioFiltro" />
+    }
+  </div>
+
+  <div class="pipeline-mobile__list">
+    @if (loading()) {
+      <app-skeleton width="70%" height="14px" />
+      <app-skeleton width="50%" height="11px" />
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar o pipeline" description="Verifique sua conexão e tente de novo." />
+    } @else if (rowsFiltradas().length === 0) {
+      <app-empty-state icon="filter" description="Nenhum candidato nessa etapa." />
+    } @else {
+      <div class="pipeline-mobile__section-header">
+        <span>{{ estagioLabels[estagioFiltro()] }} · {{ rowsFiltradas().length }} candidatos</span>
+        <span>mais antigos primeiro</span>
+      </div>
+      @for (row of rowsFiltradas(); track row.id) {
+        <a
+          class="pipeline-mobile__row"
+          [class.pipeline-mobile__row--parado]="estaParado(row)"
+          [routerLink]="['/pipeline-candidatos', row.id]"
+        >
+          <span class="pipeline-mobile__avatar" [class.pipeline-mobile__avatar--parado]="estaParado(row)">
+            {{ getInitials(row.nome) }}
+          </span>
+          <div class="pipeline-mobile__row-body">
+            <div class="pipeline-mobile__row-top">
+              <span class="pipeline-mobile__row-nome">{{ row.nome }}</span>
+              <span class="pipeline-mobile__row-tempo">
+                @if (estaParado(row)) {
+                  {{ diasParado(row) }}d parado
+                } @else {
+                  {{ diasParado(row) }}d
+                }
+              </span>
+            </div>
+            <div class="pipeline-mobile__row-meta">{{ row.vagaCargo }}</div>
+          </div>
+        </a>
+      }
+    }
+  </div>
+</div>
+
+<app-page description="Acompanhamento de candidatos por etapa do processo seletivo.">
+  <app-button page-actions variant="primary" (clicked)="toggleForm()">
+    <app-icon name="user-plus" [size]="16" />
+    Registar Candidato
+  </app-button>
+
+  <app-sheet [open]="showForm()" title="Novo candidato" (closed)="toggleForm()">
+      @if (errorMessage()) {
+        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
+        <app-input
+          label="Nome"
+          formControlName="nome"
+          [required]="true"
+          [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+        />
+        <app-input
+          label="Email"
+          type="email"
+          formControlName="email"
+          [required]="true"
+          [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+        />
+        <app-select
+          label="Vaga alvo"
+          formControlName="vagaId"
+          [options]="vagaOptions()"
+          [required]="true"
+          [errorMessage]="
+            form.controls.vagaId.touched && form.controls.vagaId.invalid ? 'Selecione a vaga' : undefined
+          "
+        />
+        <div class="pipeline__form-actions">
+          <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+          <app-button type="submit" [loading]="submitting()">Registrar candidato</app-button>
+        </div>
+      </form>
+  </app-sheet>
+
+  @if (!loading() && !error()) {
+    <app-chip-filter class="pipeline__chips" [options]="estagioOptions()" [(selected)]="estagioFiltro" />
+  }
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="!loading() && rowsFiltradas().length === 0"
+    emptyIcon="filter"
+    emptyMessage="Nenhum candidato nessa etapa."
+  >
+    @for (row of rowsFiltradas(); track row.id) {
+      <tr [class.pipeline__row--parado]="estaParado(row)">
+        <td data-label="Nome">{{ row.nome }}</td>
+        <td data-label="Email">{{ row.email }}</td>
+        <td data-label="Vaga Alvo">{{ row.vagaCargo }}</td>
+        <td data-label="Data">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
+        <td data-label="Status / Etapa">{{ row.estagioAtual ?? '—' }}</td>
+        <td data-label="Ações">
+          <a class="pipeline__action" [routerLink]="['/pipeline-candidatos', row.id]" aria-label="Ver detalhes do candidato">
+            <app-icon name="search" [size]="15" />
+          </a>
+        </td>
+      </tr>
+    }
+  </app-table>
+</app-page>

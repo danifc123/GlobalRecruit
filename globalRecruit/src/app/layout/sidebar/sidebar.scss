@@ -1,0 +1,120 @@
+// abaixo de 640px a navegação é a BottomNav (ver layout/bottom-nav) — a
+// Sidebar só existe a partir do tier de tablet retrato
+:host {
+  display: none;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  :host {
+    display: block;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 4.5rem;
+  height: 100%;
+  padding-block: var(--gr-space-4);
+  gap: var(--gr-space-2);
+  background-color: var(--gr-color-surface);
+  border-right: var(--gr-border-width) solid var(--gr-color-border);
+}
+
+.sidebar__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: var(--gr-space-4);
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-primary-500);
+  color: var(--gr-color-text-inverse);
+  flex-shrink: 0;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-1);
+  width: 100%;
+  padding-inline: var(--gr-space-2);
+}
+
+.sidebar__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gr-space-3);
+  height: 3rem;
+  border-radius: var(--gr-radius-md);
+  border-left: 3px solid transparent;
+  color: var(--gr-color-text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--gr-transition-fast),
+    color var(--gr-transition-fast),
+    transform var(--gr-transition-press);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-primary);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+}
+
+.sidebar__label {
+  display: none;
+}
+
+.sidebar__item--active {
+  background-color: var(--gr-color-primary-100);
+  border-left-color: var(--gr-color-primary-500);
+  color: var(--gr-color-primary-700);
+
+  &:hover {
+    background-color: var(--gr-color-primary-100);
+    color: var(--gr-color-primary-700);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 15rem;
+    align-items: stretch;
+    padding-inline: var(--gr-space-3);
+  }
+
+  .sidebar__logo {
+    align-self: flex-start;
+    margin-inline-start: var(--gr-space-1);
+  }
+
+  .sidebar__item {
+    justify-content: flex-start;
+    padding-inline: var(--gr-space-3);
+  }
+
+  .sidebar__label {
+    display: inline;
+    font-size: var(--gr-font-size-sm);
+    font-weight: var(--gr-font-weight-medium);
+  }
+}

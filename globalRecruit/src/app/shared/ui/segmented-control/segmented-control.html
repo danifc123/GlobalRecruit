@@ -1,0 +1,16 @@
+<div class="segmented">
+  @for (option of options(); track option.label) {
+    <button
+      type="button"
+      class="segmented__item"
+      [class.segmented__item--active]="option.value === value()"
+      [attr.aria-pressed]="option.value === value()"
+      (click)="select(option)"
+    >
+      @if (option.icon) {
+        <app-icon [name]="option.icon" [size]="16" />
+      }
+      <span>{{ option.label }}</span>
+    </button>
+  }
+</div>

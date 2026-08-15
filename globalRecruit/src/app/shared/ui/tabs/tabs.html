@@ -1,0 +1,15 @@
+<nav class="tabs">
+  @for (item of items(); track item.path; let i = $index) {
+    <a
+      class="tabs__item"
+      [routerLink]="item.path"
+      routerLinkActive="tabs__item--active"
+      [ariaCurrentWhenActive]="'page'"
+    >
+      @if (item.icon) {
+        <app-icon [name]="item.icon" [size]="16" />
+      }
+      <span>{{ i + 1 }}. {{ item.label }}</span>
+    </a>
+  }
+</nav>

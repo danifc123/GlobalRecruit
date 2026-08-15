@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-1);
+}
+
+.form-field__label {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-primary);
+}
+
+.form-field__required {
+  color: var(--gr-color-danger-500);
+}
+
+.form-field__control {
+  // 44px — mesmo alvo mínimo de toque documentado em button.scss (.btn--md)
+  height: 2.75rem;
+  padding-inline: var(--gr-space-3);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--gr-space-3) center;
+  padding-right: var(--gr-space-6);
+  transition:
+    border-color var(--gr-transition-fast),
+    box-shadow var(--gr-transition-fast);
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--gr-color-primary-500);
+    box-shadow: var(--gr-focus-ring);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-secondary);
+  }
+}
+
+.form-field__control--error {
+  border-color: var(--gr-color-danger-500);
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--gr-color-danger-100);
+  }
+}
+
+.form-field__message {
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.form-field__message--error {
+  color: var(--gr-color-danger-500);
+}

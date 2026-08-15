@@ -1,0 +1,25 @@
+// Sistema de motion compartilhado. Componentes de página aplicam a
+// animação `page-enter` no próprio :host; o guard de reduced-motion abaixo
+// é global e não precisa ser repetido em nenhum outro lugar.
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

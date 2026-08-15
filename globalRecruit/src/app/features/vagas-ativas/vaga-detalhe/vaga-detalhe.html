@@ -1,0 +1,103 @@
+<div class="vaga-detalhe">
+  @if (loading()) {
+    <div class="mobile-header">
+      <button type="button" class="vaga-detalhe__back" (click)="goBack()">
+        <app-icon name="chevron-down" [size]="18" class="vaga-detalhe__back-icon" />
+      </button>
+      <app-skeleton width="70%" height="24px" />
+      <app-skeleton width="50%" height="13px" />
+    </div>
+    <div class="vaga-detalhe__body">
+      <app-skeleton height="90px" radius="16px" />
+      <app-skeleton height="140px" radius="18px" />
+    </div>
+  } @else if (error() || !vaga()) {
+    <div class="vaga-detalhe__error">
+      <app-empty-state icon="signal" title="Não conseguimos carregar essa vaga" description="Verifique sua conexão e tente de novo.">
+        <button type="button" class="vaga-detalhe__retry" (click)="goBack()">Voltar</button>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="mobile-header">
+      <button type="button" class="vaga-detalhe__back" (click)="goBack()">
+        <app-icon name="chevron-down" [size]="18" class="vaga-detalhe__back-icon" />
+      </button>
+      <div class="vaga-detalhe__badges">
+        <span class="vaga-detalhe__badge vaga-detalhe__badge--{{ vaga()!.status }}">
+          {{ vaga()!.status === 'aberta' ? 'Aberta' : vaga()!.status === 'pausada' ? 'Pausada' : 'Fechada' }}
+        </span>
+        <span class="vaga-detalhe__badge vaga-detalhe__badge--prioridade-{{ vaga()!.prioridade }}">
+          Prioridade {{ vaga()!.prioridade }}
+        </span>
+      </div>
+      <h1 class="vaga-detalhe__title">{{ vaga()!.cargo }}</h1>
+      <p class="vaga-detalhe__subtitle">
+        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vaga()!.modalidade) { · {{ vaga()!.modalidade }} }
+      </p>
+    </div>
+
+    <div class="vaga-detalhe__body">
+      <div class="vaga-detalhe__grid">
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Idioma</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.idioma ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Salário</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.salario ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Comissão</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.comissao ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Projeto</div>
+          <div class="vaga-detalhe__stat-value">{{ projetoNome() ?? '—' }}</div>
+        </div>
+      </div>
+
+      <div class="vaga-detalhe__card">
+        <div class="vaga-detalhe__card-header">
+          <span>Pipeline desta vaga</span>
+          <span class="vaga-detalhe__card-count">{{ candidatos().length }} candidatos</span>
+        </div>
+        <div class="vaga-detalhe__pipeline">
+          @for (item of pipelineCounts(); track item.estagio) {
+            <div class="vaga-detalhe__pipeline-row">
+              <span class="vaga-detalhe__pipeline-dot vaga-detalhe__pipeline-dot--{{ item.estagio }}"></span>
+              <span class="vaga-detalhe__pipeline-label">{{ estagioLabels[item.estagio] }}</span>
+              <span class="vaga-detalhe__pipeline-count">{{ item.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="vaga-detalhe__card vaga-detalhe__card--flush">
+        <div class="vaga-detalhe__card-header">Últimos candidatos</div>
+        @if (ultimosCandidatos().length === 0) {
+          <app-empty-state icon="users" description="Nenhum candidato ainda nessa vaga." />
+        }
+        @for (candidato of ultimosCandidatos(); track candidato.id) {
+          <a class="vaga-detalhe__candidato" [routerLink]="['/pipeline-candidatos', candidato.id]">
+            <span class="vaga-detalhe__avatar">{{ getInitials(candidato.nome) }}</span>
+            <div class="vaga-detalhe__candidato-info">
+              <div class="vaga-detalhe__candidato-nome">{{ candidato.nome }}</div>
+              <div class="vaga-detalhe__candidato-meta">{{ candidato.estagioAtual ? estagioLabels[candidato.estagioAtual] : '—' }}</div>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="vaga-detalhe__footer">
+      <a
+        class="vaga-detalhe__indicar"
+        [routerLink]="['/pipeline-candidatos']"
+        [queryParams]="{ vagaId: vaga()!.id, novo: 1 }"
+      >
+        <app-icon name="user-plus" [size]="17" />
+        Indicar candidato
+      </a>
+    </div>
+  }
+</div>

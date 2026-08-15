@@ -1,0 +1,32 @@
+@if (isAuthRoute()) {
+  <router-outlet />
+} @else {
+  <div class="shell">
+    <app-sidebar [items]="navItems()" />
+
+    <div class="shell__main">
+      <header class="shell__topbar">
+        <div class="shell__topbar-title">
+          <h1>{{ pageTitle() }}</h1>
+        </div>
+        @if (auth.session(); as session) {
+          <div class="shell__topbar-user">
+            <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
+            <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
+          </div>
+        }
+      </header>
+
+      <main class="shell__content">
+        <router-outlet />
+      </main>
+    </div>
+
+    <app-bottom-nav
+      [leftItems]="phoneNav().left"
+      [rightItems]="phoneNav().right"
+      [showFab]="phoneNav().showFab"
+      (fab)="handleFab()"
+    />
+  </div>
+}

@@ -2,8 +2,8 @@
   <header class="showcase__intro">
     <h1>GlobalRecruit — UI Kit</h1>
     <p>
-      Componentes base do design system, prontos para compor as telas de gestão de vagas e
-      candidatos.
+      Componentes base do design system, desenhados a partir de tablet (retrato) e escalando para
+      telas maiores a partir de 1024px.
     </p>
   </header>
 
@@ -87,6 +87,94 @@
           <app-badge variant="success">Aberta</app-badge>
         </div>
       </app-card>
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>StatCard</h2>
+    <div class="showcase__row showcase__row--stats">
+      <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Sincronizado" statusTone="success">
+        12
+      </app-stat-card>
+      <app-stat-card label="Candidatos no Pipeline" icon="users" tone="info" description="Em processo">
+        48
+      </app-stat-card>
+      <app-stat-card label="Clientes Ativos" icon="building" tone="moss" description="Empresas parceiras">
+        6
+      </app-stat-card>
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Banner</h2>
+    <div class="showcase__col">
+      <app-banner tone="info" icon="check" [dismissible]="true">Convite enviado com sucesso.</app-banner>
+      <app-banner tone="warning" icon="close">Verifique os campos obrigatórios.</app-banner>
+      <app-banner tone="warning" icon="shield" layout="boxed">
+        <strong>Visão Restrita para Parceiros</strong>
+        <span banner-description>
+          Esta tabela omite automaticamente colunas confidenciais de comissões e clientes.
+        </span>
+      </app-banner>
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>SegmentedControl</h2>
+    <div class="showcase__row">
+      <app-segmented-control [options]="segmentedOptions" [(value)]="segmentedValue" />
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Tabs</h2>
+    <div class="showcase__row">
+      <app-tabs [items]="tabItems" />
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>EmptyState</h2>
+    <div class="showcase__row">
+      <app-card>
+        <app-empty-state
+          icon="filter"
+          title="Nenhum candidato ainda"
+          description="Assim que candidatos entrarem no pipeline, eles aparecerão aqui."
+        />
+      </app-card>
+    </div>
+  </section>
+
+  <section class="showcase__section">
+    <h2>Table</h2>
+    <p class="showcase__hint">
+      Abaixo de 1024px cada linha vira um card (redimensione a janela para ver a transição).
+    </p>
+    <div class="showcase__row">
+      <app-table [columns]="['Nome', 'Idioma', 'Vaga Alvo', 'Status / Etapa']">
+        <tr>
+          <td data-label="Nome">Marina Alves</td>
+          <td data-label="Idioma">Inglês (C1)</td>
+          <td data-label="Vaga Alvo">Recrutador(a) Pleno</td>
+          <td data-label="Status / Etapa"><app-badge variant="info">Entrevista</app-badge></td>
+        </tr>
+        <tr>
+          <td data-label="Nome">Diego Ramos</td>
+          <td data-label="Idioma">Espanhol (B2)</td>
+          <td data-label="Vaga Alvo">Analista de Vagas</td>
+          <td data-label="Status / Etapa"><app-badge variant="success">Aprovado</app-badge></td>
+        </tr>
+      </app-table>
+    </div>
+
+    <div class="showcase__row">
+      <app-table
+        [columns]="['Nome', 'Idioma', 'Vaga Alvo', 'Status / Etapa']"
+        [isEmpty]="true"
+        emptyIcon="filter"
+        emptyMessage="Nenhum candidato no pipeline ainda."
+      />
     </div>
   </section>
 </div>

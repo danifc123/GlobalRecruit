@@ -1,0 +1,201 @@
+<div class="dashboard-mobile">
+  <div class="mobile-header">
+    <div class="dashboard-mobile__top">
+      <div>
+        <div class="dashboard-mobile__date">{{ today | date: "EEEE, d 'de' MMMM" }}</div>
+        <div class="dashboard-mobile__greeting">Olá@if (primeiroNome()) {, {{ primeiroNome() }} }</div>
+      </div>
+      <span class="dashboard-mobile__status" [class.dashboard-mobile__status--offline]="error()">
+        <span class="dashboard-mobile__status-dot"></span>
+        {{ error() ? 'API indisponível' : 'API online' }}
+      </span>
+    </div>
+
+    @if (loading()) {
+      <div class="dashboard-mobile__kpis">
+        <app-skeleton height="56px" radius="16px" />
+        <app-skeleton height="56px" radius="16px" />
+        <app-skeleton height="56px" radius="16px" />
+      </div>
+    } @else if (stats(); as s) {
+      <div class="dashboard-mobile__kpis">
+        <div class="dashboard-mobile__kpi">
+          <div class="dashboard-mobile__kpi-value">{{ s.vagasAbertas }}</div>
+          <div class="dashboard-mobile__kpi-label">vagas abertas</div>
+        </div>
+        <div class="dashboard-mobile__kpi">
+          <div class="dashboard-mobile__kpi-value dashboard-mobile__kpi-value--pipeline">{{ s.candidatosEmPipeline }}</div>
+          <div class="dashboard-mobile__kpi-label">no pipeline</div>
+        </div>
+        <div class="dashboard-mobile__kpi">
+          <div class="dashboard-mobile__kpi-value dashboard-mobile__kpi-value--alta">{{ s.vagasAltaPrioridade }}</div>
+          <div class="dashboard-mobile__kpi-label">alta prioridade</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="dashboard-mobile__body">
+    @if (loading()) {
+      <app-skeleton height="120px" radius="18px" />
+      <app-skeleton height="160px" radius="18px" />
+    } @else if (stats(); as s) {
+      @if (s.candidatosParados.length > 0 || s.vagasSemCandidato.length > 0) {
+        <div class="dashboard-mobile__section">
+          <span class="dashboard-mobile__section-title">Precisa de você hoje</span>
+          <div class="dashboard-mobile__card">
+            @for (c of s.candidatosParados; track c.id) {
+              <a class="dashboard-mobile__attention" [routerLink]="['/pipeline-candidatos', c.id]">
+                <span class="dashboard-mobile__attention-icon dashboard-mobile__attention-icon--warning">
+                  <app-icon name="clock" [size]="16" />
+                </span>
+                <div class="dashboard-mobile__attention-body">
+                  <div class="dashboard-mobile__attention-title">{{ c.nome }} parado há {{ c.diasParado }}d</div>
+                  <div class="dashboard-mobile__attention-meta">{{ c.vagaCargo }}</div>
+                </div>
+              </a>
+            }
+            @for (v of s.vagasSemCandidato; track v.id) {
+              <a class="dashboard-mobile__attention" [routerLink]="['/vagas-ativas', v.id]">
+                <span class="dashboard-mobile__attention-icon dashboard-mobile__attention-icon--danger">
+                  <app-icon name="briefcase" [size]="16" />
+                </span>
+                <div class="dashboard-mobile__attention-body">
+                  <div class="dashboard-mobile__attention-title">{{ v.cargo }} sem candidato</div>
+                  <div class="dashboard-mobile__attention-meta">{{ v.cliente }}</div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      }
+
+      @if (s.vagasPorIdioma.length > 0) {
+        <div class="dashboard-mobile__card">
+          <div class="dashboard-mobile__card-header">
+            <span>Vagas por idioma exigido</span>
+            <span class="dashboard-mobile__card-count">{{ s.vagasAbertas }} vagas</span>
+          </div>
+          <div class="dashboard-mobile__bars">
+            @for (item of s.vagasPorIdioma; track item.idioma) {
+              <div class="dashboard-mobile__bar-row">
+                <div class="dashboard-mobile__bar-labels">
+                  <span>{{ item.idioma }}</span>
+                  <span>{{ item.count }}</span>
+                </div>
+                <div class="dashboard-mobile__bar-track">
+                  <div class="dashboard-mobile__bar-fill" [style.width.%]="(item.count / maiorIdioma()) * 100"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="dashboard-mobile__stats-row">
+        <div class="dashboard-mobile__stat">
+          <div class="dashboard-mobile__stat-label">Clientes ativos</div>
+          <div class="dashboard-mobile__stat-value">{{ s.clientesAtivos }}</div>
+        </div>
+        <div class="dashboard-mobile__stat">
+          <div class="dashboard-mobile__stat-label">Modalidade remota</div>
+          <div class="dashboard-mobile__stat-value">{{ s.pctModalidadeRemota }}%</div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="dashboard">
+  <div class="dashboard__grid">
+    <app-stat-card label="Vagas Ativas" icon="flame" tone="accent" description="Em aberto" statusTone="success">
+      {{ stats()?.vagasAbertas ?? '—' }}
+    </app-stat-card>
+
+    <app-stat-card label="Candidatos no Pipeline" icon="users" tone="info" description="Em processo">
+      {{ stats()?.candidatosEmPipeline ?? '—' }}
+    </app-stat-card>
+
+    <app-stat-card label="Clientes Ativos" icon="building" tone="moss" description="Empresas parceiras">
+      {{ stats()?.clientesAtivos ?? '—' }}
+    </app-stat-card>
+
+    <app-stat-card label="Modalidade Remota" icon="home" tone="neutral" description="Das vagas abertas">
+      {{ stats() ? stats()!.pctModalidadeRemota + '%' : '—' }}
+    </app-stat-card>
+
+    <app-stat-card
+      label="Estado da Conexão"
+      icon="signal"
+      [tone]="error() ? 'danger' : 'success'"
+      description="GlobalRecruit API"
+    >
+      <span class="dashboard__status">
+        <span class="dashboard__status-dot" [class.dashboard__status-dot--error]="error()"></span>
+        {{ error() ? 'Indisponível' : 'Online' }}
+      </span>
+    </app-stat-card>
+  </div>
+
+  @if (stats(); as s) {
+    @if (s.candidatosParados.length > 0 || s.vagasSemCandidato.length > 0) {
+      <app-card>
+        <div card-header class="dashboard__chart-header">
+          <app-icon name="clock" [size]="18" />
+          <h3>Precisa de você hoje</h3>
+        </div>
+        <div class="dashboard__attention-list">
+          @for (c of s.candidatosParados; track c.id) {
+            <a class="dashboard-mobile__attention dashboard__attention" [routerLink]="['/pipeline-candidatos', c.id]">
+              <span class="dashboard-mobile__attention-icon dashboard-mobile__attention-icon--warning">
+                <app-icon name="clock" [size]="16" />
+              </span>
+              <div class="dashboard-mobile__attention-body">
+                <div class="dashboard-mobile__attention-title">{{ c.nome }} parado há {{ c.diasParado }}d</div>
+                <div class="dashboard-mobile__attention-meta">{{ c.vagaCargo }}</div>
+              </div>
+            </a>
+          }
+          @for (v of s.vagasSemCandidato; track v.id) {
+            <a class="dashboard-mobile__attention dashboard__attention" [routerLink]="['/vagas-ativas', v.id]">
+              <span class="dashboard-mobile__attention-icon dashboard-mobile__attention-icon--danger">
+                <app-icon name="briefcase" [size]="16" />
+              </span>
+              <div class="dashboard-mobile__attention-body">
+                <div class="dashboard-mobile__attention-title">{{ v.cargo }} sem candidato</div>
+                <div class="dashboard-mobile__attention-meta">{{ v.cliente }}</div>
+              </div>
+            </a>
+          }
+        </div>
+      </app-card>
+    }
+  }
+
+  <app-card>
+    <div card-header class="dashboard__chart-header">
+      <app-icon name="pie-chart" [size]="18" />
+      <h3>Vagas por Idioma Exigido</h3>
+    </div>
+    @if (stats()?.vagasPorIdioma?.length) {
+      <div class="dashboard__bars">
+        @for (item of stats()!.vagasPorIdioma; track item.idioma) {
+          <div class="dashboard__bar-row">
+            <div class="dashboard__bar-labels">
+              <span>{{ item.idioma }}</span>
+              <span>{{ item.count }}</span>
+            </div>
+            <div class="dashboard__bar-track">
+              <div class="dashboard__bar-fill" [style.width.%]="(item.count / maiorIdioma()) * 100"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <app-empty-state
+        icon="pie-chart"
+        description="Ainda não há vagas suficientes para gerar este gráfico."
+      />
+    }
+  </app-card>
+</div>

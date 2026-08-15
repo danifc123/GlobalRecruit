@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: globalrecruit
+      POSTGRES_PASSWORD: globalrecruit
+      POSTGRES_DB: globalrecruit
+    ports:
+      # 5432 já está ocupada por um PostgreSQL nativo do Windows nesta
+      # máquina (serviço postgresql-x64-17) — usar 5434 no host
+      - "5434:5432"
+    volumes:
+      - globalrecruit_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U globalrecruit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  globalrecruit_db_data:
