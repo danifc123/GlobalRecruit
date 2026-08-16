@@ -327,55 +327,41 @@
   cursor: pointer;
 }
 
-// ≥640px: mesmo header/cards do celular (já são o "chrome" da página, não
-// precisa de Page em cima) — só reaproveita mais largura de tela e vira
-// grid de 2 colunas a partir de 1024px, em vez de ficar numa coluna
-// estreita de 640px sobrando espaço vazio nas laterais.
+// ≥640px: a árvore acima (.vaga-detalhe, header cheio escuro) é só o
+// celular — a partir daqui quem aparece é o .vaga-panel claro abaixo (o
+// mesmo conceito usado no painel de master-detail ≥1024px, só que aqui
+// dentro de um overlay de tela cheia, não um painel de 400px docado).
 @media (min-width: 640px) {
-  .mobile-header {
-    border-radius: var(--gr-radius-xl);
-    max-width: 640px;
-    margin: var(--gr-space-6) auto 0;
-  }
-
-  .vaga-detalhe__body {
-    max-width: 640px;
-    margin-inline: auto;
-    padding-bottom: var(--gr-space-6);
-  }
-
-  .vaga-detalhe__footer {
-    position: static;
-    max-width: 640px;
-    margin-inline: auto;
-    background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-top: none;
-    padding: 0 var(--gr-space-5) var(--gr-space-6);
-  }
-}
-
-// ≥1024px: a árvore acima (.vaga-detalhe, header cheio escuro) só existe
-// <1024px — quem aparece a partir daí é o painel .vaga-panel abaixo, que é
-// sempre renderizado dentro do master-detail de VagasAtivas.
-@media (min-width: 1024px) {
   .vaga-detalhe {
     display: none;
   }
 }
 
-// ==== painel (≥1024px) — visual claro, dentro do container de 400px do
-// master-detail (ver .vagas__detail-panel em vagas-ativas.scss) ===========
+// ==== painel claro — celular usa o header escuro acima; daqui pra cima
+// (tablet em diante) é essa árvore. ≥1024px ela roda dentro do painel de
+// 400px do master-detail (ver .vagas__detail-panel em vagas-ativas.scss)
+// e ocupa 100% da largura dele; 640–1023px é um overlay de tela cheia, por
+// isso ganha teto de largura e centralização só nesse intervalo, senão o
+// conteúdo (pensado pra coluna estreita) esticaria feio lado a lado.
 .vaga-panel {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 640px) {
   .vaga-panel {
     display: flex;
     flex-direction: column;
     min-height: 100%;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .vaga-panel__header,
+  .vaga-panel__body,
+  .vaga-panel .vaga-detalhe__footer {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
   }
 }
 
