@@ -228,7 +228,9 @@ app-page {
   }
 }
 
-@media (min-width: 640px) {
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira tabela de
+// verdade (mesmo motivo documentado em vagas-ativas.scss)
+@media (min-width: 1024px) {
   .vagas-desat-mobile {
     display: none;
   }

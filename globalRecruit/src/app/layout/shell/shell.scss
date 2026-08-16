@@ -127,6 +127,27 @@
   flex-shrink: 0;
 }
 
+// preparado pro dialog de configurações que ainda vai existir — por
+// enquanto só leva pra /conta, igual o e-mail ao lado
+.shell__topbar-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: var(--gr-color-primary-100);
+  color: var(--gr-color-primary-700);
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--gr-color-primary-200);
+  }
+}
+
 // escondido abaixo de 640px: e-mail + título + botão juntos não cabem numa
 // tela de celular sem cortar algo — "Sair" (ação) tem prioridade sobre o
 // e-mail (informação).

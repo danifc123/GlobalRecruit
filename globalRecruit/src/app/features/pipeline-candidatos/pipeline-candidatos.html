@@ -93,34 +93,6 @@
       </form>
   </app-sheet>
 
-  <div class="pipeline__table-view">
-    @if (!loading() && !error()) {
-      <app-chip-filter class="pipeline__chips" [options]="estagioOptions()" [(selected)]="estagioFiltro" />
-    }
-
-    <app-table
-      [columns]="columns"
-      [isEmpty]="!loading() && rowsFiltradas().length === 0"
-      emptyIcon="filter"
-      emptyMessage="Nenhum candidato nessa etapa."
-    >
-      @for (row of rowsFiltradas(); track row.id) {
-        <tr [class.pipeline__row--parado]="estaParado(row)">
-          <td data-label="Nome">{{ row.nome }}</td>
-          <td data-label="Email">{{ row.email }}</td>
-          <td data-label="Vaga Alvo">{{ row.vagaCargo }}</td>
-          <td data-label="Data">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
-          <td data-label="Status / Etapa">{{ row.estagioAtual ?? '—' }}</td>
-          <td data-label="Ações">
-            <a class="pipeline__action" [routerLink]="['/pipeline-candidatos', row.id]" aria-label="Ver detalhes do candidato">
-              <app-icon name="search" [size]="15" />
-            </a>
-          </td>
-        </tr>
-      }
-    </app-table>
-  </div>
-
   <div class="pipeline__kanban-view">
     @if (kanbanError(); as msg) {
       <app-banner tone="danger" [dismissible]="true">{{ msg }}</app-banner>

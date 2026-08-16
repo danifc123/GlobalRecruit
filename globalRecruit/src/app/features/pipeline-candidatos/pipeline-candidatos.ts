@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -6,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, Table, type SelectOption } from '@app/shared/ui';
+import { Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, type SelectOption } from '@app/shared/ui';
 import { VagasService } from '@app/core/data/vagas.service';
 import { CandidatosService } from '@app/core/data/candidatos.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
@@ -28,7 +27,6 @@ const DIAS_PARADO_ALERTA = 10;
     Banner,
     Button,
     ChipFilter,
-    DatePipe,
     EmptyState,
     Icon,
     Input,
@@ -37,7 +35,6 @@ const DIAS_PARADO_ALERTA = 10;
     Select,
     Sheet,
     Skeleton,
-    Table,
   ],
   templateUrl: './pipeline-candidatos.html',
   styleUrl: './pipeline-candidatos.scss',
@@ -51,7 +48,6 @@ export class PipelineCandidatos {
   private readonly destroyRef = inject(DestroyRef);
   private readonly topbarActions = inject(TopbarActionsService);
 
-  protected readonly columns = ['Nome', 'Email', 'Vaga Alvo', 'Data', 'Status / Etapa', 'Ações'];
   protected readonly getInitials = getInitials;
   protected readonly estagioLabels = ESTAGIO_LABELS;
 

@@ -42,6 +42,9 @@
 
           @if (auth.session(); as session) {
             <div class="shell__topbar-user">
+              <a class="shell__topbar-avatar" routerLink="/conta" aria-label="Minha conta">
+                {{ userInitials() }}
+              </a>
               <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
               <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
             </div>

@@ -380,14 +380,6 @@ app-page {
 
 // ==== ≥640px: mantém form flat + tabela de hoje ============================
 @media (min-width: 640px) {
-  .vagas-mobile {
-    display: none;
-  }
-
-  app-page {
-    display: flex;
-  }
-
   .vagas__form {
     max-width: 480px;
   }
@@ -402,6 +394,19 @@ app-page {
   }
 
   .vagas-wizard__step {
+    display: flex;
+  }
+}
+
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira tabela de
+// verdade; abaixo disso a tabela genérica (cada linha virando um cartão de
+// rótulo:valor) ficava fora do padrão do resto do app
+@media (min-width: 1024px) {
+  .vagas-mobile {
+    display: none;
+  }
+
+  app-page {
     display: flex;
   }
 }

@@ -149,34 +149,17 @@ app-page {
   color: var(--gr-color-text-secondary);
 }
 
-.pipeline__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: var(--gr-border-width) solid var(--gr-color-border);
-  border-radius: var(--gr-radius-sm);
-  background-color: var(--gr-color-surface);
-  color: var(--gr-color-text-secondary);
-  text-decoration: none;
-
-  &:hover {
-    color: var(--gr-color-primary-700);
-    border-color: var(--gr-color-primary-300);
+@media (min-width: 640px) {
+  .pipeline__form {
+    max-width: 420px;
   }
 }
 
-.pipeline__row--parado {
-  background-color: var(--gr-color-warning-100);
-}
-
-.pipeline__chips {
-  margin-bottom: var(--gr-space-3);
-}
-
-// ==== ≥640px: mantém tabela de hoje =========================================
-@media (min-width: 640px) {
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira Kanban de
+// verdade (mesmo motivo documentado em vagas-ativas.scss; a tabela plana
+// que existia nesse meio-termo foi removida, não tinha mais pra onde ir:
+// mobile cobre até aqui, Kanban assume daqui pra frente)
+@media (min-width: 1024px) {
   .pipeline-mobile {
     display: none;
   }
@@ -184,22 +167,13 @@ app-page {
   app-page {
     display: flex;
   }
-
-  .pipeline__form {
-    max-width: 420px;
-  }
 }
 
-// ==== Kanban (≥1024px) — troca a tabela por um quadro de verdade ===========
 .pipeline__kanban-view {
   display: none;
 }
 
 @media (min-width: 1024px) {
-  .pipeline__table-view {
-    display: none;
-  }
-
   .pipeline__kanban-view {
     display: block;
     // header/chips saíram pro topbar (TopbarActionsService) — o board usa a

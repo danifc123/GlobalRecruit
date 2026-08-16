@@ -151,15 +151,19 @@ app-page {
 
 // ==== ≥640px: mantém tabela de hoje =========================================
 @media (min-width: 640px) {
+  .projetos-admin__form {
+    max-width: 420px;
+  }
+}
+
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira tabela de
+// verdade (mesmo motivo documentado em vagas-ativas.scss)
+@media (min-width: 1024px) {
   .projetos-mobile {
     display: none;
   }
 
   app-page {
     display: flex;
-  }
-
-  .projetos-admin__form {
-    max-width: 420px;
   }
 }
