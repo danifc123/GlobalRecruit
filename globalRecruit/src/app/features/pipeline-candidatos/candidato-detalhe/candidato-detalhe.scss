@@ -103,6 +103,15 @@
   display: flex;
   align-items: center;
   gap: var(--gr-space-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.candidato-detalhe__vaga-icon {
+  margin-left: auto;
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+  color: var(--gr-color-neutral-400);
 }
 
 .candidato-detalhe__vaga-flag {
@@ -304,19 +313,92 @@
   }
 }
 
-// ≥1024px: vaga alvo + botão "mover" numa coluna, histórico (geralmente
-// mais longo) na outra, em vez de empilhado numa coluna estreita de 560px
+// ==== ≥1024px: cabeçalho claro (não o header cheio escuro do celular) —
+// vaga alvo + botão "mover" numa coluna, histórico na outra ================
+.candidato-page__header {
+  display: none;
+}
+
 @media (min-width: 1024px) {
   .mobile-header,
-  .candidato-detalhe__body,
   .candidato-detalhe__footer {
+    display: none;
+  }
+
+  .candidato-page__header {
+    display: block;
     max-width: 900px;
+    margin: var(--gr-space-6) auto 0;
+    padding: 0 var(--gr-space-5) var(--gr-space-4);
+  }
+
+  .candidato-page__voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-1);
+    font-size: var(--gr-font-size-sm);
+    font-weight: var(--gr-font-weight-medium);
+    color: var(--gr-color-text-secondary);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--gr-color-text-primary);
+    }
+  }
+
+  .candidato-page__voltar-icon {
+    transform: rotate(90deg);
+  }
+
+  .candidato-page__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gr-space-4);
+    margin-top: var(--gr-space-3);
+  }
+
+  .candidato-page__nome {
+    margin: 0;
+    font-size: var(--gr-font-size-xl);
+    font-weight: var(--gr-font-weight-semibold);
+    letter-spacing: -0.02em;
+    color: var(--gr-color-text-primary);
+  }
+
+  .candidato-page__email {
+    margin: 2px 0 0;
+    font-size: var(--gr-font-size-sm);
+    color: var(--gr-color-text-secondary);
+  }
+
+  .candidato-page__mover {
+    flex-shrink: 0;
+    height: 2.375rem;
+    padding-inline: var(--gr-space-4);
+    border: none;
+    border-radius: var(--gr-radius-md);
+    background-color: var(--gr-color-primary-600);
+    color: var(--gr-color-text-inverse);
+    font-size: var(--gr-font-size-sm);
+    font-weight: var(--gr-font-weight-medium);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--gr-color-primary-700);
+    }
   }
 
   .candidato-detalhe__body {
+    max-width: 900px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1.3fr;
     gap: var(--gr-space-4);
+    padding-bottom: var(--gr-space-6);
+    // sem isso, "Vaga alvo" (mais curto) estica pra altura de "Histórico"
+    // (mais alto, pela timeline) — vira uma caixa com um monte de vazio embaixo
+    align-items: start;
   }
 
   .candidato-detalhe__card:first-of-type {
@@ -326,5 +408,11 @@
   .candidato-detalhe__card:last-of-type {
     grid-column: 2;
     grid-row: 1 / -1;
+  }
+
+  .candidato-detalhe__vaga:hover {
+    .candidato-detalhe__vaga-cargo {
+      color: var(--gr-color-primary-700);
+    }
   }
 }

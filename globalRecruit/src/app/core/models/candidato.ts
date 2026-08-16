@@ -6,6 +6,14 @@ export interface HistoricoEstagio {
   updatedAt: string;
 }
 
+export interface OutraCandidatura {
+  id: string;
+  vagaId: string;
+  vagaCargo: string;
+  vagaCliente: string;
+  estagioAtual: Estagio | null;
+}
+
 export interface Candidato {
   id: string;
   nome: string;
@@ -14,6 +22,7 @@ export interface Candidato {
   createdAt: string;
   estagioAtual: Estagio | null;
   historico: HistoricoEstagio[];
+  outrasCandidaturas: OutraCandidatura[];
 }
 
 export interface CandidatoCreate {

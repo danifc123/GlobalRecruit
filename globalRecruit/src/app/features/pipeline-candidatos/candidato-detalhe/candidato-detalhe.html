@@ -30,17 +30,37 @@
       </div>
     </div>
 
+    <!-- ≥1024px: cabeçalho claro de verdade, em vez do header cheio escuro
+         do celular só alargado — mesmo padrão já aplicado em Vaga Detalhe -->
+    <div class="candidato-page__header">
+      <a class="candidato-page__voltar" routerLink="/pipeline-candidatos">
+        <app-icon name="chevron-down" [size]="15" class="candidato-page__voltar-icon" />
+        Pipeline
+      </a>
+      <div class="candidato-page__top">
+        <div class="candidato-detalhe__profile">
+          <span class="candidato-detalhe__avatar">{{ getInitials(candidato()!.nome) }}</span>
+          <div>
+            <h1 class="candidato-page__nome">{{ candidato()!.nome }}</h1>
+            <p class="candidato-page__email">{{ candidato()!.email }}</p>
+          </div>
+        </div>
+        <button type="button" class="candidato-page__mover" (click)="moverOpen.set(true)">Mover etapa</button>
+      </div>
+    </div>
+
     <div class="candidato-detalhe__body">
       @if (vaga(); as v) {
         <div class="candidato-detalhe__card">
           <div class="candidato-detalhe__card-title">Vaga alvo</div>
-          <div class="candidato-detalhe__vaga">
+          <a class="candidato-detalhe__vaga" [routerLink]="['/vagas-ativas', v.id]">
             <span class="candidato-detalhe__vaga-flag">{{ v.pais ? v.pais.slice(0, 2).toUpperCase() : '—' }}</span>
             <div>
               <div class="candidato-detalhe__vaga-cargo">{{ v.cargo }}</div>
               <div class="candidato-detalhe__vaga-meta">{{ v.cliente }}@if (v.idioma) { · {{ v.idioma }} }</div>
             </div>
-          </div>
+            <app-icon name="chevron-down" [size]="15" class="candidato-detalhe__vaga-icon" />
+          </a>
         </div>
       }
 

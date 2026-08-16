@@ -86,7 +86,10 @@
 .vaga-detalhe__body {
   flex: 1;
   overflow-y: auto;
-  padding: var(--gr-space-4) var(--gr-space-5) calc(112px + env(safe-area-inset-bottom, 0px));
+  // reserva espaço pro rodapé fixo (2 linhas de botão desde que "Fechar
+  // vaga" entrou — 112px era o suficiente só pra 1 linha; sem isso, o fim
+  // da lista de "Últimos candidatos" ficava escondido atrás do rodapé)
+  padding: var(--gr-space-4) var(--gr-space-5) calc(250px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: var(--gr-space-4);
@@ -404,6 +407,34 @@
 
   &:hover {
     background-color: var(--gr-color-neutral-200);
+  }
+}
+
+// os badges de status/prioridade (.vaga-detalhe__badge*) foram feitos pro
+// fundo escuro do header do celular — cores clarinhas em texto, ilegíveis
+// aqui dentro do painel, que tem fundo branco. Reaproveitados aqui, mas
+// com o par fundo-claro/texto-escuro que já é usado no resto do app pros
+// mesmos status (ex.: tag de prioridade da tabela, tag da tela de
+// desativadas) em vez de inventar cor nova.
+.vaga-panel__header {
+  .vaga-detalhe__badge {
+    background-color: var(--gr-color-primary-50);
+    color: var(--gr-color-primary-700);
+  }
+
+  .vaga-detalhe__badge--pausada {
+    background-color: var(--gr-color-warning-100);
+    color: var(--gr-color-warning-700);
+  }
+
+  .vaga-detalhe__badge--fechada {
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-secondary);
+  }
+
+  .vaga-detalhe__badge--prioridade-alta {
+    background-color: var(--gr-color-accent-100);
+    color: var(--gr-color-accent-700);
   }
 }
 

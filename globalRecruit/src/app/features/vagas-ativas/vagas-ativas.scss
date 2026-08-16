@@ -439,8 +439,11 @@ app-page {
   .vagas__detail--active {
     width: 400px;
     inset-inline-start: auto;
-    // fica embaixo do topbar (sticky, z-index maior) — a própria topbar
-    // cobre a parte de cima, não precisa calcular a altura dela aqui
+    // começa ABAIXO da topbar (mesma altura fixa de 4rem definida em
+    // shell.scss), não atrás dela — o header do painel (badges + botão de
+    // fechar) fica logo nos primeiros px, e com z-index menor que a topbar
+    // (opaca, por cima) ele ficava coberto e inclicável, sem jeito de fechar
+    top: 4rem;
     z-index: 9;
     border-left: var(--gr-border-width) solid var(--gr-color-border);
     background-color: var(--gr-color-surface);

@@ -20,6 +20,16 @@ class PipelineStageOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class OutraCandidatura(BaseModel):
+    id: uuid.UUID
+    vaga_id: uuid.UUID
+    vaga_cargo: str
+    vaga_cliente: str
+    estagio_atual: Estagio | None
+
+    model_config = {"from_attributes": True}
+
+
 class CandidatoOut(BaseModel):
     id: uuid.UUID
     nome: str
@@ -28,6 +38,7 @@ class CandidatoOut(BaseModel):
     created_at: datetime
     estagio_atual: Estagio | None
     historico: list[PipelineStageOut] = []
+    outras_candidaturas: list[OutraCandidatura] = []
 
     model_config = {"from_attributes": True}
 
