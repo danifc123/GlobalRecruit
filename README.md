@@ -73,30 +73,28 @@ frontend e SQL com o Postgres, e é só isso.
 
 ## Estrutura do projeto
 
-```
-GlobalRecruit/
-├── backend/                    # FastAPI + SQLAlchemy async + Alembic
-│   ├── app/
-│   │   ├── api/routes/         # auth, vagas, candidatos, projetos_parceiros, dashboard, users
-│   │   ├── core/                # config (.env), security (JWT/bcrypt), deps (guards de rota)
-│   │   ├── db/models/           # User, Vaga, Candidato, PipelineStage, ProjetoParceiro
-│   │   ├── middleware/          # rate limit (slowapi), security headers
-│   │   └── schemas/             # Pydantic — request/response
-│   ├── alembic/                 # migrations de schema
-│   └── docker-compose.yml       # Postgres 16 local
-└── globalRecruit/               # Angular 21
-    └── src/app/
-        ├── core/auth/           # AuthService, guard, interceptor, JWT
-        ├── features/            # dashboard, vagas-ativas, vagas-desativadas,
-        │                        # pipeline-candidatos, banco-talentos,
-        │                        # projetos-parceiros, admin (usuarios/projetos), conta
-        └── layout/               # shell, sidebar, bottom-nav
-```
-
 Camadas do backend, dependência sempre numa direção só: `api/` (HTTP) →
 `core/`/`schemas/` (regra de negócio e contrato) → `db/` (persistência).
 Nenhuma rota faz SQL direto — sempre via SQLAlchemy async, sessão injetada
 por `Depends(get_db)`.
+
+### Backend
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/arvore-backend-resumo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/arvore-backend-resumo-light.svg">
+  <img src="docs/arvore-backend-resumo-dark.svg" alt="Árvore de diretórios do backend (backend/app/): main.py monta o FastAPI (CORS, rate limit, security headers, api_router); api/ tem as rotas REST; core/ tem config, security e deps; db/ tem os models SQLAlchemy; middleware/ tem rate limit e security headers; schemas/ tem os contratos Pydantic; seed_admin.py cria o primeiro usuário admin." width="100%">
+</picture>
+
+### Frontend
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/arvore-frontend-resumo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/arvore-frontend-resumo-light.svg">
+  <img src="docs/arvore-frontend-resumo-dark.svg" alt="Árvore de diretórios do frontend (globalRecruit/src/app/): core/ tem AuthService, guard, interceptor e JWT; features/ tem as telas (dashboard, vagas, pipeline, banco de talentos, projetos parceiros, admin, conta); layout/ tem shell, sidebar e bottom-nav; shared/ tem componentes e utilitários reaproveitados." width="100%">
+</picture>
+
+*(gerado por [`docs/gerar_arvore.py`](docs/gerar_arvore.py) — editar as tuplas `BACKEND_RESUMO`/`FRONTEND_RESUMO` e rodar `python docs/gerar_arvore.py` de novo quando a estrutura de pastas mudar)*
 
 ## Como rodar
 
