@@ -13,4 +13,9 @@ import type { TabItem } from '@app/shared/ui/tabs/tabs';
 })
 export class Sidebar {
   readonly items = input.required<TabItem[]>();
+  // só usados no bloco de usuário que aparece ≥1024px — abaixo disso a
+  // Sidebar não mostra usuário nenhum (fica no topbar/Conta)
+  readonly userInitials = input<string>();
+  readonly userEmail = input<string>();
+  readonly userRoleLabel = input<string>();
 }

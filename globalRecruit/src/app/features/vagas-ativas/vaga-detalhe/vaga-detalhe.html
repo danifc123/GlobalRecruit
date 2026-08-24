@@ -1,8 +1,8 @@
 <div class="vaga-detalhe">
   @if (loading()) {
     <div class="mobile-header">
-      <button type="button" class="vaga-detalhe__back" (click)="goBack()">
-        <app-icon name="chevron-down" [size]="18" class="vaga-detalhe__back-icon" />
+      <button type="button" class="vaga-detalhe__back" aria-label="Fechar" (click)="closePanel()">
+        <app-icon name="close" [size]="18" />
       </button>
       <app-skeleton width="70%" height="24px" />
       <app-skeleton width="50%" height="13px" />
@@ -14,13 +14,13 @@
   } @else if (error() || !vaga()) {
     <div class="vaga-detalhe__error">
       <app-empty-state icon="signal" title="Não conseguimos carregar essa vaga" description="Verifique sua conexão e tente de novo.">
-        <button type="button" class="vaga-detalhe__retry" (click)="goBack()">Voltar</button>
+        <button type="button" class="vaga-detalhe__retry" (click)="closePanel()">Voltar</button>
       </app-empty-state>
     </div>
   } @else {
     <div class="mobile-header">
-      <button type="button" class="vaga-detalhe__back" (click)="goBack()">
-        <app-icon name="chevron-down" [size]="18" class="vaga-detalhe__back-icon" />
+      <button type="button" class="vaga-detalhe__back" aria-label="Fechar" (click)="closePanel()">
+        <app-icon name="close" [size]="18" />
       </button>
       <div class="vaga-detalhe__badges">
         <span class="vaga-detalhe__badge vaga-detalhe__badge--{{ vaga()!.status }}">
@@ -90,6 +90,160 @@
     </div>
 
     <div class="vaga-detalhe__footer">
+      <div class="vaga-detalhe__footer-row">
+        <button type="button" class="vaga-detalhe__editar" (click)="editar()">Editar vaga</button>
+        @if (vaga()!.status === 'aberta') {
+          <button
+            type="button"
+            class="vaga-detalhe__fechar"
+            [disabled]="fechando()"
+            (click)="fecharVaga()"
+          >
+            {{ fechando() ? 'Fechando…' : 'Fechar vaga' }}
+          </button>
+        }
+      </div>
+      <a
+        class="vaga-detalhe__indicar"
+        [routerLink]="['/pipeline-candidatos']"
+        [queryParams]="{ vagaId: vaga()!.id, novo: 1 }"
+      >
+        <app-icon name="user-plus" [size]="17" />
+        Indicar candidato
+      </a>
+    </div>
+  }
+</div>
+
+<!-- ≥1024px: painel do master-detail — visual claro, barra de pipeline
+     horizontal e badge de estágio por candidato, bem diferente da árvore
+     acima (que é a mesma usada em <1024px, com o header cheio escuro) -->
+<div class="vaga-panel">
+  @if (loading()) {
+    <div class="vaga-panel__header">
+      <app-skeleton width="60%" height="22px" />
+      <app-skeleton width="70%" height="13px" />
+    </div>
+    <div class="vaga-panel__body">
+      <app-skeleton height="80px" radius="14px" />
+      <app-skeleton height="120px" radius="14px" />
+    </div>
+  } @else if (error() || !vaga()) {
+    <div class="vaga-panel__error">
+      <app-empty-state icon="signal" title="Não conseguimos carregar essa vaga" description="Verifique sua conexão e tente de novo.">
+        <button type="button" class="vaga-detalhe__retry" (click)="closePanel()">Fechar</button>
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="vaga-panel__header">
+      <div class="vaga-panel__header-top">
+        <div class="vaga-detalhe__badges">
+          <span class="vaga-detalhe__badge vaga-detalhe__badge--{{ vaga()!.status }}">
+            {{ vaga()!.status === 'aberta' ? 'Aberta' : vaga()!.status === 'pausada' ? 'Pausada' : 'Fechada' }}
+          </span>
+          <span class="vaga-detalhe__badge vaga-detalhe__badge--prioridade-{{ vaga()!.prioridade }}">
+            Prioridade {{ vaga()!.prioridade }}
+          </span>
+        </div>
+        <button type="button" class="vaga-panel__close" aria-label="Fechar" (click)="closePanel()">
+          <app-icon name="close" [size]="15" />
+        </button>
+      </div>
+      <h2 class="vaga-panel__title">{{ vaga()!.cargo }}</h2>
+      <p class="vaga-panel__subtitle">
+        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vaga()!.modalidade) { · {{ vaga()!.modalidade }} }
+      </p>
+    </div>
+
+    <div class="vaga-panel__body">
+      <div class="vaga-detalhe__grid">
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Idioma</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.idioma ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Salário</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.salario ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Comissão</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.comissao ?? '—' }}</div>
+        </div>
+        <div class="vaga-detalhe__stat">
+          <div class="vaga-detalhe__stat-label">Projeto</div>
+          <div class="vaga-detalhe__stat-value">{{ projetoNome() ?? '—' }}</div>
+        </div>
+      </div>
+
+      <div class="vaga-panel__pipeline">
+        <div class="vaga-panel__pipeline-header">
+          <span>Pipeline desta vaga</span>
+          <span class="vaga-panel__pipeline-count">{{ candidatos().length }} candidatos</span>
+        </div>
+        @if (candidatos().length > 0) {
+          <div class="vaga-panel__pipeline-bar">
+            @for (item of pipelineCounts(); track item.estagio) {
+              @if (item.count > 0) {
+                <span
+                  class="vaga-panel__pipeline-segment vaga-detalhe__pipeline-dot--{{ item.estagio }}"
+                  [style.width.%]="(item.count / candidatos().length) * 100"
+                ></span>
+              }
+            }
+          </div>
+        }
+        <div class="vaga-panel__pipeline-legend">
+          @for (item of pipelineCounts(); track item.estagio) {
+            <span class="vaga-panel__legend-item">
+              <span class="vaga-panel__legend-dot vaga-detalhe__pipeline-dot--{{ item.estagio }}"></span>
+              {{ estagioLabels[item.estagio] }} {{ item.count }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="vaga-panel__candidatos">
+        <div class="vaga-panel__candidatos-header">Últimos candidatos</div>
+        @if (ultimosCandidatos().length === 0) {
+          <app-empty-state icon="users" description="Nenhum candidato ainda nessa vaga." />
+        }
+        @for (candidato of ultimosCandidatos(); track candidato.id) {
+          <a
+            class="vaga-panel__candidato"
+            [class.vaga-panel__candidato--parado]="candidatoParado(candidato)"
+            [routerLink]="['/pipeline-candidatos', candidato.id]"
+          >
+            <span class="vaga-detalhe__avatar">{{ getInitials(candidato.nome) }}</span>
+            <div class="vaga-detalhe__candidato-info">
+              <div class="vaga-detalhe__candidato-nome">{{ candidato.nome }}</div>
+              <div class="vaga-panel__candidato-tempo">
+                {{ tempoRelativo(candidato.historico[0]?.updatedAt ?? candidato.createdAt) }}@if (candidatoParado(candidato)) { — parado }
+              </div>
+            </div>
+            @if (candidato.estagioAtual) {
+              <span class="vaga-panel__estagio-pill vaga-detalhe__pipeline-dot--{{ candidato.estagioAtual }}">
+                {{ estagioLabels[candidato.estagioAtual] }}
+              </span>
+            }
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="vaga-detalhe__footer">
+      <div class="vaga-detalhe__footer-row">
+        <button type="button" class="vaga-detalhe__editar" (click)="editar()">Editar vaga</button>
+        @if (vaga()!.status === 'aberta') {
+          <button
+            type="button"
+            class="vaga-detalhe__fechar"
+            [disabled]="fechando()"
+            (click)="fecharVaga()"
+          >
+            {{ fechando() ? 'Fechando…' : 'Fechar vaga' }}
+          </button>
+        }
+      </div>
       <a
         class="vaga-detalhe__indicar"
         [routerLink]="['/pipeline-candidatos']"

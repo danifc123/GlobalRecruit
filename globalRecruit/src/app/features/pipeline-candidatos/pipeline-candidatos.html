@@ -93,29 +93,73 @@
       </form>
   </app-sheet>
 
-  @if (!loading() && !error()) {
-    <app-chip-filter class="pipeline__chips" [options]="estagioOptions()" [(selected)]="estagioFiltro" />
-  }
-
-  <app-table
-    [columns]="columns"
-    [isEmpty]="!loading() && rowsFiltradas().length === 0"
-    emptyIcon="filter"
-    emptyMessage="Nenhum candidato nessa etapa."
-  >
-    @for (row of rowsFiltradas(); track row.id) {
-      <tr [class.pipeline__row--parado]="estaParado(row)">
-        <td data-label="Nome">{{ row.nome }}</td>
-        <td data-label="Email">{{ row.email }}</td>
-        <td data-label="Vaga Alvo">{{ row.vagaCargo }}</td>
-        <td data-label="Data">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
-        <td data-label="Status / Etapa">{{ row.estagioAtual ?? '—' }}</td>
-        <td data-label="Ações">
-          <a class="pipeline__action" [routerLink]="['/pipeline-candidatos', row.id]" aria-label="Ver detalhes do candidato">
-            <app-icon name="search" [size]="15" />
-          </a>
-        </td>
-      </tr>
+  <div class="pipeline__kanban-view">
+    @if (kanbanError(); as msg) {
+      <app-banner tone="danger" [dismissible]="true">{{ msg }}</app-banner>
     }
-  </app-table>
+
+    @if (loading()) {
+      <div class="pipeline__kanban">
+        @for (i of [0, 1, 2, 3, 4]; track i) {
+          <div class="pipeline__kanban-col">
+            <app-skeleton height="16px" width="60%" />
+            <app-skeleton height="90px" radius="14px" />
+            <app-skeleton height="90px" radius="14px" />
+          </div>
+        }
+      </div>
+    } @else if (error()) {
+      <app-empty-state icon="signal" title="Não conseguimos carregar o pipeline" description="Verifique sua conexão e tente de novo." />
+    } @else {
+      <div class="pipeline__kanban">
+        @for (coluna of kanbanColunas(); track coluna.estagio) {
+          <div
+            class="pipeline__kanban-col"
+            [class.pipeline__kanban-col--over]="dragOverEstagio() === coluna.estagio"
+            (dragover)="onColunaDragOver($event, coluna.estagio)"
+            (dragleave)="onColunaDragLeave(coluna.estagio)"
+            (drop)="onColunaDrop($event, coluna.estagio)"
+          >
+            <div class="pipeline__kanban-col-header">
+              <span class="pipeline__kanban-dot pipeline__kanban-dot--{{ coluna.estagio }}"></span>
+              <span class="pipeline__kanban-col-title">{{ coluna.label }}</span>
+              <span class="pipeline__kanban-col-count">{{ coluna.rows.length }}</span>
+            </div>
+            <div class="pipeline__kanban-col-body">
+              @for (row of coluna.rows; track row.id) {
+                <a
+                  class="pipeline__kanban-card"
+                  [class.pipeline__kanban-card--parado]="estaParado(row)"
+                  [class.pipeline__kanban-card--dragging]="draggingId() === row.id"
+                  [routerLink]="['/pipeline-candidatos', row.id]"
+                  draggable="true"
+                  (dragstart)="onDragStart($event, row.id)"
+                  (dragend)="onDragEnd()"
+                >
+                  <div class="pipeline__kanban-card-top">
+                    <span class="pipeline__kanban-avatar" [class.pipeline__kanban-avatar--parado]="estaParado(row)">
+                      {{ getInitials(row.nome) }}
+                    </span>
+                    <div class="pipeline__kanban-card-info">
+                      <div class="pipeline__kanban-card-nome">{{ row.nome }}</div>
+                      <div class="pipeline__kanban-card-meta">{{ row.vagaCargo }}</div>
+                    </div>
+                  </div>
+                  <div class="pipeline__kanban-card-tempo" [class.pipeline__kanban-card-tempo--parado]="estaParado(row)">
+                    @if (estaParado(row)) {
+                      {{ diasParado(row) }}d — parado
+                    } @else {
+                      {{ diasParado(row) }}d nesta etapa
+                    }
+                  </div>
+                </a>
+              } @empty {
+                <div class="pipeline__kanban-empty">Nenhum candidato aqui.</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
 </app-page>

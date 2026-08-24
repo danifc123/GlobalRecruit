@@ -18,6 +18,18 @@ class VagaCreate(BaseModel):
     prioridade: Prioridade
 
 
+class VagaUpdate(BaseModel):
+    projeto_id: uuid.UUID
+    cliente: str = Field(min_length=1, max_length=200)
+    cargo: str = Field(min_length=1, max_length=200)
+    idioma: str | None = Field(default=None, max_length=50)
+    pais: str | None = Field(default=None, max_length=100)
+    modalidade: str | None = Field(default=None, max_length=50)
+    salario: float | None = Field(default=None, ge=0)
+    comissao: float | None = Field(default=None, ge=0)
+    prioridade: Prioridade
+
+
 class VagaOut(BaseModel):
     id: uuid.UUID
     projeto_id: uuid.UUID
@@ -38,6 +50,10 @@ class VagaOut(BaseModel):
 
 class VagaPrioridadeUpdate(BaseModel):
     prioridade: Prioridade
+
+
+class VagaStatusUpdate(BaseModel):
+    status: StatusVaga
 
 
 class VagaPage(BaseModel):

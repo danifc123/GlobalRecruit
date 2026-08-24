@@ -3,7 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { environment } from '@env';
-import { Candidato, CandidatoCreate, Estagio } from '@app/core/models/candidato';
+import { Candidato, CandidatoCreate, Estagio, OutraCandidatura } from '@app/core/models/candidato';
+
+interface OutraCandidaturaApi {
+  id: string;
+  vaga_id: string;
+  vaga_cargo: string;
+  vaga_cliente: string;
+  estagio_atual: Estagio | null;
+}
 
 interface CandidatoApi {
   id: string;
@@ -13,6 +21,17 @@ interface CandidatoApi {
   created_at: string;
   estagio_atual: Estagio | null;
   historico: { id: string; estagio: Estagio; updated_at: string }[];
+  outras_candidaturas: OutraCandidaturaApi[];
+}
+
+function toOutraCandidatura(api: OutraCandidaturaApi): OutraCandidatura {
+  return {
+    id: api.id,
+    vagaId: api.vaga_id,
+    vagaCargo: api.vaga_cargo,
+    vagaCliente: api.vaga_cliente,
+    estagioAtual: api.estagio_atual,
+  };
 }
 
 function toCandidato(api: CandidatoApi): Candidato {
@@ -24,6 +43,7 @@ function toCandidato(api: CandidatoApi): Candidato {
     createdAt: api.created_at,
     estagioAtual: api.estagio_atual,
     historico: (api.historico ?? []).map((h) => ({ id: h.id, estagio: h.estagio, updatedAt: h.updated_at })),
+    outrasCandidaturas: (api.outras_candidaturas ?? []).map(toOutraCandidatura),
   };
 }
 

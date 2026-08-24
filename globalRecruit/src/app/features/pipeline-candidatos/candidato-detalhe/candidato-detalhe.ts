@@ -1,6 +1,6 @@
 import { DatePipe, Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { EmptyState, Icon, Sheet, Skeleton } from '@app/shared/ui';
 import { CandidatosService } from '@app/core/data/candidatos.service';
@@ -15,9 +15,18 @@ interface EstagioOpcao {
   recomendado: boolean;
 }
 
+interface CandidaturaItem {
+  id: string;
+  vagaId: string;
+  cargo: string;
+  cliente: string;
+  estagioAtual: Estagio | null;
+  isCurrent: boolean;
+}
+
 @Component({
   selector: 'app-candidato-detalhe',
-  imports: [DatePipe, EmptyState, Icon, Sheet, Skeleton],
+  imports: [DatePipe, EmptyState, Icon, RouterLink, Sheet, Skeleton],
   templateUrl: './candidato-detalhe.html',
   styleUrl: './candidato-detalhe.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +46,29 @@ export class CandidatoDetalhe {
   protected readonly error = signal(false);
   protected readonly moverOpen = signal(false);
   protected readonly moving = signal(false);
+
+  // a mesma pessoa (por e-mail) pode estar indicada em mais de uma vaga —
+  // une a candidatura atual (já carregada em vaga()/candidato()) com as
+  // outras que o backend manda junto em GET /candidatos/{id}; atual sempre
+  // primeiro, o resto na ordem que já vem (mais recente primeiro)
+  protected readonly todasCandidaturas = computed<CandidaturaItem[]>(() => {
+    const c = this.candidato();
+    const v = this.vaga();
+    if (!c || !v) return [];
+    return [
+      { id: c.id, vagaId: v.id, cargo: v.cargo, cliente: v.cliente, estagioAtual: c.estagioAtual, isCurrent: true },
+      ...c.outrasCandidaturas.map(
+        (o): CandidaturaItem => ({
+          id: o.id,
+          vagaId: o.vagaId,
+          cargo: o.vagaCargo,
+          cliente: o.vagaCliente,
+          estagioAtual: o.estagioAtual,
+          isCurrent: false,
+        }),
+      ),
+    ];
+  });
 
   protected readonly opcoes = computed<EstagioOpcao[]>(() => {
     const atual = this.candidato()?.estagioAtual;

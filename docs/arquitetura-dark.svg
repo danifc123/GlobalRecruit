@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 920" role="img" aria-labelledby="titulo-svg desc-svg">
+  <title id="titulo-svg">Arquitetura do GlobalRecruit</title>
+  <desc id="desc-svg">O Angular Web App autentica via JWT e fala REST com o Backend FastAPI, que valida o token, aplica rate limit e headers de segurança, e persiste tudo no PostgreSQL (via Docker) usando SQLAlchemy async. O Alembic aplica as migrations de schema diretamente no banco, fora do processo do backend.</desc>
+
+  <style>
+    <![CDATA[
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+    text { font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif; }
+
+    .painel {
+      fill: #0d1526;
+      stroke: #1e2a45;
+      stroke-width: 1.25;
+    }
+
+    .painel-titulo {
+      font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+    }
+
+    .painel-legenda {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 11px;
+      fill: #4c5773;
+    }
+
+    .canto {
+      stroke-width: 2;
+      fill: none;
+      opacity: 0.9;
+    }
+
+    .no-caixa {
+      fill: #101c33;
+      stroke-width: 1.4;
+    }
+
+    .no-icone-fundo {
+      fill: rgba(255, 255, 255, 0.03);
+    }
+
+    .no-nome {
+      font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      fill: #eaf1ff;
+    }
+
+    .no-legenda {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10.5px;
+      fill: #8291b3;
+    }
+
+    .no-hero .no-nome { font-size: 17px; }
+
+    .fio {
+      fill: none;
+      stroke-width: 1.6;
+      opacity: 0.55;
+    }
+
+    .fio-tracejado {
+      stroke-dasharray: 5 5;
+      opacity: 0.45;
+    }
+
+    .fio-rotulo {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 13.5px;
+    }
+
+    .fio-rotulo-fundo {
+      fill: #070b14;
+      opacity: 0.88;
+    }
+
+    .flow-dot {
+      filter: drop-shadow(0 0 4px currentColor);
+    }
+
+    /* SMIL (animateMotion) em vez de CSS @keyframes de propósito: este
+       arquivo é carregado via <img src="..."> no README do GitHub, e nesse
+       contexto o navegador não avança o relógio de animação CSS — qualquer
+       coisa dependente de @keyframes fica congelada no frame inicial pra
+       sempre. animateMotion não tem esse problema. */
+    @media (prefers-reduced-motion: reduce) {
+      .flow-dot { display: none; }
+    }
+    ]]>
+  </style>
+
+  <defs>
+    <pattern id="grade-fundo" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="rgba(79,141,255,0.055)" stroke-width="1"/>
+    </pattern>
+
+    <marker id="seta-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#35e7ff"/>
+    </marker>
+    <marker id="seta-violet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#b48bff"/>
+    </marker>
+    <marker id="seta-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#ffa63d"/>
+    </marker>
+    <marker id="seta-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#7d8fb3"/>
+    </marker>
+
+    <filter id="brilho-cyan" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="brilho-violet" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="brilho-green" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="brilho-amber" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- ícones reutilizáveis, 24x24, stroke-based -->
+    <g id="ic-users">
+      <circle cx="8" cy="8" r="3.1"/><path d="M2.6 20c0-4 2.4-6.4 5.4-6.4s5.4 2.4 5.4 6.4"/>
+      <circle cx="16.6" cy="9" r="2.5"/><path d="M14.6 13.3c1-.5 1.9-.7 2.6-.7 2.5 0 4.6 2.1 4.6 5.7"/>
+    </g>
+    <g id="ic-lock">
+      <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7.6a4 4 0 0 1 8 0V11"/><circle cx="12" cy="16" r="1.5"/>
+    </g>
+    <g id="ic-angular">
+      <path d="M12 2.3 20.6 5.8 19 18.4 12 21.7 5 18.4 3.4 5.8Z"/>
+      <path d="M12 6.6 16.6 16.6H14.3L13.4 14.4H10.4L9.6 16.6H7.3Z"/>
+      <path d="M12 9.4 10.9 12.5H13.1Z"/>
+    </g>
+    <g id="ic-chip">
+      <rect x="7" y="7" width="10" height="10" rx="1.4"/><rect x="10" y="10" width="4" height="4" rx="0.6"/>
+      <path d="M9 3.4V7M12 3.4V7M15 3.4V7M9 17V20.6M12 17V20.6M15 17V20.6M3.4 9H7M3.4 12H7M3.4 15H7M17 9H20.6M17 12H20.6M17 15H20.6"/>
+    </g>
+    <g id="ic-db">
+      <ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>
+    </g>
+  </defs>
+
+  <!-- fundo -->
+  <rect x="0" y="0" width="1180" height="920" fill="#070b14"/>
+  <rect x="0" y="0" width="1180" height="920" fill="url(#grade-fundo)"/>
+
+  <!-- ATOR EXTERNO -->
+  <g>
+    <rect x="30" y="30" width="210" height="170" rx="14" fill="rgba(180,139,255,0.05)" stroke="#b48bff" stroke-opacity="0.5" stroke-width="1.2" stroke-dasharray="4 5"/>
+    <use href="#ic-users" x="112" y="55" width="46" height="46" fill="none" stroke="#b48bff" stroke-width="1.5" filter="url(#brilho-violet)"/>
+    <text class="no-nome" x="135" y="130" text-anchor="middle">Usuários</text>
+    <text class="no-legenda" x="135" y="148" text-anchor="middle">recrutadores &amp; admins</text>
+  </g>
+
+  <!-- CAMADA 1 — APRESENTAÇÃO -->
+  <g>
+    <rect class="painel" x="300" y="30" width="850" height="170" rx="16" stroke="#b48bff" stroke-opacity="0.35"/>
+    <path class="canto" stroke="#b48bff" d="M300,54 V38 a8,8 0 0 1 8,-8 H324"/>
+    <path class="canto" stroke="#b48bff" d="M1150,54 V38 a8,8 0 0 0 -8,-8 H1126"/>
+    <text class="painel-titulo" x="322" y="52" fill="#b48bff">CAMADA DE APRESENTAÇÃO</text>
+    <text class="painel-legenda" x="322" y="68">frontend &amp; autenticação</text>
+
+    <rect class="no-caixa" x="360" y="80" width="200" height="110" rx="12" stroke="#35e7ff"/>
+    <rect class="no-icone-fundo" x="440" y="94" width="40" height="40" rx="10"/>
+    <use href="#ic-angular" x="446" y="100" width="28" height="28" fill="none" stroke="#35e7ff" stroke-width="1.4" filter="url(#brilho-cyan)"/>
+    <text class="no-nome" x="460" y="155" text-anchor="middle">Angular Web App</text>
+    <text class="no-legenda" x="460" y="172" text-anchor="middle">SPA · Angular 21</text>
+
+    <rect class="no-caixa" x="760" y="80" width="200" height="110" rx="12" stroke="#b48bff"/>
+    <rect class="no-icone-fundo" x="840" y="94" width="40" height="40" rx="10"/>
+    <use href="#ic-lock" x="847" y="101" width="26" height="26" fill="none" stroke="#b48bff" stroke-width="1.5" filter="url(#brilho-violet)"/>
+    <text class="no-nome" x="860" y="155" text-anchor="middle">Auth Guard</text>
+    <text class="no-legenda" x="860" y="172" text-anchor="middle">JWT no interceptor</text>
+  </g>
+
+  <!-- CAMADA 2 — APLICAÇÃO -->
+  <g>
+    <rect class="painel" x="300" y="310" width="850" height="200" rx="16" stroke="#35ffa6" stroke-opacity="0.35"/>
+    <path class="canto" stroke="#35ffa6" d="M300,334 V318 a8,8 0 0 1 8,-8 H324"/>
+    <path class="canto" stroke="#35ffa6" d="M1150,334 V318 a8,8 0 0 0 -8,-8 H1126"/>
+    <text class="painel-titulo" x="322" y="332" fill="#35ffa6">CAMADA DE APLICAÇÃO</text>
+    <text class="painel-legenda" x="322" y="348">orquestração &amp; regra de negócio</text>
+
+    <rect class="no-caixa no-hero" x="565" y="365" width="320" height="130" rx="14" stroke="#35ffa6" stroke-width="1.6" fill="rgba(53,255,166,0.07)"/>
+    <rect class="no-icone-fundo" x="701" y="381" width="48" height="48" rx="12"/>
+    <use href="#ic-chip" x="709" y="389" width="32" height="32" fill="none" stroke="#35ffa6" stroke-width="1.4" filter="url(#brilho-green)"/>
+    <text class="no-nome" x="725" y="452" text-anchor="middle">Backend FastAPI</text>
+    <text class="no-legenda" x="725" y="470" text-anchor="middle">REST API · Uvicorn</text>
+    <text class="no-legenda" x="725" y="484" text-anchor="middle" fill="#35ffa6">JWT · bcrypt · rate limit · security headers</text>
+  </g>
+
+  <!-- CAMADA 3 — DADOS -->
+  <g>
+    <rect class="painel" x="300" y="580" width="850" height="300" rx="18" stroke="#ffa63d" stroke-opacity="0.45" stroke-width="1.6"/>
+    <path class="canto" stroke="#ffa63d" d="M300,606 V586 a10,10 0 0 1 10,-10 H330"/>
+    <path class="canto" stroke="#ffa63d" d="M1150,606 V586 a10,10 0 0 0 -10,-10 H1120"/>
+    <text class="painel-titulo" x="326" y="602" fill="#ffa63d" font-size="15">CAMADA DE DADOS</text>
+    <text class="painel-legenda" x="326" y="619">único banco — PostgreSQL via Docker</text>
+
+    <rect class="no-caixa no-hero" x="340" y="640" width="280" height="180" rx="14" stroke="#ffa63d" stroke-width="1.8" fill="rgba(255, 166, 61, 0.16)"/>
+    <rect class="no-icone-fundo" x="452" y="660" width="56" height="56" rx="12"/>
+    <use href="#ic-db" x="461" y="669" width="38" height="38" fill="none" stroke="#ffa63d" stroke-width="1.5" filter="url(#brilho-amber)"/>
+    <text class="no-nome" x="480" y="746" text-anchor="middle">PostgreSQL</text>
+    <text class="no-legenda" x="480" y="764" text-anchor="middle">globalrecruit · Docker</text>
+    <text class="no-legenda" x="480" y="779" text-anchor="middle" fill="#ffa63d">users · vagas · candidatos · pipeline</text>
+
+    <rect class="no-caixa" x="660" y="660" width="230" height="130" rx="12" stroke="#7d8fb3" stroke-opacity="0.6" stroke-dasharray="5 4" fill="rgba(125,143,179,0.05)"/>
+    <rect class="no-icone-fundo" x="755" y="678" width="40" height="40" rx="10"/>
+    <use href="#ic-db" x="762" y="684" width="26" height="26" fill="none" stroke="#7d8fb3" stroke-width="1.4"/>
+    <text class="no-nome" x="775" y="740" text-anchor="middle" font-size="13.5" fill="#8291b3">Alembic</text>
+    <text class="no-legenda" x="775" y="756" text-anchor="middle">migrations · schema</text>
+    <text class="no-legenda" x="775" y="770" text-anchor="middle">roda fora do backend</text>
+  </g>
+
+  <!-- CONEXÕES -->
+  <g>
+    <path id="p-http" class="fio" stroke="#b48bff" d="M240,115 H300" marker-end="url(#seta-violet)"/>
+    <rect class="fio-rotulo-fundo" x="238" y="92" width="64" height="20" rx="5"/>
+    <text class="fio-rotulo" x="270" y="106" text-anchor="middle" fill="#b48bff">HTTPS</text>
+
+    <path id="p-rest" class="fio" stroke="#35e7ff" d="M460,190 C460,250 560,320 618,366" marker-end="url(#seta-cyan)"/>
+    <rect class="fio-rotulo-fundo" x="404" y="255" width="110" height="20" rx="5"/>
+    <text class="fio-rotulo" x="459" y="269" text-anchor="middle" fill="#35e7ff">REST + JWT</text>
+
+    <path id="p-valida" class="fio" stroke="#b48bff" d="M860,190 C860,262 700,332 646,366" marker-end="url(#seta-violet)"/>
+    <rect class="fio-rotulo-fundo" x="672" y="288" width="118" height="20" rx="5"/>
+    <text class="fio-rotulo" x="731" y="302" text-anchor="middle" fill="#b48bff">valida token</text>
+
+    <path id="p-sql" class="fio" stroke="#ffa63d" d="M700,495 C680,555 610,600 500,638" marker-end="url(#seta-amber)"/>
+    <rect class="fio-rotulo-fundo" x="556" y="558" width="176" height="20" rx="5"/>
+    <text class="fio-rotulo" x="644" y="572" text-anchor="middle" fill="#ffa63d">SQL · SQLAlchemy async</text>
+
+    <path id="p-migra" class="fio fio-tracejado" stroke="#7d8fb3" d="M660,725 H620" marker-end="url(#seta-slate)"/>
+    <rect class="fio-rotulo-fundo" x="592" y="695" width="96" height="20" rx="5"/>
+    <text class="fio-rotulo" x="640" y="709" text-anchor="middle" fill="#7d8fb3">migrations</text>
+  </g>
+
+  <!-- pontos animados fluindo nas conexões -->
+  <g>
+    <circle r="3.2" fill="#b48bff" class="flow-dot"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#p-http"/></animateMotion></circle>
+    <circle r="3.2" fill="#35e7ff" class="flow-dot"><animateMotion dur="2.8s" repeatCount="indefinite"><mpath href="#p-rest"/></animateMotion></circle>
+    <circle r="3.2" fill="#b48bff" class="flow-dot"><animateMotion dur="3.1s" repeatCount="indefinite"><mpath href="#p-valida"/></animateMotion></circle>
+    <circle r="3.2" fill="#ffa63d" class="flow-dot"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#p-sql"/></animateMotion></circle>
+    <circle r="2.6" fill="#7d8fb3" class="flow-dot" opacity="0.85"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#p-migra"/></animateMotion></circle>
+  </g>
+</svg>

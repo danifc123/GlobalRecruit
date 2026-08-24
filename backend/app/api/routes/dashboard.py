@@ -10,7 +10,14 @@ from app.db.models.pipeline_stage import Estagio, PipelineStage
 from app.db.models.projeto_parceiro import ProjetoParceiro
 from app.db.models.user import User
 from app.db.models.vaga import Prioridade, StatusVaga, Vaga
-from app.schemas.dashboard import CandidatoParado, DashboardStats, VagaPorIdioma, VagaSemCandidato
+from app.schemas.dashboard import (
+    CandidatoParado,
+    DashboardStats,
+    EtapaCount,
+    PropostaAguardando,
+    VagaPorIdioma,
+    VagaSemCandidato,
+)
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -65,6 +72,12 @@ async def stats(user: User = Depends(get_current_user), db: AsyncSession = Depen
         for id_, cargo, cliente in (await db.execute(sem_candidato_stmt)).all()
     ]
 
+    semana_cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+    novas_stmt = select(func.count()).where(Vaga.created_at >= semana_cutoff)
+    if ids is not None:
+        novas_stmt = novas_stmt.where(Vaga.projeto_id.in_(ids))
+    vagas_novas_semana = (await db.execute(novas_stmt)).scalar_one()
+
     # último estágio por candidato via DISTINCT ON, agregado em uma query só —
     # reaproveitada tanto pros totais do pipeline quanto pra lista de parados
     latest_stage = (
@@ -116,6 +129,36 @@ async def stats(user: User = Depends(get_current_user), db: AsyncSession = Depen
         for id_, nome, cargo, updated_at in (await db.execute(parados_stmt)).all()
     ]
 
+    funil_stmt = (
+        select(latest_stage.c.estagio, func.count())
+        .select_from(latest_stage)
+        .join(Candidato, Candidato.id == latest_stage.c.candidato_id)
+        .join(Vaga, Vaga.id == Candidato.vaga_id)
+        .group_by(latest_stage.c.estagio)
+    )
+    if ids is not None:
+        funil_stmt = funil_stmt.where(Vaga.projeto_id.in_(ids))
+    funil_counts = dict((await db.execute(funil_stmt)).all())
+    funil_por_etapa = [
+        EtapaCount(estagio=estagio.value, count=funil_counts.get(estagio, 0)) for estagio in Estagio
+    ]
+
+    propostas_stmt = (
+        select(Candidato.id, Candidato.nome, Vaga.cargo, latest_stage.c.updated_at)
+        .select_from(latest_stage)
+        .join(Candidato, Candidato.id == latest_stage.c.candidato_id)
+        .join(Vaga, Vaga.id == Candidato.vaga_id)
+        .where(latest_stage.c.estagio == Estagio.PROPOSTA)
+        .order_by(latest_stage.c.updated_at.asc())
+        .limit(_TOP_N)
+    )
+    if ids is not None:
+        propostas_stmt = propostas_stmt.where(Vaga.projeto_id.in_(ids))
+    propostas_aguardando = [
+        PropostaAguardando(id=id_, nome=nome, vaga_cargo=cargo, enviada_em=updated_at.date().isoformat())
+        for id_, nome, cargo, updated_at in (await db.execute(propostas_stmt)).all()
+    ]
+
     return DashboardStats(
         vagas_abertas=vagas_abertas,
         vagas_alta_prioridade=vagas_alta_prioridade,
@@ -123,7 +166,10 @@ async def stats(user: User = Depends(get_current_user), db: AsyncSession = Depen
         candidatos_contratados=contratados or 0,
         clientes_ativos=clientes_ativos,
         pct_modalidade_remota=pct_modalidade_remota,
+        vagas_novas_semana=vagas_novas_semana,
         vagas_por_idioma=vagas_por_idioma,
         candidatos_parados=candidatos_parados,
         vagas_sem_candidato=vagas_sem_candidato,
+        funil_por_etapa=funil_por_etapa,
+        propostas_aguardando=propostas_aguardando,
     )

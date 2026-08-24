@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -7,6 +7,7 @@ import { Banner, EmptyState, Icon, Page, Skeleton, Table } from '@app/shared/ui'
 import { AuthService } from '@app/core/auth/auth.service';
 import { VagasService } from '@app/core/data/vagas.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
+import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
 import { Vaga } from '@app/core/models/vaga';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 
@@ -26,6 +27,8 @@ export class ProjetosParceiros {
   private readonly vagasService = inject(VagasService);
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly auth = inject(AuthService);
+  private readonly topbarActions = inject(TopbarActionsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // API já restringe por papel no backend (recrutador só recebe vagas dos
   // projetos vinculados) — aqui só omitimos as colunas confidenciais na exibição
@@ -35,7 +38,22 @@ export class ProjetosParceiros {
   protected readonly projetos = signal<ProjetoParceiro[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
-  protected readonly isEmpty = computed(() => !this.loading() && this.vagas().length === 0);
+
+  // busca do topbar (≥1024px) — mesmo padrão das outras telas
+  protected readonly search = signal('');
+
+  protected readonly vagasFiltradas = computed(() => {
+    const termo = this.search().trim().toLowerCase();
+    if (!termo) return this.vagas();
+    return this.vagas().filter(
+      (v) =>
+        v.cargo.toLowerCase().includes(termo) ||
+        (v.pais?.toLowerCase().includes(termo) ?? false) ||
+        (v.idioma?.toLowerCase().includes(termo) ?? false),
+    );
+  });
+
+  protected readonly isEmpty = computed(() => !this.loading() && this.vagasFiltradas().length === 0);
 
   protected readonly totalVagas = computed(() => this.vagas().length);
   protected readonly totalProjetos = computed(() => this.grupos().length);
@@ -71,5 +89,8 @@ export class ProjetosParceiros {
           this.loading.set(false);
         },
       });
+
+    this.topbarActions.setSearch({ placeholder: 'Cargo, país ou idioma', query: this.search });
+    this.destroyRef.onDestroy(() => this.topbarActions.clearSearch());
   }
 }

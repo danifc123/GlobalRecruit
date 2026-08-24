@@ -2,11 +2,18 @@
   <button
     type="button"
     class="sheet__backdrop"
+    [class.sheet__backdrop--drawer]="drawer()"
     tabindex="-1"
     aria-hidden="true"
     (click)="close()"
   ></button>
-  <div class="sheet" role="dialog" aria-modal="true" [attr.aria-labelledby]="title() ? titleId : null">
+  <div
+    class="sheet"
+    [class.sheet--drawer]="drawer()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="title() ? titleId : null"
+  >
     <header class="sheet__header">
       @if (title(); as titleText) {
         <h2 [id]="titleId" class="sheet__title">{{ titleText }}</h2>

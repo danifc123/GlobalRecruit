@@ -188,6 +188,20 @@ app-page {
   letter-spacing: -0.02em;
 }
 
+.vagas-mobile__top-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+}
+
+.vagas-mobile__desativadas {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .vagas-mobile__add {
   display: flex;
   align-items: center;
@@ -346,16 +360,26 @@ app-page {
   margin-bottom: var(--gr-space-3);
 }
 
+.vagas__desativadas-link {
+  display: inline-flex;
+  align-items: center;
+  height: 2.375rem;
+  padding-inline: var(--gr-space-4);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  color: var(--gr-color-text-secondary);
+  text-decoration: none;
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+
+  &:hover {
+    color: var(--gr-color-text-primary);
+    border-color: var(--gr-color-neutral-300);
+  }
+}
+
 // ==== ≥640px: mantém form flat + tabela de hoje ============================
 @media (min-width: 640px) {
-  .vagas-mobile {
-    display: none;
-  }
-
-  app-page {
-    display: flex;
-  }
-
   .vagas__form {
     max-width: 480px;
   }
@@ -371,5 +395,63 @@ app-page {
 
   .vagas-wizard__step {
     display: flex;
+  }
+}
+
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira tabela de
+// verdade; abaixo disso a tabela genérica (cada linha virando um cartão de
+// rótulo:valor) ficava fora do padrão do resto do app
+@media (min-width: 1024px) {
+  .vagas-mobile {
+    display: none;
+  }
+
+  app-page {
+    display: flex;
+  }
+}
+
+// ==== detalhe de vaga (rota filha /vagas-ativas/:id) ========================
+// fora do <app-page> de propósito — senão fica escondido junto com ele
+// abaixo de 640px (ver `app-page { display: none }` no topo do arquivo) e o
+// deep link do celular pra cá para de funcionar.
+.vagas__detail {
+  display: none;
+}
+
+.vagas__detail--active {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow-y: auto;
+  background-color: var(--gr-color-background);
+}
+
+@media (min-width: 1024px) {
+  .vagas__row {
+    cursor: pointer;
+  }
+
+  .vagas__row--selected {
+    background-color: var(--gr-color-primary-50);
+  }
+
+  .vagas__body--detail-open {
+    padding-right: 400px;
+  }
+
+  .vagas__detail--active {
+    width: 400px;
+    inset-inline-start: auto;
+    // começa ABAIXO da topbar (mesma altura fixa de 4rem definida em
+    // shell.scss), não atrás dela — o header do painel (badges + botão de
+    // fechar) fica logo nos primeiros px, e com z-index menor que a topbar
+    // (opaca, por cima) ele ficava coberto e inclicável, sem jeito de fechar
+    top: 4rem;
+    z-index: 9;
+    border-left: var(--gr-border-width) solid var(--gr-color-border);
+    background-color: var(--gr-color-surface);
+    box-shadow: var(--gr-shadow-lg);
   }
 }

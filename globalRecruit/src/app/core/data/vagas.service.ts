@@ -71,10 +71,30 @@ export class VagasService {
       );
   }
 
+  update(id: string, vaga: VagaCreate): Observable<Vaga> {
+    return this.http
+      .patch<VagaApi>(`${this.baseUrl}/${id}`, {
+        projeto_id: vaga.projetoId,
+        cliente: vaga.cliente,
+        cargo: vaga.cargo,
+        idioma: vaga.idioma,
+        pais: vaga.pais,
+        modalidade: vaga.modalidade,
+        salario: vaga.salario,
+        comissao: vaga.comissao,
+        prioridade: vaga.prioridade,
+      })
+      .pipe(map(toVaga));
+  }
+
   updatePrioridade(id: string, prioridade: Vaga['prioridade']): Observable<Vaga> {
     return this.http
       .patch<VagaApi>(`${this.baseUrl}/${id}/prioridade`, { prioridade })
       .pipe(map(toVaga));
+  }
+
+  updateStatus(id: string, status: StatusVaga): Observable<Vaga> {
+    return this.http.patch<VagaApi>(`${this.baseUrl}/${id}/status`, { status }).pipe(map(toVaga));
   }
 
   create(vaga: VagaCreate): Observable<Vaga> {

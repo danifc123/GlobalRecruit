@@ -13,11 +13,11 @@
       <app-banner tone="danger">{{ errorMessage() }}</app-banner>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="login-mobile__form">
+    <form [formGroup]="formMobile" (ngSubmit)="submit(formMobile)" class="login-mobile__form">
       <label class="login-mobile__field">
         <span class="login-mobile__label">E-mail</span>
         <input class="login-mobile__input" type="email" formControlName="email" autocomplete="email" />
-        @if (form.controls.email.touched && form.controls.email.invalid) {
+        @if (formMobile.controls.email.touched && formMobile.controls.email.invalid) {
           <span class="login-mobile__error">Informe um email válido</span>
         }
       </label>
@@ -29,7 +29,7 @@
           formControlName="password"
           autocomplete="current-password"
         />
-        @if (form.controls.password.touched && form.controls.password.invalid) {
+        @if (formMobile.controls.password.touched && formMobile.controls.password.invalid) {
           <span class="login-mobile__error">Mínimo de 8 caracteres</span>
         }
       </label>
@@ -52,22 +52,73 @@
       <app-banner tone="danger">{{ errorMessage() }}</app-banner>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="login-card__form">
+    <form [formGroup]="formCard" (ngSubmit)="submit(formCard)" class="login-card__form">
       <app-input
         label="Email"
         type="email"
         formControlName="email"
         [required]="true"
-        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+        [errorMessage]="formCard.controls.email.touched && formCard.controls.email.invalid ? 'Informe um email válido' : undefined"
       />
       <app-input
         label="Senha"
         type="password"
         formControlName="password"
         [required]="true"
-        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+        [errorMessage]="formCard.controls.password.touched && formCard.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
       />
       <app-button type="submit" [fullWidth]="true" [loading]="loading()">Entrar</app-button>
     </form>
   </app-card>
+</div>
+
+<div class="login-split">
+  <div class="login-split__brand">
+    <span class="login-split__glow login-split__glow--1"></span>
+    <span class="login-split__glow login-split__glow--2"></span>
+    <div class="login-split__top">
+      <span class="login-split__logo">G</span>
+      <span class="login-split__brand-name">GlobalRecruit</span>
+    </div>
+    <div class="login-split__pitch">
+      <h1 class="login-split__headline">Sua operação<br />de vagas<br />internacionais</h1>
+      <p class="login-split__lead">
+        Vagas, pipeline e projetos parceiros num só lugar — do celular do recrutador ao desktop da
+        operação.
+      </p>
+    </div>
+    <div class="login-split__stats">
+      <span>Vagas, candidatos e clientes</span>
+      <span>num só painel</span>
+    </div>
+  </div>
+
+  <div class="login-split__form-col">
+    <div class="login-split__form-wrap">
+      <h2 class="login-split__form-title">Entrar</h2>
+      <p class="login-split__form-subtitle">Use a conta fornecida pela sua operação.</p>
+
+      @if (errorMessage()) {
+        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+      }
+
+      <form [formGroup]="formSplit" (ngSubmit)="submit(formSplit)" class="login-split__form">
+        <app-input
+          label="Email"
+          type="email"
+          formControlName="email"
+          [required]="true"
+          [errorMessage]="formSplit.controls.email.touched && formSplit.controls.email.invalid ? 'Informe um email válido' : undefined"
+        />
+        <app-input
+          label="Senha"
+          type="password"
+          formControlName="password"
+          [required]="true"
+          [errorMessage]="formSplit.controls.password.touched && formSplit.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+        />
+        <app-button type="submit" [fullWidth]="true" [loading]="loading()">Entrar</app-button>
+      </form>
+    </div>
+  </div>
 </div>

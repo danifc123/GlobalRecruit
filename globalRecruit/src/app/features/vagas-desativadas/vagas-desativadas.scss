@@ -1,0 +1,247 @@
+:host {
+  display: block;
+}
+
+// <app-page> é o wrapper "de sempre" (banner + busca + Table) — só existe a
+// partir de 640px; abaixo disso quem mostra o conteúdo é `.vagas-desat-mobile`.
+app-page {
+  display: none;
+}
+
+// ==== mobile (<640px) =======================================================
+.vagas-desat-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background-color: var(--gr-color-surface);
+}
+
+.mobile-header {
+  background-color: var(--gr-color-primary-900);
+  color: var(--gr-color-text-inverse);
+  padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-4);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+.vagas-desat-mobile__top {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+}
+
+.vagas-desat-mobile__voltar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--gr-color-text-inverse);
+}
+
+.vagas-desat-mobile__voltar-icon {
+  transform: rotate(90deg);
+}
+
+.vagas-desat-mobile__title {
+  font-size: var(--gr-font-size-lg);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+// o Input compartilhado assume fundo claro — sobrescreve só aqui, dentro do
+// header escuro
+.vagas-desat-mobile__search {
+  ::ng-deep .form-field__control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--gr-color-text-inverse);
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+  }
+}
+
+.vagas-desat-mobile__banner {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  margin: var(--gr-space-4) var(--gr-space-5) 0;
+  padding: var(--gr-space-3);
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-warning-100);
+  color: var(--gr-color-warning-700);
+  font-size: var(--gr-font-size-xs);
+  line-height: 1.5;
+}
+
+.vagas-desat-mobile__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gr-space-3) var(--gr-space-5) calc(var(--gr-space-6) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+}
+
+.vagas-desat-mobile__skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
+  padding: var(--gr-space-4);
+}
+
+.vagas-desat-mobile__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-3);
+  border-radius: var(--gr-radius-lg);
+  background-color: var(--gr-color-background);
+  text-decoration: none;
+  color: inherit;
+}
+
+.vagas-desat-mobile__row-bar {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background-color: var(--gr-color-neutral-300);
+}
+
+.vagas-desat-mobile__row-bar--fechada {
+  background-color: var(--gr-color-danger-500);
+}
+
+.vagas-desat-mobile__row-bar--pausada {
+  background-color: var(--gr-color-warning-500);
+}
+
+.vagas-desat-mobile__row-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.vagas-desat-mobile__row-cargo {
+  font-size: 0.9375rem;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vagas-desat-mobile__row-meta {
+  margin-top: 3px;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.vagas-desat-mobile__tag {
+  flex-shrink: 0;
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  border-radius: var(--gr-radius-sm);
+  padding: 4px 9px;
+}
+
+.vagas-desat-mobile__tag--fechada {
+  color: var(--gr-color-danger-700);
+  background-color: var(--gr-color-danger-100);
+}
+
+.vagas-desat-mobile__tag--pausada {
+  color: var(--gr-color-warning-700);
+  background-color: var(--gr-color-warning-100);
+}
+
+// ==== ≥640px: banner + busca + tabela (tom verde mais claro, ícones
+// vermelhos — contraste proposital com Vagas Ativas, pra não confundir as
+// duas telas) =================================================================
+.vagas-desat__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  height: 2.375rem;
+  padding-inline: var(--gr-space-4);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  color: var(--gr-color-text-primary);
+  text-decoration: none;
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+}
+
+.vagas-desat__voltar-icon {
+  transform: rotate(90deg);
+}
+
+.vagas-desat__search {
+  max-width: 360px;
+  margin: var(--gr-space-4) 0;
+}
+
+.vagas-desat__tag {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding-inline: var(--gr-space-2);
+  border-radius: var(--gr-radius-sm);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  text-transform: capitalize;
+}
+
+.vagas-desat__tag--fechada {
+  color: var(--gr-color-danger-700);
+  background-color: var(--gr-color-danger-100);
+}
+
+.vagas-desat__tag--pausada {
+  color: var(--gr-color-warning-700);
+  background-color: var(--gr-color-warning-100);
+}
+
+.vagas-desat__actions {
+  display: flex;
+}
+
+.vagas-desat__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: var(--gr-border-width) solid var(--gr-color-danger-100);
+  border-radius: var(--gr-radius-sm);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-danger-500);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--gr-color-danger-100);
+    color: var(--gr-color-danger-700);
+  }
+}
+
+// lista de sempre (celular) sobe até tablet — só ≥1024px vira tabela de
+// verdade (mesmo motivo documentado em vagas-ativas.scss)
+@media (min-width: 1024px) {
+  .vagas-desat-mobile {
+    display: none;
+  }
+
+  app-page {
+    display: flex;
+  }
+
+  // verde mais claro que o -900 usado em Vagas Ativas — ::ng-deep porque
+  // <th> é renderizado dentro do próprio Table, não projetado por nós
+  :host ::ng-deep app-table th {
+    background-color: var(--gr-color-primary-600);
+  }
+}

@@ -2,9 +2,12 @@
   <div class="mobile-header">
     <div class="vagas-mobile__top">
       <span class="vagas-mobile__title">Vagas ativas</span>
-      <button type="button" class="vagas-mobile__add" aria-label="Nova vaga" (click)="toggleForm()">
-        <app-icon name="plus" [size]="18" />
-      </button>
+      <div class="vagas-mobile__top-actions">
+        <a class="vagas-mobile__desativadas" routerLink="/vagas-desativadas">Desativadas</a>
+        <button type="button" class="vagas-mobile__add" aria-label="Nova vaga" (click)="toggleForm()">
+          <app-icon name="plus" [size]="18" />
+        </button>
+      </div>
     </div>
     @if (!loading() && !error()) {
       <div class="vagas-mobile__stats">
@@ -56,12 +59,13 @@
 </div>
 
 <app-page description="Gestão de vagas operacionais.">
+  <a page-actions class="vagas__desativadas-link" routerLink="/vagas-desativadas">Vagas desativadas</a>
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
     Nova Vaga
   </app-button>
 
-  <app-sheet [open]="showForm()" title="Nova vaga" (closed)="toggleForm()">
+  <app-sheet [open]="showForm()" [title]="editingVagaId() ? 'Editar vaga' : 'Nova vaga'" (closed)="toggleForm()">
     <div class="vagas-wizard__progress">
       <div class="vagas-wizard__steps">
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 1"></span>
@@ -151,61 +155,73 @@
             @if (submitting()) {
               <span class="vagas-wizard__spinner"></span>
             }
-            Criar vaga
+            {{ editingVagaId() ? 'Salvar alterações' : 'Criar vaga' }}
           </button>
         }
       </div>
 
       <div class="vagas__form-actions">
         <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
-        <app-button type="submit" [loading]="submitting()">Criar vaga</app-button>
+        <app-button type="submit" [loading]="submitting()">
+          {{ editingVagaId() ? 'Salvar alterações' : 'Criar vaga' }}
+        </app-button>
       </div>
     </form>
   </app-sheet>
 
-  @if (!loading() && !error()) {
-    <app-chip-filter class="vagas__chips" [options]="filtroOptions()" [(selected)]="filtro" />
-  }
+  <div class="vagas__body" [class.vagas__body--detail-open]="hasDetail()">
+      @if (!loading() && !error()) {
+        <app-chip-filter class="vagas__chips" [options]="filtroOptions()" [(selected)]="filtro" />
+      }
 
-  <app-table
-    [columns]="columns"
-    [isEmpty]="isEmpty()"
-    emptyIcon="briefcase"
-    emptyMessage="Nenhuma vaga aberta no momento."
-  >
-    @for (vaga of vagasFiltradas(); track vaga.id) {
-      <tr>
-        <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
-        <td data-label="Cliente">{{ vaga.cliente }}</td>
-        <td data-label="Cargo">{{ vaga.cargo }}</td>
-        <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
-        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
-        <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
-        <td data-label="Salário">{{ vaga.salario ?? '—' }}</td>
-        <td data-label="Comissão">{{ vaga.comissao ?? '—' }}</td>
-        <td data-label="Prioridade">{{ vaga.prioridade }}</td>
-        <td data-label="Ações" class="vagas__actions">
-          <a class="vagas__action" [routerLink]="['/vagas-ativas', vaga.id]" aria-label="Ver detalhes da vaga">
-            <app-icon name="search" [size]="15" />
-          </a>
-          <button
-            type="button"
-            class="vagas__action"
-            aria-label="Priorizar vaga"
-            (click)="handleSwipeAction(vaga.id, 'priorizar')"
+      <app-table
+        [columns]="columns"
+        [isEmpty]="isEmpty()"
+        emptyIcon="briefcase"
+        emptyMessage="Nenhuma vaga aberta no momento."
+      >
+        @for (vaga of vagasFiltradas(); track vaga.id) {
+          <tr
+            class="vagas__row"
+            [class.vagas__row--selected]="selectedVagaId() === vaga.id"
+            (click)="selectVaga(vaga.id)"
           >
-            <app-icon name="flame" [size]="15" />
-          </button>
-          <button
-            type="button"
-            class="vagas__action"
-            aria-label="Indicar candidato para esta vaga"
-            (click)="handleSwipeAction(vaga.id, 'indicar')"
-          >
-            <app-icon name="user-plus" [size]="15" />
-          </button>
-        </td>
-      </tr>
-    }
-  </app-table>
+            <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
+            <td data-label="Cliente">{{ vaga.cliente }}</td>
+            <td data-label="Cargo">{{ vaga.cargo }}</td>
+            <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
+            <td data-label="País">{{ vaga.pais ?? '—' }}</td>
+            <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
+            <td data-label="Salário">{{ vaga.salario ?? '—' }}</td>
+            <td data-label="Comissão">{{ vaga.comissao ?? '—' }}</td>
+            <td data-label="Prioridade">{{ vaga.prioridade }}</td>
+            <td data-label="Ações" class="vagas__actions" (click)="$event.stopPropagation()">
+              <a class="vagas__action" [routerLink]="['/vagas-ativas', vaga.id]" aria-label="Ver detalhes da vaga">
+                <app-icon name="search" [size]="15" />
+              </a>
+              <button
+                type="button"
+                class="vagas__action"
+                aria-label="Priorizar vaga"
+                (click)="handleSwipeAction(vaga.id, 'priorizar')"
+              >
+                <app-icon name="flame" [size]="15" />
+              </button>
+              <button
+                type="button"
+                class="vagas__action"
+                aria-label="Indicar candidato para esta vaga"
+                (click)="handleSwipeAction(vaga.id, 'indicar')"
+              >
+                <app-icon name="user-plus" [size]="15" />
+              </button>
+            </td>
+          </tr>
+        }
+      </app-table>
+  </div>
 </app-page>
+
+<div class="vagas__detail" [class.vagas__detail--active]="hasDetail()">
+  <router-outlet />
+</div>

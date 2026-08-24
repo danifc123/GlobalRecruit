@@ -2,19 +2,54 @@
   <router-outlet />
 } @else {
   <div class="shell">
-    <app-sidebar [items]="navItems()" />
+    <app-sidebar
+      [items]="navItems()"
+      [userInitials]="userInitials()"
+      [userEmail]="auth.session()?.email"
+      [userRoleLabel]="userRoleLabel()"
+    />
 
     <div class="shell__main">
       <header class="shell__topbar">
         <div class="shell__topbar-title">
           <h1>{{ pageTitle() }}</h1>
         </div>
-        @if (auth.session(); as session) {
-          <div class="shell__topbar-user">
-            <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
-            <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
-          </div>
-        }
+
+        <div class="shell__topbar-end">
+          @if (topbarActions.search(); as search) {
+            <div class="shell__search">
+              <app-icon name="search" [size]="16" />
+              <label for="shell-search" class="shell__search-label">{{ search.placeholder }}</label>
+              <input
+                id="shell-search"
+                type="text"
+                class="shell__search-input"
+                [placeholder]="search.placeholder"
+                [value]="search.query()"
+                (input)="search.query.set($any($event.target).value)"
+              />
+            </div>
+          }
+
+          @if (topbarActions.action(); as action) {
+            <app-button class="shell__topbar-action" variant="primary" size="sm" (clicked)="action.onClick()">
+              @if (action.icon) {
+                <app-icon [name]="action.icon" [size]="15" />
+              }
+              {{ action.label }}
+            </app-button>
+          }
+
+          @if (auth.session(); as session) {
+            <div class="shell__topbar-user">
+              <a class="shell__topbar-avatar" routerLink="/conta" aria-label="Minha conta">
+                {{ userInitials() }}
+              </a>
+              <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
+              <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
+            </div>
+          }
+        </div>
       </header>
 
       <main class="shell__content">

@@ -10,23 +10,27 @@ from app.db.models.candidato import Candidato
 from app.db.models.pipeline_stage import Estagio, PipelineStage
 from app.db.models.user import Role, User
 from app.db.models.vaga import Vaga
-from app.schemas.candidato import CandidatoCreate, CandidatoOut, PipelineStageUpdate
+from app.schemas.candidato import CandidatoCreate, CandidatoOut, OutraCandidatura, PipelineStageUpdate
 
 router = APIRouter(prefix="/candidatos", tags=["candidatos"])
 
 
-def _to_out(candidato: Candidato) -> CandidatoOut:
-    atual = candidato.pipeline_stages[0].estagio if candidato.pipeline_stages else None
+def _estagio_atual(candidato: Candidato) -> Estagio | None:
+    return candidato.pipeline_stages[0].estagio if candidato.pipeline_stages else None
+
+
+def _to_out(candidato: Candidato, outras: list[OutraCandidatura] | None = None) -> CandidatoOut:
     return CandidatoOut(
         id=candidato.id,
         nome=candidato.nome,
         email=candidato.email,
         vaga_id=candidato.vaga_id,
         created_at=candidato.created_at,
-        estagio_atual=atual,
+        estagio_atual=_estagio_atual(candidato),
         # pipeline_stages já vem ordenado desc (ver relationship em Candidato) —
         # é o histórico completo, não só o estágio atual
         historico=list(candidato.pipeline_stages),
+        outras_candidaturas=outras or [],
     )
 
 
@@ -73,7 +77,31 @@ async def get_candidato(
     candidato = (await db.execute(stmt)).scalar_one_or_none()
     if candidato is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidato não encontrado")
-    return _to_out(candidato)
+
+    # mesma pessoa em outras vagas — não existe cadastro de "pessoa" separado,
+    # então agrupa por e-mail (mesmo critério que o resto do produto já usa
+    # informalmente pra reconhecer "é o mesmo candidato")
+    outras_stmt = (
+        select(Candidato, Vaga.cargo, Vaga.cliente)
+        .join(Vaga, Vaga.id == Candidato.vaga_id)
+        .where(Candidato.email == candidato.email, Candidato.id != candidato.id)
+        .options(selectinload(Candidato.pipeline_stages))
+        .order_by(Candidato.created_at.desc())
+    )
+    if ids is not None:
+        outras_stmt = outras_stmt.where(Vaga.projeto_id.in_(ids))
+    outras = [
+        OutraCandidatura(
+            id=outro.id,
+            vaga_id=outro.vaga_id,
+            vaga_cargo=cargo,
+            vaga_cliente=cliente,
+            estagio_atual=_estagio_atual(outro),
+        )
+        for outro, cargo, cliente in (await db.execute(outras_stmt)).all()
+    ]
+
+    return _to_out(candidato, outras)
 
 
 @router.post("", response_model=CandidatoOut, status_code=status.HTTP_201_CREATED)

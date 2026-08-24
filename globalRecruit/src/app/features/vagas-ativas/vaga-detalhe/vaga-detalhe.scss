@@ -86,7 +86,10 @@
 .vaga-detalhe__body {
   flex: 1;
   overflow-y: auto;
-  padding: var(--gr-space-4) var(--gr-space-5) calc(112px + env(safe-area-inset-bottom, 0px));
+  // reserva espaço pro rodapé fixo (2 linhas de botão desde que "Fechar
+  // vaga" entrou — 112px era o suficiente só pra 1 linha; sem isso, o fim
+  // da lista de "Últimos candidatos" ficava escondido atrás do rodapé)
+  padding: var(--gr-space-4) var(--gr-space-5) calc(250px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: var(--gr-space-4);
@@ -191,6 +194,10 @@
   background-color: var(--gr-color-info-500);
 }
 
+.vaga-detalhe__pipeline-dot--rejeitado {
+  background-color: var(--gr-color-danger-500);
+}
+
 .vaga-detalhe__pipeline-dot--contratado {
   background-color: var(--gr-color-primary-600);
 }
@@ -243,12 +250,49 @@
   position: fixed;
   inset-inline: 0;
   bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-2);
   background-color: rgba(255, 255, 255, 0.94);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-top: var(--gr-border-width) solid var(--gr-color-border);
   padding: var(--gr-space-3) var(--gr-space-5) calc(var(--gr-space-3) + env(safe-area-inset-bottom, 0px) + 4.5rem);
   z-index: 20;
+}
+
+.vaga-detalhe__footer-row {
+  display: flex;
+  gap: var(--gr-space-3);
+}
+
+.vaga-detalhe__editar {
+  flex: 1;
+  height: 50px;
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+}
+
+.vaga-detalhe__fechar {
+  flex: 1;
+  height: 50px;
+  border: var(--gr-border-width) solid var(--gr-color-danger-100);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-danger-700);
+  font-size: var(--gr-font-size-md);
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .vaga-detalhe__indicar {
@@ -283,61 +327,265 @@
   cursor: pointer;
 }
 
-// ≥640px: mesmo header/cards do celular (já são o "chrome" da página, não
-// precisa de Page em cima) — só reaproveita mais largura de tela e vira
-// grid de 2 colunas a partir de 1024px, em vez de ficar numa coluna
-// estreita de 640px sobrando espaço vazio nas laterais.
+// ≥640px: a árvore acima (.vaga-detalhe, header cheio escuro) é só o
+// celular — a partir daqui quem aparece é o .vaga-panel claro abaixo (o
+// mesmo conceito usado no painel de master-detail ≥1024px, só que aqui
+// dentro de um overlay de tela cheia, não um painel de 400px docado).
 @media (min-width: 640px) {
-  .mobile-header {
-    border-radius: var(--gr-radius-xl);
-    max-width: 640px;
-    margin: var(--gr-space-6) auto 0;
-  }
-
-  .vaga-detalhe__body {
-    max-width: 640px;
-    margin-inline: auto;
-    padding-bottom: var(--gr-space-6);
-  }
-
-  .vaga-detalhe__footer {
-    position: static;
-    max-width: 640px;
-    margin-inline: auto;
-    background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-top: none;
-    padding: 0 var(--gr-space-5) var(--gr-space-6);
+  .vaga-detalhe {
+    display: none;
   }
 }
 
-@media (min-width: 1024px) {
-  .mobile-header,
-  .vaga-detalhe__body,
-  .vaga-detalhe__footer {
-    max-width: 1040px;
+// ==== painel claro — celular usa o header escuro acima; daqui pra cima
+// (tablet em diante) é essa árvore. ≥1024px ela roda dentro do painel de
+// 400px do master-detail (ver .vagas__detail-panel em vagas-ativas.scss)
+// e ocupa 100% da largura dele; 640–1023px é um overlay de tela cheia, por
+// isso ganha teto de largura e centralização só nesse intervalo, senão o
+// conteúdo (pensado pra coluna estreita) esticaria feio lado a lado.
+.vaga-panel {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .vaga-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .vaga-panel__header,
+  .vaga-panel__body,
+  .vaga-panel .vaga-detalhe__footer {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}
+
+.vaga-panel__header {
+  padding: var(--gr-space-5) var(--gr-space-5) var(--gr-space-4);
+  border-bottom: var(--gr-border-width) solid var(--gr-color-border);
+  flex-shrink: 0;
+}
+
+.vaga-panel__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-3);
+}
+
+.vaga-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--gr-color-neutral-100);
+  color: var(--gr-color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--gr-color-neutral-200);
+  }
+}
+
+// os badges de status/prioridade (.vaga-detalhe__badge*) foram feitos pro
+// fundo escuro do header do celular — cores clarinhas em texto, ilegíveis
+// aqui dentro do painel, que tem fundo branco. Reaproveitados aqui, mas
+// com o par fundo-claro/texto-escuro que já é usado no resto do app pros
+// mesmos status (ex.: tag de prioridade da tabela, tag da tela de
+// desativadas) em vez de inventar cor nova.
+.vaga-panel__header {
+  .vaga-detalhe__badge {
+    background-color: var(--gr-color-primary-50);
+    color: var(--gr-color-primary-700);
   }
 
-  .vaga-detalhe__body {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    grid-template-areas:
-      'stats candidatos'
-      'pipeline candidatos';
-    align-items: start;
+  .vaga-detalhe__badge--pausada {
+    background-color: var(--gr-color-warning-100);
+    color: var(--gr-color-warning-700);
   }
 
-  .vaga-detalhe__grid {
-    grid-area: stats;
+  .vaga-detalhe__badge--fechada {
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-secondary);
   }
 
-  .vaga-detalhe__card:not(.vaga-detalhe__card--flush) {
-    grid-area: pipeline;
+  .vaga-detalhe__badge--prioridade-alta {
+    background-color: var(--gr-color-accent-100);
+    color: var(--gr-color-accent-700);
+  }
+}
+
+.vaga-panel__title {
+  margin: var(--gr-space-3) 0 0;
+  font-size: var(--gr-font-size-xl);
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-panel__subtitle {
+  margin: 4px 0 0;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--gr-space-4) var(--gr-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-4);
+}
+
+// caixas de estatística ficam sobre um painel branco (não a página cinza-
+// claro) — sem isso, .vaga-detalhe__stat (fundo --gr-color-surface, também
+// branco) desaparece por falta de contraste
+.vaga-panel .vaga-detalhe__stat {
+  background-color: var(--gr-color-background);
+  box-shadow: none;
+}
+
+.vaga-panel__pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}
+
+.vaga-panel__pipeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+}
+
+.vaga-panel__pipeline-count {
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-primary-700);
+}
+
+.vaga-panel__pipeline-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: var(--gr-color-neutral-100);
+}
+
+.vaga-panel__pipeline-segment {
+  height: 100%;
+}
+
+.vaga-panel__pipeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gr-space-3);
+}
+
+.vaga-panel__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-panel__legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.vaga-panel__candidatos-header {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-primary);
+  margin-bottom: var(--gr-space-2);
+}
+
+.vaga-panel__candidato {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-3);
+  padding: var(--gr-space-2) var(--gr-space-3);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-background);
+  text-decoration: none;
+  color: inherit;
+
+  & + & {
+    margin-top: var(--gr-space-2);
   }
 
-  .vaga-detalhe__card--flush {
-    grid-area: candidatos;
-    align-self: stretch;
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
   }
+}
+
+.vaga-panel__candidato--parado {
+  background-color: var(--gr-color-warning-100);
+
+  &:hover {
+    background-color: var(--gr-color-warning-100);
+  }
+}
+
+.vaga-panel__candidato-tempo {
+  margin-top: 2px;
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-panel__candidato--parado .vaga-panel__candidato-tempo {
+  color: var(--gr-color-warning-700);
+  font-weight: var(--gr-font-weight-medium);
+}
+
+.vaga-panel__estagio-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 1.375rem;
+  padding-inline: 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  color: var(--gr-color-text-inverse);
+  background-color: var(--gr-color-neutral-400);
+}
+
+.vaga-panel__error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: var(--gr-space-5);
+}
+
+// o rodapé (Editar vaga / Indicar candidato) reaproveita as mesmas classes
+// .vaga-detalhe__footer/__editar/__indicar de <1024px — só precisa perder
+// o teto de largura de 640px e o centering, e ficar preso à base do painel
+.vaga-panel .vaga-detalhe__footer {
+  position: sticky;
+  bottom: 0;
+  max-width: none;
+  margin: 0;
+  background-color: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--gr-border-width) solid var(--gr-color-border);
+  padding: var(--gr-space-3) var(--gr-space-5);
+  flex-shrink: 0;
 }

@@ -66,7 +66,7 @@
     <app-banner tone="success">{{ successMessage() }}</app-banner>
   }
 
-  <app-sheet [open]="showForm()" title="Novo usuário" (closed)="toggleForm()">
+  <app-sheet [open]="showForm()" [drawer]="true" title="Novo usuário" (closed)="toggleForm()">
     @if (errorMessage()) {
       <app-banner tone="danger">{{ errorMessage() }}</app-banner>
     }
@@ -131,6 +131,22 @@
             <span class="usuarios__role-card-desc">Cria vagas, candidatos, projetos e usuários.</span>
           </span>
         </button>
+      </div>
+
+      <div class="usuarios__role-segmented">
+        <span class="usuarios__field-label">Papel</span>
+        <div class="usuarios__segmented">
+          @for (opcao of roleOptions; track opcao.value) {
+            <button
+              type="button"
+              class="usuarios__segment"
+              [class.usuarios__segment--active]="form.controls.role.value === opcao.value"
+              (click)="selecionarRole($any(opcao.value))"
+            >
+              {{ roleLabelCurto(opcao.value) }}
+            </button>
+          }
+        </div>
       </div>
 
       @if (isRecrutadorRole()) {
