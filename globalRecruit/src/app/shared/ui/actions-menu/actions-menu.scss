@@ -1,0 +1,104 @@
+:host {
+  display: inline-block;
+}
+
+.actions-menu {
+  display: inline-flex;
+}
+
+// texto real (só visível pra leitor de tela) em vez de aria-label vinculado
+// dinamicamente — analisadores estáticos de acessibilidade não conseguem
+// avaliar bindings do Angular pra confirmar que o atributo nunca fica vazio
+.actions-menu__trigger-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.actions-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--gr-radius-full);
+  background-color: transparent;
+  color: var(--gr-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--gr-transition-fast);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+}
+
+// backdrop invisível full-screen — mesma técnica do Sheet pra fechar ao
+// clicar fora, sem escurecer a tela (é um menu pequeno, não um modal)
+.actions-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: default;
+}
+
+// position:fixed com top/right calculados em JS (ver toggle() no .ts) — não
+// "absolute" ancorado no wrapper, pra não contar como overflow de um
+// ancestral com scroll (ex.: table.scss tem overflow-x:auto) e pra ficar
+// sempre por cima, independente de onde o botão está na página
+.actions-menu__panel {
+  position: fixed;
+  z-index: 31;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: var(--gr-space-2);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  box-shadow: var(--gr-shadow-lg);
+  animation: actions-menu-in var(--gr-transition-fast);
+}
+
+@keyframes actions-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host ::ng-deep .actions-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+  padding: var(--gr-space-2) var(--gr-space-3);
+  border: none;
+  border-radius: var(--gr-radius-sm);
+  background: none;
+  color: var(--gr-color-text-primary);
+  font-size: var(--gr-font-size-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--gr-transition-fast);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+  }
+}
