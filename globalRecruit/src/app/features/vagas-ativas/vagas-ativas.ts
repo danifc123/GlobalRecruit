@@ -137,12 +137,19 @@ export class VagasAtivas {
 
   // rota filha ativa (/vagas-ativas/:id) — dirige o painel de master-detail
   // em ≥1024px e o overlay de tela cheia abaixo disso (ver vagas-ativas.html)
+  // route.snapshot.firstChild (árvore de snapshot do próprio componente) em
+  // vez de route.firstChild?.snapshot (rota-filha *viva*): numa navegação
+  // profunda vinda de fora (ex.: "Vaga alvo" do Candidato Detalhe indo
+  // direto pra /vagas-ativas/:id), VagasAtivas e VagaDetalhe são criados
+  // juntos na mesma navegação, e o `.snapshot` da rota-filha viva ainda não
+  // está pronto nesse instante — quebra o construtor. A árvore de snapshot
+  // já vem resolvida antes de qualquer componente ser instanciado.
   protected readonly selectedVagaId = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.route.firstChild?.snapshot.paramMap.get('id') ?? null),
+      map(() => this.route.snapshot.firstChild?.paramMap.get('id') ?? null),
     ),
-    { initialValue: this.route.firstChild?.snapshot.paramMap.get('id') ?? null },
+    { initialValue: this.route.snapshot.firstChild?.paramMap.get('id') ?? null },
   );
 
   protected readonly hasDetail = computed(() => this.selectedVagaId() !== null);
