@@ -1,0 +1,11 @@
+<app-sheet [open]="open()" [drawer]="true" title="Configurações" (closed)="close()">
+  @if (isStaff()) {
+    <app-segmented-control class="configuracoes-dialog__abas" [options]="abaOptions" [(value)]="aba" />
+  }
+
+  @if (isStaff() && aba() === 'aparencia') {
+    <app-aparencia-form />
+  } @else {
+    <app-perfil-form />
+  }
+</app-sheet>

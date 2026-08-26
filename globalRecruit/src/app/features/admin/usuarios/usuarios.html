@@ -66,7 +66,28 @@
     <app-banner tone="success">{{ successMessage() }}</app-banner>
   }
 
-  <app-sheet [open]="showForm()" [drawer]="true" title="Novo usuário" (closed)="toggleForm()">
+  @if (!loading() && !error()) {
+    <app-chip-filter class="usuarios__chips" [options]="filtroOptions()" [(selected)]="filtro" />
+  }
+
+  <app-table
+    [columns]="columns"
+    [isEmpty]="!loading() && usersFiltrados().length === 0"
+    emptyIcon="users"
+    emptyMessage="Nenhum usuário encontrado para esse filtro."
+  >
+    @for (user of usersFiltrados(); track user.id) {
+      <tr>
+        <td data-label="Email">{{ user.email }}</td>
+        <td data-label="Papel">{{ roleLabel(user.role) }}</td>
+        <td data-label="Projetos">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
+        <td data-label="Status">{{ user.isActive ? 'Ativo' : 'Inativo' }}</td>
+      </tr>
+    }
+  </app-table>
+</app-page>
+
+<app-sheet [open]="showForm()" [drawer]="true" title="Novo usuário" (closed)="toggleForm()">
     @if (errorMessage()) {
       <app-banner tone="danger">{{ errorMessage() }}</app-banner>
     }
@@ -171,24 +192,3 @@
       <app-button type="submit" [loading]="submitting()">Criar usuário</app-button>
     </form>
   </app-sheet>
-
-  @if (!loading() && !error()) {
-    <app-chip-filter class="usuarios__chips" [options]="filtroOptions()" [(selected)]="filtro" />
-  }
-
-  <app-table
-    [columns]="columns"
-    [isEmpty]="!loading() && usersFiltrados().length === 0"
-    emptyIcon="users"
-    emptyMessage="Nenhum usuário encontrado para esse filtro."
-  >
-    @for (user of usersFiltrados(); track user.id) {
-      <tr>
-        <td data-label="Email">{{ user.email }}</td>
-        <td data-label="Papel">{{ roleLabel(user.role) }}</td>
-        <td data-label="Projetos">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
-        <td data-label="Status">{{ user.isActive ? 'Ativo' : 'Inativo' }}</td>
-      </tr>
-    }
-  </app-table>
-</app-page>

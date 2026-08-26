@@ -1,0 +1,35 @@
+<div class="aparencia-form">
+  @if (sucesso()) {
+    <app-banner tone="success">Tema salvo — já aplicado pra todo mundo.</app-banner>
+  }
+  @if (erro()) {
+    <app-banner tone="danger">{{ erro() }}</app-banner>
+  }
+
+  @if (!loading()) {
+    <div class="aparencia-form__list">
+      @for (field of fields; track field.key) {
+        <div class="aparencia-form__row">
+          <label class="aparencia-form__label" [for]="field.key">{{ field.label }}</label>
+          <div class="aparencia-form__control">
+            <input
+              [id]="field.key"
+              type="color"
+              class="aparencia-form__swatch"
+              [value]="valorAtual(field)"
+              (input)="alterar(field, $any($event.target).value)"
+            />
+            <span class="aparencia-form__hex">{{ valorAtual(field) }}</span>
+            @if (colors()[field.key]) {
+              <button type="button" class="aparencia-form__reset" (click)="restaurarPadrao(field)">
+                Restaurar padrão
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <app-button [loading]="saving()" (clicked)="salvar()">Salvar tema</app-button>
+  }
+</div>

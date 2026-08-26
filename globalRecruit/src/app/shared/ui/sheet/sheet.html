@@ -3,6 +3,7 @@
     type="button"
     class="sheet__backdrop"
     [class.sheet__backdrop--drawer]="drawer()"
+    [class.sheet__backdrop--bottom]="bottom()"
     tabindex="-1"
     aria-hidden="true"
     (click)="close()"
@@ -10,6 +11,7 @@
   <div
     class="sheet"
     [class.sheet--drawer]="drawer()"
+    [class.sheet--bottom]="bottom()"
     role="dialog"
     aria-modal="true"
     [attr.aria-labelledby]="title() ? titleId : null"

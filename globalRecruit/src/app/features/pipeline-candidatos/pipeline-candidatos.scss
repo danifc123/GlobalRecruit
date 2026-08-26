@@ -184,7 +184,7 @@ app-page {
 
 .pipeline__kanban {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--gr-space-3);
   align-items: start;
 }
@@ -229,6 +229,10 @@ app-page {
 
 .pipeline__kanban-dot--rejeitado {
   background-color: var(--gr-color-danger-500);
+}
+
+.pipeline__kanban-dot--concluido {
+  background-color: var(--gr-color-neutral-400);
 }
 
 .pipeline__kanban-col-title {

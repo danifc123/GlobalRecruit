@@ -19,3 +19,4 @@ export * from './sheet/sheet';
 export * from './skeleton/skeleton';
 export * from './chip-filter/chip-filter';
 export * from './swipe-row/swipe-row';
+export * from './actions-menu/actions-menu';

@@ -96,6 +96,11 @@
   overflow: hidden;
 }
 
+.conta__card--form {
+  padding: var(--gr-space-5);
+  overflow: visible;
+}
+
 .conta__row {
   display: flex;
   align-items: center;
@@ -218,9 +223,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
+      'perfil perfil'
       'dados admin'
       'sistema admin';
     align-content: start;
+  }
+
+  .conta__section--perfil {
+    grid-area: perfil;
   }
 
   .conta__section--dados {

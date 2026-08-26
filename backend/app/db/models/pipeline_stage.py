@@ -15,6 +15,7 @@ class Estagio(str, enum.Enum):
     PROPOSTA = "proposta"
     CONTRATADO = "contratado"
     REJEITADO = "rejeitado"
+    CONCLUIDO = "concluido"
 
 
 class PipelineStage(Base):

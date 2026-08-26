@@ -63,7 +63,7 @@ export class PipelineCandidatos {
   protected readonly estagioFiltro = signal<Estagio>('triagem');
   protected readonly estagioOptions = computed<ChipOption[]>(() => {
     const rows = this.rows();
-    return ESTAGIO_ORDEM.filter((e) => e !== 'rejeitado').map((estagio) => ({
+    return ESTAGIO_ORDEM.filter((e) => e !== 'rejeitado' && e !== 'concluido').map((estagio) => ({
       value: estagio,
       label: ESTAGIO_LABELS[estagio],
       count: rows.filter((r) => r.estagioAtual === estagio).length,
@@ -137,7 +137,7 @@ export class PipelineCandidatos {
   }
 
   protected diasParado(row: CandidatoRow): number {
-    return diasDesde(row.historico[0]?.updatedAt ?? row.createdAt);
+    return diasDesde(row.historico[0].updatedAt);
   }
 
   protected estaParado(row: CandidatoRow): boolean {

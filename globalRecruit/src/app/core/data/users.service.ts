@@ -8,6 +8,7 @@ import { AppUser, UserCreate } from '@app/core/models/user';
 interface UserApi {
   id: string;
   email: string;
+  nome: string | null;
   role: AppUser['role'];
   projetos: { id: string; nome: string }[];
   is_active: boolean;
@@ -17,6 +18,7 @@ function toUser(api: UserApi): AppUser {
   return {
     id: api.id,
     email: api.email,
+    nome: api.nome,
     role: api.role,
     projetos: api.projetos,
     isActive: api.is_active,
@@ -41,5 +43,16 @@ export class UsersService {
         project_ids: user.projetoIds ?? [],
       })
       .pipe(map(toUser));
+  }
+
+  updateMe(nome: string | null, email: string): Observable<AppUser> {
+    return this.http.patch<UserApi>(`${this.baseUrl}/me`, { nome, email }).pipe(map(toUser));
+  }
+
+  changePassword(senhaAtual: string, novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/me/password`, {
+      senha_atual: senhaAtual,
+      nova_senha: novaSenha,
+    });
   }
 }

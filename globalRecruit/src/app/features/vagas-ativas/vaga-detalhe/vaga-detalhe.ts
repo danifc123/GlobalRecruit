@@ -47,7 +47,7 @@ export class VagaDetalhe {
     for (const c of this.candidatos()) {
       if (c.estagioAtual) counts.set(c.estagioAtual, (counts.get(c.estagioAtual) ?? 0) + 1);
     }
-    return ESTAGIO_ORDEM.filter((e) => e !== 'rejeitado').map((estagio) => ({
+    return ESTAGIO_ORDEM.filter((e) => e !== 'rejeitado' && e !== 'concluido').map((estagio) => ({
       estagio,
       count: counts.get(estagio) ?? 0,
     }));
@@ -126,6 +126,6 @@ export class VagaDetalhe {
   }
 
   protected candidatoParado(candidato: Candidato): boolean {
-    return diasDesde(candidato.historico[0]?.updatedAt ?? candidato.createdAt) >= DIAS_PARADO_ALERTA;
+    return diasDesde(candidato.historico[0].updatedAt) >= DIAS_PARADO_ALERTA;
   }
 }

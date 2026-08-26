@@ -1,7 +1,7 @@
 <div class="candidato-detalhe">
   @if (loading()) {
     <div class="mobile-header">
-      <button type="button" class="candidato-detalhe__back" (click)="goBack()">
+      <button type="button" class="candidato-detalhe__back" aria-label="Voltar" (click)="goBack()">
         <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
       </button>
       <app-skeleton width="60%" height="24px" />
@@ -18,7 +18,7 @@
     </div>
   } @else {
     <div class="mobile-header">
-      <button type="button" class="candidato-detalhe__back" (click)="goBack()">
+      <button type="button" class="candidato-detalhe__back" aria-label="Voltar" (click)="goBack()">
         <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
       </button>
       <div class="candidato-detalhe__profile">
@@ -93,7 +93,7 @@
       </button>
     </div>
 
-    <app-sheet [open]="moverOpen()" title="Mover para" (closed)="moverOpen.set(false)">
+    <app-sheet [open]="moverOpen()" [bottom]="true" title="Mover para" (closed)="moverOpen.set(false)">
       <div class="candidato-detalhe__opcoes">
         @for (opcao of opcoes(); track opcao.estagio) {
           <button

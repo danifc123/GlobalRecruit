@@ -1,12 +1,10 @@
 <div class="form-field">
-  @if (label(); as labelText) {
-    <label class="form-field__label" [for]="selectId">
-      {{ labelText }}
-      @if (required()) {
-        <span class="form-field__required" aria-hidden="true">*</span>
-      }
-    </label>
-  }
+  <label class="form-field__label" [for]="selectId">
+    {{ label() ?? placeholder() }}
+    @if (required()) {
+      <span class="form-field__required" aria-hidden="true">*</span>
+    }
+  </label>
 
   <select
     class="form-field__control"

@@ -1,4 +1,4 @@
-export type Estagio = 'triagem' | 'entrevista' | 'proposta' | 'contratado' | 'rejeitado';
+export type Estagio = 'triagem' | 'entrevista' | 'proposta' | 'contratado' | 'rejeitado' | 'concluido';
 
 export interface HistoricoEstagio {
   id: string;
@@ -31,7 +31,14 @@ export interface CandidatoCreate {
   vagaId: string;
 }
 
-export const ESTAGIO_ORDEM: Estagio[] = ['triagem', 'entrevista', 'proposta', 'contratado', 'rejeitado'];
+export const ESTAGIO_ORDEM: Estagio[] = [
+  'triagem',
+  'entrevista',
+  'proposta',
+  'contratado',
+  'rejeitado',
+  'concluido',
+];
 
 export const ESTAGIO_LABELS: Record<Estagio, string> = {
   triagem: 'Triagem',
@@ -39,4 +46,5 @@ export const ESTAGIO_LABELS: Record<Estagio, string> = {
   proposta: 'Proposta',
   contratado: 'Contratado',
   rejeitado: 'Rejeitado',
+  concluido: 'Concluído',
 };

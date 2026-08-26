@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-8);
+}
+
+.perfil-form__title {
+  margin: 0 0 var(--gr-space-3);
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--gr-color-text-secondary);
+}
+
+.perfil-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gr-space-3);
+}

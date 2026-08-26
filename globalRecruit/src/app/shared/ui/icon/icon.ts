@@ -24,7 +24,8 @@ export type IconName =
   | 'clock'
   | 'plus'
   | 'user-plus'
-  | 'more-horizontal';
+  | 'more-horizontal'
+  | 'edit';
 
 @Component({
   selector: 'app-icon',

@@ -29,10 +29,17 @@ import { IdGenerator } from '../../utils/id-generator';
 export class Sheet {
   readonly open = input(false);
   readonly title = input<string>();
-  // ≥1024px: vira painel lateral fixo em vez do bloco inline padrão desse
+  // ≥640px: vira painel lateral fixo em vez do bloco inline padrão desse
   // tier — usado onde o formulário precisa ficar "sobre" a lista, não
-  // substituí-la (ex.: Novo usuário). Abaixo de 1024px, sem efeito.
+  // substituí-la (ex.: Nova vaga, Novo usuário). Abaixo de 640px, sem efeito
+  // (já é o modal de tela cheia por padrão).
   readonly drawer = input(false);
+  // ≥640px: mantém o mesmo modal deslizando de baixo pra cima que já é o
+  // padrão abaixo de 640px, só que centralizado e com largura limitada —
+  // pra painéis curtos (ex.: escolher uma opção) que não fazem sentido
+  // como bloco inline empurrando o resto da página, nem como painel
+  // lateral largo. Abaixo de 640px, sem efeito (já é esse comportamento).
+  readonly bottom = input(false);
   readonly closed = output<void>();
 
   @ViewChild('closeButton') private readonly closeButtonRef?: ElementRef<HTMLButtonElement>;
