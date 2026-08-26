@@ -3,10 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import get_db, require_roles
-from app.core.security import hash_password
+from app.core.deps import get_current_user, get_db, require_roles
+from app.core.security import hash_password, verify_password
 from app.db.models.projeto_parceiro import ProjetoParceiro
 from app.db.models.user import Role, User
+from app.schemas.auth import PasswordChange, ProfileUpdate
 from app.schemas.user import UserCreate, UserOut
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -47,3 +48,33 @@ async def create_user(payload: UserCreate, db: AsyncSession = Depends(get_db)) -
     await db.commit()
     await db.refresh(user, attribute_names=["projetos"])
     return user
+
+
+@router.patch("/me", response_model=UserOut)
+async def update_me(
+    payload: ProfileUpdate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    if payload.email != user.email:
+        existing = await db.execute(
+            select(User).where(User.email == payload.email, User.id != user.id)
+        )
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email já cadastrado")
+        user.email = payload.email
+    user.nome = payload.nome
+    await db.commit()
+    return user
+
+
+@router.post("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_my_password(
+    payload: PasswordChange,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    if not verify_password(payload.senha_atual, user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Senha atual incorreta")
+    user.hashed_password = hash_password(payload.nova_senha)
+    await db.commit()

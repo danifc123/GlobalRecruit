@@ -24,6 +24,7 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: uuid.UUID
     email: EmailStr
+    nome: str | None
     role: Role
     projetos: list[ProjetoParceiroMini]
     is_active: bool

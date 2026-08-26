@@ -29,7 +29,18 @@ class RefreshRequest(BaseModel):
 class CurrentUserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
+    nome: str | None
     role: Role
     projetos: list[ProjetoParceiroMini]
 
     model_config = {"from_attributes": True}
+
+
+class ProfileUpdate(BaseModel):
+    nome: str | None = None
+    email: EmailStr
+
+
+class PasswordChange(BaseModel):
+    senha_atual: str = Field(min_length=8, max_length=72)
+    nova_senha: str = Field(min_length=8, max_length=72)

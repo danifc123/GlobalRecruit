@@ -8,6 +8,7 @@ export interface ProjetoRef {
 export interface AppUser {
   id: string;
   email: string;
+  nome: string | null;
   role: Role;
   projetos: ProjetoRef[];
   isActive: boolean;

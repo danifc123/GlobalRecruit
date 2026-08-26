@@ -7,9 +7,11 @@ import { catchError, of } from 'rxjs';
 import { Icon } from '@app/shared/ui';
 import { environment } from '@env';
 import { AuthService } from '@app/core/auth/auth.service';
+import { isStaffRole } from '@app/core/auth/is-staff';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
-import { getEmailInitials } from '@app/shared/utils/initials';
+import { getEmailInitials, getInitials } from '@app/shared/utils/initials';
+import { PerfilForm } from './perfil-form/perfil-form';
 
 // caixa alta deliberada — visual do badge desta tela (não é o mesmo
 // ROLE_LABELS de core/models/user.ts, que é usado como texto normal)
@@ -21,7 +23,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-conta',
-  imports: [Icon, RouterLink],
+  imports: [Icon, RouterLink, PerfilForm],
   templateUrl: './conta.html',
   styleUrl: './conta.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,12 +35,12 @@ export class Conta {
   private readonly usersService = inject(UsersService);
   private readonly projetosService = inject(ProjetosParceirosService);
 
-  protected readonly isStaff = computed(() => {
-    const role = this.auth.session()?.role;
-    return role === 'admin' || role === 'developer';
-  });
+  protected readonly isStaff = computed(() => isStaffRole(this.auth.session()?.role));
 
-  protected readonly initials = computed(() => getEmailInitials(this.auth.session()?.email ?? ''));
+  protected readonly initials = computed(() => {
+    const session = this.auth.session();
+    return session?.nome ? getInitials(session.nome) : getEmailInitials(session?.email ?? '');
+  });
 
   protected readonly roleLabel = computed(() => ROLE_LABELS[this.auth.session()?.role ?? ''] ?? '');
 

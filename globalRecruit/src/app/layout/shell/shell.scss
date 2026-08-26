@@ -127,8 +127,10 @@
   flex-shrink: 0;
 }
 
-// preparado pro dialog de configurações que ainda vai existir — por
-// enquanto só leva pra /conta, igual o e-mail ao lado
+// abaixo de 1024px: link simples pra /conta, igual o e-mail ao lado. A
+// partir de 1024px (identidade "desktop" de verdade — mesmo limiar da
+// Sidebar larga, ver sidebar.scss:114) essa variante some e dá lugar ao
+// botão que abre o dialog de Configurações, logo abaixo.
 .shell__topbar-avatar {
   display: flex;
   align-items: center;
@@ -136,6 +138,7 @@
   width: 2rem;
   height: 2rem;
   flex-shrink: 0;
+  border: none;
   border-radius: 999px;
   background-color: var(--gr-color-primary-100);
   color: var(--gr-color-primary-700);
@@ -146,6 +149,40 @@
   &:hover {
     background-color: var(--gr-color-primary-200);
   }
+}
+
+.shell__topbar-avatar--button {
+  display: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.shell__topbar-avatar-tooltip {
+  position: absolute;
+  top: calc(100% + var(--gr-space-2));
+  right: 0;
+  z-index: 20;
+  padding: var(--gr-space-2) var(--gr-space-3);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-neutral-900);
+  color: var(--gr-color-text-inverse);
+  font-size: var(--gr-font-size-xs);
+  font-weight: var(--gr-font-weight-regular);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--gr-transition-fast),
+    transform var(--gr-transition-fast);
+  pointer-events: none;
+}
+
+.shell__topbar-avatar--button:hover .shell__topbar-avatar-tooltip,
+.shell__topbar-avatar--button:focus-visible .shell__topbar-avatar-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 // escondido abaixo de 640px: e-mail + título + botão juntos não cabem numa
@@ -168,6 +205,22 @@
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+// ≥1024px: avatar vira o gatilho do dialog de Configurações, e-mail em
+// texto puro some (o avatar já leva pra lá, redundante mantê-lo).
+@media (min-width: 1024px) {
+  .shell__topbar-avatar--link {
+    display: none;
+  }
+
+  .shell__topbar-avatar--button {
+    display: flex;
+  }
+
+  .shell__topbar-email {
+    display: none;
   }
 }
 

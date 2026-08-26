@@ -7,8 +7,8 @@ export function getInitials(nome: string): string {
   return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
-// usuários não têm campo "nome" — só e-mail. Usa a parte local, separada por
-// ./_/- ("ana.ferreira@..." -> "AF"; "dev@..." -> "DE")
+// fallback pra quando o usuário não preencheu um nome — usa a parte local
+// do e-mail, separada por ./_/- ("ana.ferreira@..." -> "AF"; "dev@..." -> "DE")
 export function getEmailInitials(email: string): string {
   const local = email.split('@')[0] ?? '';
   const partes = local.split(/[._-]+/).filter(Boolean);

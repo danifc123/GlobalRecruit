@@ -42,9 +42,18 @@
 
           @if (auth.session(); as session) {
             <div class="shell__topbar-user">
-              <a class="shell__topbar-avatar" routerLink="/conta" aria-label="Minha conta">
+              <a class="shell__topbar-avatar shell__topbar-avatar--link" routerLink="/conta" aria-label="Minha conta">
                 {{ userInitials() }}
               </a>
+              <button
+                type="button"
+                class="shell__topbar-avatar shell__topbar-avatar--button"
+                aria-label="Abrir configurações"
+                (click)="configuracoesOpen.set(true)"
+              >
+                {{ userInitials() }}
+                <span class="shell__topbar-avatar-tooltip">{{ session.email }} · {{ userRoleLabel() }}</span>
+              </button>
               <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
               <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
             </div>
@@ -63,5 +72,7 @@
       [showFab]="phoneNav().showFab"
       (fab)="handleFab()"
     />
+
+    <app-configuracoes-dialog [open]="configuracoesOpen()" (closed)="configuracoesOpen.set(false)" />
   </div>
 }

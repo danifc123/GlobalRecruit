@@ -10,6 +10,13 @@
   </header>
 
   <div class="conta__body" [class.conta__body--staff]="isStaff()">
+    <section class="conta__section conta__section--perfil">
+      <span class="conta__section-title">Perfil</span>
+      <div class="conta__card conta__card--form">
+        <app-perfil-form />
+      </div>
+    </section>
+
     @if (isStaff()) {
       <section class="conta__section conta__section--dados">
         <span class="conta__section-title">Dados</span>

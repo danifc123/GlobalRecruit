@@ -21,6 +21,7 @@ interface RefreshResponse {
 interface MeResponse {
   id: string;
   email: string;
+  nome: string | null;
   role: Session['role'];
   partner_project_id: string | null;
 }
@@ -61,7 +62,16 @@ export class AuthService {
     );
     const current = this.sessionSignal();
     if (current) {
-      this.sessionSignal.set({ ...current, email: me.email });
+      this.sessionSignal.set({ ...current, email: me.email, nome: me.nome });
+    }
+  }
+
+  // chamado pelo form de Perfil depois de salvar com sucesso — reflete o
+  // nome/e-mail novo em toda a app (topbar, iniciais) sem precisar relogar
+  updateSessionProfile(nome: string | null, email: string): void {
+    const current = this.sessionSignal();
+    if (current) {
+      this.sessionSignal.set({ ...current, nome, email });
     }
   }
 
@@ -106,6 +116,7 @@ export class AuthService {
         ? {
             userId: claims.sub,
             email: '',
+            nome: null,
             role: claims.role,
           }
         : null,

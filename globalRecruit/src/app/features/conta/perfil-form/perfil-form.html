@@ -1,0 +1,76 @@
+<div class="perfil-form">
+  <section class="perfil-form__section">
+    <h3 class="perfil-form__title">Dados</h3>
+
+    @if (dadosSucesso()) {
+      <app-banner tone="success">Dados salvos.</app-banner>
+    }
+    @if (dadosErro()) {
+      <app-banner tone="danger">{{ dadosErro() }}</app-banner>
+    }
+
+    <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()" class="perfil-form__form">
+      <app-input label="Nome" formControlName="nome" placeholder="Como quer ser chamado" />
+      <app-input
+        label="Email"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="
+          dadosForm.controls.email.touched && dadosForm.controls.email.invalid
+            ? 'Informe um email válido'
+            : undefined
+        "
+      />
+      <app-button type="submit" [loading]="savingDados()">Salvar dados</app-button>
+    </form>
+  </section>
+
+  <section class="perfil-form__section">
+    <h3 class="perfil-form__title">Senha</h3>
+
+    @if (senhaSucesso()) {
+      <app-banner tone="success">Senha alterada.</app-banner>
+    }
+    @if (senhaErro()) {
+      <app-banner tone="danger">{{ senhaErro() }}</app-banner>
+    }
+
+    <form [formGroup]="senhaForm" (ngSubmit)="salvarSenha()" class="perfil-form__form">
+      <app-input
+        label="Senha atual"
+        type="password"
+        formControlName="senhaAtual"
+        [required]="true"
+        [errorMessage]="
+          senhaForm.controls.senhaAtual.touched && senhaForm.controls.senhaAtual.invalid
+            ? 'Mínimo de 8 caracteres'
+            : undefined
+        "
+      />
+      <app-input
+        label="Nova senha"
+        type="password"
+        formControlName="novaSenha"
+        [required]="true"
+        [errorMessage]="
+          senhaForm.controls.novaSenha.touched && senhaForm.controls.novaSenha.invalid
+            ? 'Mínimo de 8 caracteres'
+            : undefined
+        "
+      />
+      <app-input
+        label="Confirmar nova senha"
+        type="password"
+        formControlName="confirmarSenha"
+        [required]="true"
+        [errorMessage]="
+          senhaForm.controls.confirmarSenha.touched && senhaForm.errors?.['senhasDiferentes']
+            ? 'As senhas não coincidem'
+            : undefined
+        "
+      />
+      <app-button type="submit" [loading]="savingSenha()">Alterar senha</app-button>
+    </form>
+  </section>
+</div>
