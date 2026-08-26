@@ -58,41 +58,6 @@
     Registar Candidato
   </app-button>
 
-  <app-sheet [open]="showForm()" title="Novo candidato" (closed)="toggleForm()">
-      @if (errorMessage()) {
-        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
-      }
-
-      <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
-        <app-input
-          label="Nome"
-          formControlName="nome"
-          [required]="true"
-          [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
-        />
-        <app-input
-          label="Email"
-          type="email"
-          formControlName="email"
-          [required]="true"
-          [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
-        />
-        <app-select
-          label="Vaga alvo"
-          formControlName="vagaId"
-          [options]="vagaOptions()"
-          [required]="true"
-          [errorMessage]="
-            form.controls.vagaId.touched && form.controls.vagaId.invalid ? 'Selecione a vaga' : undefined
-          "
-        />
-        <div class="pipeline__form-actions">
-          <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
-          <app-button type="submit" [loading]="submitting()">Registrar candidato</app-button>
-        </div>
-      </form>
-  </app-sheet>
-
   <div class="pipeline__kanban-view">
     @if (kanbanError(); as msg) {
       <app-banner tone="danger" [dismissible]="true">{{ msg }}</app-banner>
@@ -163,3 +128,38 @@
     }
   </div>
 </app-page>
+
+<app-sheet [open]="showForm()" [drawer]="true" title="Novo candidato" (closed)="toggleForm()">
+  @if (errorMessage()) {
+    <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
+    <app-input
+      label="Nome"
+      formControlName="nome"
+      [required]="true"
+      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+    />
+    <app-input
+      label="Email"
+      type="email"
+      formControlName="email"
+      [required]="true"
+      [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+    />
+    <app-select
+      label="Vaga alvo"
+      formControlName="vagaId"
+      [options]="vagaOptions()"
+      [required]="true"
+      [errorMessage]="
+        form.controls.vagaId.touched && form.controls.vagaId.invalid ? 'Selecione a vaga' : undefined
+      "
+    />
+    <div class="pipeline__form-actions">
+      <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+      <app-button type="submit" [loading]="submitting()">Registrar candidato</app-button>
+    </div>
+  </form>
+</app-sheet>

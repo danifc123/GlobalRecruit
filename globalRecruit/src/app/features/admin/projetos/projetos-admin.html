@@ -54,28 +54,6 @@
     <app-banner tone="success">{{ successMessage() }}</app-banner>
   }
 
-  <app-sheet [open]="showForm()" title="Novo projeto" (closed)="toggleForm()">
-    @if (errorMessage()) {
-      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
-    }
-
-    <form [formGroup]="form" (ngSubmit)="submit()" class="projetos-admin__form">
-      <app-input
-        label="Nome do projeto"
-        formControlName="nome"
-        [required]="true"
-        [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
-      />
-      <app-input
-        label="Cliente"
-        formControlName="cliente"
-        [required]="true"
-        [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
-      />
-      <app-button type="submit" [loading]="submitting()">Criar projeto</app-button>
-    </form>
-  </app-sheet>
-
   <app-table
     [columns]="columns"
     [isEmpty]="isEmpty()"
@@ -92,3 +70,25 @@
     }
   </app-table>
 </app-page>
+
+<app-sheet [open]="showForm()" [drawer]="true" title="Novo projeto" (closed)="toggleForm()">
+  @if (errorMessage()) {
+    <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="projetos-admin__form">
+    <app-input
+      label="Nome do projeto"
+      formControlName="nome"
+      [required]="true"
+      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+    />
+    <app-input
+      label="Cliente"
+      formControlName="cliente"
+      [required]="true"
+      [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+    />
+    <app-button type="submit" [loading]="submitting()">Criar projeto</app-button>
+  </form>
+</app-sheet>

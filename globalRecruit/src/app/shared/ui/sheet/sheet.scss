@@ -122,8 +122,8 @@
   }
 }
 
-// ---- 1024px+: variante drawer (painel lateral, não bloco inline) --------
-@media (min-width: 1024px) {
+// ---- 640px+: variante drawer (painel lateral, não bloco inline) --------
+@media (min-width: 640px) {
   .sheet__backdrop--drawer {
     display: block;
   }
@@ -156,5 +156,38 @@
   }
   to {
     transform: translateX(0);
+  }
+}
+
+// ---- 640px+: variante bottom (mesmo modal deslizando de baixo pra cima
+// que já é o padrão abaixo de 640px, só centralizado e com largura
+// limitada) — pra painéis curtos que não fazem sentido como bloco inline
+// nem como painel lateral largo -----------------------------------------
+@media (min-width: 640px) {
+  .sheet__backdrop--bottom {
+    display: block;
+  }
+
+  .sheet--bottom {
+    position: fixed;
+    inset-inline: auto;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+    max-width: calc(100vw - var(--gr-space-5) * 2);
+    max-height: 80dvh;
+    border-radius: var(--gr-radius-xl) var(--gr-radius-xl) 0 0;
+    box-shadow: var(--gr-shadow-lg);
+    animation: sheet-slide-in var(--gr-transition-base);
+  }
+
+  .sheet--bottom .sheet__close {
+    display: inline-flex;
+  }
+
+  .sheet--bottom .sheet__body {
+    flex: 1;
+    overflow-y: auto;
   }
 }
