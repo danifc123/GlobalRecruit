@@ -414,6 +414,11 @@
   background-color: var(--gr-color-danger-500);
 }
 
+.dashboard__funil-fill--concluido {
+  background-color: var(--gr-color-neutral-400);
+  color: var(--gr-color-text-primary);
+}
+
 .dashboard__status {
   display: inline-flex;
   align-items: center;

@@ -94,7 +94,7 @@ async def stats(user: User = Depends(get_current_user), db: AsyncSession = Depen
     pipeline_stmt = (
         select(
             func.count(
-                case((latest_stage.c.estagio.notin_([Estagio.CONTRATADO, Estagio.REJEITADO]), 1))
+                case((latest_stage.c.estagio.notin_([Estagio.CONTRATADO, Estagio.REJEITADO, Estagio.CONCLUIDO]), 1))
             ),
             func.count(case((latest_stage.c.estagio == Estagio.CONTRATADO, 1))),
         )
@@ -114,7 +114,7 @@ async def stats(user: User = Depends(get_current_user), db: AsyncSession = Depen
         .join(Candidato, Candidato.id == latest_stage.c.candidato_id)
         .join(Vaga, Vaga.id == Candidato.vaga_id)
         .where(
-            latest_stage.c.estagio.notin_([Estagio.CONTRATADO, Estagio.REJEITADO]),
+            latest_stage.c.estagio.notin_([Estagio.CONTRATADO, Estagio.REJEITADO, Estagio.CONCLUIDO]),
             latest_stage.c.updated_at < cutoff,
         )
         .order_by(latest_stage.c.updated_at.asc())

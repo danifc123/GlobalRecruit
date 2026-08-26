@@ -202,6 +202,10 @@
   background-color: var(--gr-color-primary-600);
 }
 
+.vaga-detalhe__pipeline-dot--concluido {
+  background-color: var(--gr-color-neutral-400);
+}
+
 .vaga-detalhe__candidato {
   display: flex;
   align-items: center;

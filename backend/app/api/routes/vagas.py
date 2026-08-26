@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_current_user, get_db, require_roles, scoped_projeto_ids
 from app.db.models.candidato import Candidato
+from app.db.models.pipeline_stage import Estagio, PipelineStage
 from app.db.models.user import Role, User
 from app.db.models.vaga import StatusVaga, Vaga
 from app.schemas.vaga import VagaCreate, VagaOut, VagaPage, VagaPrioridadeUpdate, VagaStatusUpdate, VagaUpdate
@@ -141,6 +142,30 @@ async def update_status(
     vaga = await db.get(Vaga, vaga_id)
     if vaga is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
+
+    # reativação: candidatos ainda em processo (triagem/entrevista/proposta)
+    # nessa vaga viram "concluído" — fecha o vínculo sem apagar histórico,
+    # deixando a vaga livre pra receber indicação nova. contratado/rejeitado
+    # ficam como estão, já são desfechos registrados.
+    if payload.status == StatusVaga.ABERTA and vaga.status != StatusVaga.ABERTA:
+        latest_stage = (
+            select(PipelineStage.candidato_id, PipelineStage.estagio)
+            .distinct(PipelineStage.candidato_id)
+            .order_by(PipelineStage.candidato_id, PipelineStage.updated_at.desc())
+            .subquery()
+        )
+        em_andamento_stmt = (
+            select(Candidato.id)
+            .select_from(latest_stage)
+            .join(Candidato, Candidato.id == latest_stage.c.candidato_id)
+            .where(
+                Candidato.vaga_id == vaga_id,
+                latest_stage.c.estagio.in_([Estagio.TRIAGEM, Estagio.ENTREVISTA, Estagio.PROPOSTA]),
+            )
+        )
+        candidato_ids = (await db.execute(em_andamento_stmt)).scalars().all()
+        for candidato_id in candidato_ids:
+            db.add(PipelineStage(candidato_id=candidato_id, estagio=Estagio.CONCLUIDO))
 
     vaga.status = payload.status
     await db.commit()

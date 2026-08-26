@@ -217,7 +217,7 @@
             <div class="vaga-detalhe__candidato-info">
               <div class="vaga-detalhe__candidato-nome">{{ candidato.nome }}</div>
               <div class="vaga-panel__candidato-tempo">
-                {{ tempoRelativo(candidato.historico[0]?.updatedAt ?? candidato.createdAt) }}@if (candidatoParado(candidato)) { — parado }
+                {{ tempoRelativo(candidato.historico[0].updatedAt) }}@if (candidatoParado(candidato)) { — parado }
               </div>
             </div>
             @if (candidato.estagioAtual) {
