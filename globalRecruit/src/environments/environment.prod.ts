@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  // preenchido no deploy — nunca apontar pra localhost em produção
-  apiUrl: 'https://api.globalrecruit.example.com/api',
+  // backend no Railway (serviço "GlobalRecruit", root directory backend/)
+  apiUrl: 'https://stunning-stillness-production-804f.up.railway.app/api',
 };
