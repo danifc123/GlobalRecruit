@@ -28,12 +28,14 @@ const BASE_NAV_ITEMS: TabItem[] = [
   { path: 'banco-talentos', label: 'Banco de Talentos', icon: 'users' },
 ];
 
+// pipeline de candidatos: admin/developer veem tudo, recrutador só os
+// candidatos das vagas dos projetos vinculados a ele (escopo aplicado no
+// backend, ver scoped_projeto_ids) — por isso fica fora de STAFF_NAV_ITEMS
+const PIPELINE_NAV_ITEM: TabItem = { path: 'pipeline-candidatos', label: 'Pipeline Candidatos', icon: 'filter' };
+
 // só admin/developer — recrutador é bloqueado nessas rotas pelo roleGuard
 // (mostram cliente/comissão e ações de escrita que ele não pode usar)
-const STAFF_NAV_ITEMS: TabItem[] = [
-  { path: 'vagas-ativas', label: 'Vagas Ativas', icon: 'briefcase' },
-  { path: 'pipeline-candidatos', label: 'Pipeline Candidatos', icon: 'filter' },
-];
+const STAFF_NAV_ITEMS: TabItem[] = [{ path: 'vagas-ativas', label: 'Vagas Ativas', icon: 'briefcase' }];
 
 const ADMIN_NAV_ITEMS: TabItem[] = [
   { path: 'admin/usuarios', label: 'Usuários', icon: 'shield' },
@@ -50,10 +52,12 @@ const STAFF_PHONE_RIGHT: TabItem[] = [
   { path: 'conta', label: 'Conta', icon: 'user' },
 ];
 
-// bottom nav do recrutador: Minhas vagas · Talentos · Conta — sem FAB, ele
-// não cria nada
+// bottom nav do recrutador: Minhas vagas · Pipeline · Talentos · Conta — sem
+// FAB (o FAB do shell é só pra "Nova vaga", que continua admin/developer;
+// recrutador cria candidato pelo botão de dentro da própria tela de Pipeline)
 const RECRUTADOR_PHONE_ITEMS: TabItem[] = [
   { path: 'projetos-parceiros', label: 'Minhas vagas', icon: 'briefcase' },
+  { path: 'pipeline-candidatos', label: 'Pipeline', icon: 'filter' },
   { path: 'banco-talentos', label: 'Talentos', icon: 'database' },
   { path: 'conta', label: 'Conta', icon: 'user' },
 ];
@@ -82,6 +86,11 @@ export class Shell {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isStaff = computed(() => isStaffRole(this.auth.session()?.role));
+  // recrutador também enxerga o Pipeline (só as vagas dele) — não é
+  // "staff" (continua sem Vagas Ativas/Admin), mas também não fica de fora
+  protected readonly canSeePipeline = computed(
+    () => this.isStaff() || this.auth.session()?.role === 'recruiter',
+  );
   protected readonly configuracoesOpen = signal(false);
 
   protected readonly userInitials = computed(() => {
@@ -105,8 +114,12 @@ export class Shell {
     this.theme.load();
 
     effect(() => {
-      if (!this.isStaff() || this.countsFetched) return;
+      const isStaff = this.isStaff();
+      const canSeePipeline = this.canSeePipeline();
+      if ((!isStaff && !canSeePipeline) || this.countsFetched) return;
       this.countsFetched = true;
+      // stats() já vem escopado pelo backend (scoped_projeto_ids) — pro
+      // recrutador, candidatosEmPipeline conta só as vagas dele
       this.dashboardService
         .stats()
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -114,10 +127,12 @@ export class Shell {
           this.vagasCount.set(stats.vagasAbertas);
           this.pipelineCount.set(stats.candidatosEmPipeline);
         });
-      this.usersService
-        .list()
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((users) => this.usuariosCount.set(users.length));
+      if (isStaff) {
+        this.usersService
+          .list()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((users) => this.usuariosCount.set(users.length));
+      }
     });
   }
 
@@ -126,14 +141,10 @@ export class Shell {
     ...(this.isStaff()
       ? STAFF_NAV_ITEMS.map((item) => ({
           ...item,
-          count:
-            item.path === 'vagas-ativas'
-              ? (this.vagasCount() ?? undefined)
-              : item.path === 'pipeline-candidatos'
-                ? (this.pipelineCount() ?? undefined)
-                : undefined,
+          count: item.path === 'vagas-ativas' ? (this.vagasCount() ?? undefined) : undefined,
         }))
       : []),
+    ...(this.canSeePipeline() ? [{ ...PIPELINE_NAV_ITEM, count: this.pipelineCount() ?? undefined }] : []),
     ...(this.isStaff()
       ? ADMIN_NAV_ITEMS.map((item) => ({
           ...item,

@@ -107,11 +107,18 @@ async def get_candidato(
 @router.post("", response_model=CandidatoOut, status_code=status.HTTP_201_CREATED)
 async def create_candidato(
     payload: CandidatoCreate,
-    user: User = Depends(require_roles(Role.ADMIN)),
+    user: User = Depends(require_roles(Role.ADMIN, Role.RECRUITER)),
     db: AsyncSession = Depends(get_db),
 ) -> CandidatoOut:
     vaga = await db.get(Vaga, payload.vaga_id)
     if vaga is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
+
+    # mesma regra de escopo do GET: recrutador só indica candidato pra vaga
+    # de projeto vinculado a ele. 404, não 403 — não confirma pra ele que a
+    # vaga existe em outro projeto.
+    ids = scoped_projeto_ids(user)
+    if ids is not None and vaga.projeto_id not in ids:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
 
     candidato = Candidato(nome=payload.nome, email=payload.email, vaga_id=payload.vaga_id)
@@ -127,14 +134,18 @@ async def create_candidato(
 async def update_pipeline_stage(
     candidato_id: uuid.UUID,
     payload: PipelineStageUpdate,
-    user: User = Depends(require_roles(Role.ADMIN)),
+    user: User = Depends(require_roles(Role.ADMIN, Role.RECRUITER)),
     db: AsyncSession = Depends(get_db),
 ) -> CandidatoOut:
     stmt = (
         select(Candidato)
+        .join(Vaga, Vaga.id == Candidato.vaga_id)
         .where(Candidato.id == candidato_id)
         .options(selectinload(Candidato.pipeline_stages))
     )
+    ids = scoped_projeto_ids(user)
+    if ids is not None:
+        stmt = stmt.where(Vaga.projeto_id.in_(ids))
     candidato = (await db.execute(stmt)).scalar_one_or_none()
     if candidato is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidato não encontrado")

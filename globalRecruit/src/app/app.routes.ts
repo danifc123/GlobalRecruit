@@ -58,7 +58,7 @@ export const routes: Routes = [
         (m) => m.PipelineCandidatos,
       ),
     title: 'Pipeline Candidatos — GlobalRecruit Ops',
-    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+    canActivate: [authGuard, roleGuard(['admin', 'developer', 'recruiter'])],
   },
   {
     path: 'pipeline-candidatos/:id',
@@ -67,7 +67,7 @@ export const routes: Routes = [
         (m) => m.CandidatoDetalhe,
       ),
     title: 'Candidato — GlobalRecruit Ops',
-    canActivate: [authGuard, roleGuard(['admin', 'developer'])],
+    canActivate: [authGuard, roleGuard(['admin', 'developer', 'recruiter'])],
   },
   {
     path: 'conta',
