@@ -1,7 +1,7 @@
 <div class="candidato-detalhe">
   @if (loading()) {
     <div class="mobile-header">
-      <button type="button" class="candidato-detalhe__back" aria-label="Voltar" (click)="goBack()">
+      <button type="button" class="candidato-detalhe__back" [attr.aria-label]="'Voltar' | translate" (click)="goBack()">
         <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
       </button>
       <app-skeleton width="60%" height="24px" />
@@ -12,13 +12,13 @@
     </div>
   } @else if (error() || !candidato()) {
     <div class="candidato-detalhe__error">
-      <app-empty-state icon="signal" title="Não conseguimos carregar esse candidato" description="Verifique sua conexão e tente de novo.">
-        <button type="button" class="candidato-detalhe__retry" (click)="goBack()">Voltar</button>
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar esse candidato' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate">
+        <button type="button" class="candidato-detalhe__retry" (click)="goBack()">{{ 'Voltar' | translate }}</button>
       </app-empty-state>
     </div>
   } @else {
     <div class="mobile-header">
-      <button type="button" class="candidato-detalhe__back" aria-label="Voltar" (click)="goBack()">
+      <button type="button" class="candidato-detalhe__back" [attr.aria-label]="'Voltar' | translate" (click)="goBack()">
         <app-icon name="chevron-down" [size]="18" class="candidato-detalhe__back-icon" />
       </button>
       <div class="candidato-detalhe__profile">
@@ -35,7 +35,7 @@
     <div class="candidato-page__header">
       <a class="candidato-page__voltar" routerLink="/pipeline-candidatos">
         <app-icon name="chevron-down" [size]="15" class="candidato-page__voltar-icon" />
-        Pipeline
+        {{ 'Pipeline' | translate }}
       </a>
       <div class="candidato-page__top">
         <div class="candidato-detalhe__profile">
@@ -45,14 +45,14 @@
             <p class="candidato-page__email">{{ candidato()!.email }}</p>
           </div>
         </div>
-        <button type="button" class="candidato-page__mover" (click)="moverOpen.set(true)">Mover etapa</button>
+        <button type="button" class="candidato-page__mover" (click)="moverOpen.set(true)">{{ 'Mover etapa' | translate }}</button>
       </div>
     </div>
 
     <div class="candidato-detalhe__body">
       @if (vaga(); as v) {
         <div class="candidato-detalhe__card">
-          <div class="candidato-detalhe__card-title">Vaga alvo</div>
+          <div class="candidato-detalhe__card-title">{{ 'Vaga alvo' | translate }}</div>
           <a class="candidato-detalhe__vaga" [routerLink]="['/vagas-ativas', v.id]">
             <span class="candidato-detalhe__vaga-flag">{{ v.pais ? v.pais.slice(0, 2).toUpperCase() : '—' }}</span>
             <div>
@@ -66,7 +66,7 @@
 
       <div class="candidato-detalhe__card">
         <div class="candidato-detalhe__card-header">
-          <span class="candidato-detalhe__card-title">Histórico</span>
+          <span class="candidato-detalhe__card-title">{{ 'Histórico' | translate }}</span>
         </div>
         <div class="candidato-detalhe__timeline">
           @for (item of candidato()!.historico; track item.id; let last = $last) {
@@ -78,7 +78,7 @@
                 }
               </div>
               <div class="candidato-detalhe__timeline-content">
-                <div class="candidato-detalhe__timeline-label">{{ estagioLabels[item.estagio] }}</div>
+                <div class="candidato-detalhe__timeline-label">{{ estagioLabels[item.estagio] | translate }}</div>
                 <div class="candidato-detalhe__timeline-date">{{ item.updatedAt | date: 'dd/MM' }}</div>
               </div>
             </div>
@@ -89,11 +89,11 @@
 
     <div class="candidato-detalhe__footer">
       <button type="button" class="candidato-detalhe__mover" (click)="moverOpen.set(true)">
-        Mover etapa
+        {{ 'Mover etapa' | translate }}
       </button>
     </div>
 
-    <app-sheet [open]="moverOpen()" [bottom]="true" title="Mover para" (closed)="moverOpen.set(false)">
+    <app-sheet [open]="moverOpen()" [bottom]="true" [title]="'Mover para' | translate" (closed)="moverOpen.set(false)">
       <div class="candidato-detalhe__opcoes">
         @for (opcao of opcoes(); track opcao.estagio) {
           <button
@@ -103,9 +103,9 @@
             (click)="mover(opcao.estagio)"
           >
             <span class="candidato-detalhe__opcao-dot"></span>
-            {{ opcao.label }}
+            {{ opcao.label | translate }}
             @if (opcao.recomendado) {
-              <span class="candidato-detalhe__opcao-tag">recomendado</span>
+              <span class="candidato-detalhe__opcao-tag">{{ 'recomendado' | translate }}</span>
             }
           </button>
         }

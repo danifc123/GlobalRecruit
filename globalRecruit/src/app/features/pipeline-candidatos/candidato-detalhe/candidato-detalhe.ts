@@ -8,6 +8,7 @@ import { VagasService } from '@app/core/data/vagas.service';
 import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/models/candidato';
 import { Vaga } from '@app/core/models/vaga';
 import { getInitials } from '@app/shared/utils/initials';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 interface EstagioOpcao {
   estagio: Estagio;
@@ -26,7 +27,7 @@ interface CandidaturaItem {
 
 @Component({
   selector: 'app-candidato-detalhe',
-  imports: [DatePipe, EmptyState, Icon, RouterLink, Sheet, Skeleton],
+  imports: [DatePipe, EmptyState, Icon, RouterLink, Sheet, Skeleton, TranslatePipe],
   templateUrl: './candidato-detalhe.html',
   styleUrl: './candidato-detalhe.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
