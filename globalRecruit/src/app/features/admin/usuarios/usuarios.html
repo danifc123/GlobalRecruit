@@ -43,6 +43,12 @@
             <span class="usuarios-mobile__badge usuarios-mobile__badge--{{ user.role }}">{{ roleLabel(user.role) | translate }}</span>
             @if (!isSelf(user)) {
               <app-actions-menu [label]="'Ações do usuário' | translate">
+                @if (user.role === 'recruiter') {
+                  <button type="button" class="actions-menu__item" (click)="abrirVincular(user)">
+                    <app-icon name="briefcase" [size]="15" />
+                    {{ 'Vincular projetos' | translate }}
+                  </button>
+                }
                 <button
                   type="button"
                   class="actions-menu__item"
@@ -114,6 +120,12 @@
         <td [attr.data-label]="'Ações' | translate" class="usuarios__actions" (click)="$event.stopPropagation()">
           @if (!isSelf(user)) {
             <app-actions-menu [label]="'Ações do usuário' | translate">
+              @if (user.role === 'recruiter') {
+                <button type="button" class="actions-menu__item" (click)="abrirVincular(user)">
+                  <app-icon name="briefcase" [size]="15" />
+                  {{ 'Vincular projetos' | translate }}
+                </button>
+              }
               <button
                 type="button"
                 class="actions-menu__item"
@@ -224,10 +236,10 @@
       @if (isRecrutadorRole()) {
         <fieldset class="usuarios__checkbox-group">
           <legend>
-            <span>{{ 'Projetos vinculados' | translate }} <span class="usuarios__required">*</span></span>
+            <span>{{ 'Projetos vinculados' | translate }}</span>
             <span class="usuarios__checkbox-count">{{ '{0} de {1}' | translate: selectedProjetoIds().size : projetos().length }}</span>
           </legend>
-          <p class="usuarios__hint">{{ 'Obrigatório ao menos um — restringe os dados que este recrutador enxerga.' | translate }}</p>
+          <p class="usuarios__hint">{{ 'Restringe os dados que este recrutador enxerga. Pode deixar sem marcar nenhum agora e vincular depois em Ações › Vincular projetos.' | translate }}</p>
           @for (projeto of projetos(); track projeto.id) {
             <label class="usuarios__checkbox">
               <input
@@ -243,3 +255,40 @@
       <app-button type="submit" [loading]="submitting()">{{ 'Criar usuário' | translate }}</app-button>
     </form>
   </app-sheet>
+
+<app-sheet
+  [open]="!!vinculoUser()"
+  [bottom]="true"
+  [title]="'Vincular projetos' | translate"
+  (closed)="fecharVincular()"
+>
+  @if (vinculoUser(); as user) {
+    <p class="usuarios__hint">{{ '{0} — escolha os projetos que ele enxerga.' | translate: user.email }}</p>
+
+    @if (vinculoError(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
+    }
+
+    <fieldset class="usuarios__checkbox-group">
+      <legend>
+        <span>{{ 'Projetos vinculados' | translate }}</span>
+        <span class="usuarios__checkbox-count">{{ '{0} de {1}' | translate: vinculoSelectedIds().size : projetos().length }}</span>
+      </legend>
+      @if (projetos().length === 0) {
+        <p class="usuarios__hint">{{ 'Nenhum projeto parceiro cadastrado ainda.' | translate }}</p>
+      }
+      @for (projeto of projetos(); track projeto.id) {
+        <label class="usuarios__checkbox">
+          <input
+            type="checkbox"
+            [checked]="vinculoSelectedIds().has(projeto.id)"
+            (change)="toggleVinculoProjeto(projeto.id)"
+          />
+          {{ projeto.nome }} — {{ projeto.cliente }}
+        </label>
+      }
+    </fieldset>
+
+    <app-button [loading]="vinculoSubmitting()" (clicked)="salvarVinculo()">{{ 'Salvar vínculo' | translate }}</app-button>
+  }
+</app-sheet>

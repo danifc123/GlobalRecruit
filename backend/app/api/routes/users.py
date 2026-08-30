@@ -10,7 +10,7 @@ from app.core.security import hash_password, verify_password
 from app.db.models.projeto_parceiro import ProjetoParceiro
 from app.db.models.user import Role, User
 from app.schemas.auth import PasswordChange, ProfileUpdate
-from app.schemas.user import UserCreate, UserOut, UserStatusUpdate
+from app.schemas.user import UserCreate, UserOut, UserProjetosUpdate, UserStatusUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -72,6 +72,35 @@ async def update_user_status(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
 
     user.is_active = payload.is_active
+    await db.commit()
+    await db.refresh(user, attribute_names=["projetos"])
+    return user
+
+
+@router.patch("/{user_id}/projetos", response_model=UserOut)
+async def update_user_projetos(
+    user_id: uuid.UUID,
+    payload: UserProjetosUpdate,
+    current_user: User = Depends(require_roles(Role.ADMIN)),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    stmt = select(User).options(selectinload(User.projetos)).where(User.id == user_id)
+    user = (await db.execute(stmt)).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+    if user.role != Role.RECRUITER:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Vínculo de projeto só se aplica a recrutador"
+        )
+
+    projetos: list[ProjetoParceiro] = []
+    if payload.project_ids:
+        result = await db.execute(select(ProjetoParceiro).where(ProjetoParceiro.id.in_(payload.project_ids)))
+        projetos = list(result.scalars().all())
+        if len(projetos) != len(set(payload.project_ids)):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Um ou mais projetos não encontrados")
+
+    user.projetos = projetos
     await db.commit()
     await db.refresh(user, attribute_names=["projetos"])
     return user

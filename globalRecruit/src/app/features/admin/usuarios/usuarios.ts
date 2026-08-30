@@ -170,10 +170,8 @@ export class Usuarios {
   }
 
   protected async submit(): Promise<void> {
-    const missingProjetos = this.isRecrutadorRole() && this.selectedProjetoIds().size === 0;
-    if (this.form.invalid || missingProjetos || this.submitting()) {
+    if (this.form.invalid || this.submitting()) {
       this.form.markAllAsTouched();
-      if (missingProjetos) this.errorMessage.set('Selecione ao menos um projeto para o recrutador.');
       return;
     }
 
@@ -227,6 +225,52 @@ export class Usuarios {
           user.isActive ? 'Não foi possível desativar o usuário.' : 'Não foi possível reativar o usuário.',
         );
         this.togglingId.set(null);
+      },
+    });
+  }
+
+  // recrutador pode ser criado sem projeto (ex.: nenhum projeto cadastrado
+  // ainda) — esse sheet à parte é o jeito de vincular depois, e também de
+  // ajustar o vínculo de um recrutador já existente
+  protected readonly vinculoUser = signal<AppUser | null>(null);
+  protected readonly vinculoSelectedIds = signal<Set<string>>(new Set());
+  protected readonly vinculoSubmitting = signal(false);
+  protected readonly vinculoError = signal<string | null>(null);
+
+  protected abrirVincular(user: AppUser): void {
+    this.vinculoUser.set(user);
+    this.vinculoSelectedIds.set(new Set(user.projetos.map((p) => p.id)));
+    this.vinculoError.set(null);
+  }
+
+  protected fecharVincular(): void {
+    this.vinculoUser.set(null);
+  }
+
+  protected toggleVinculoProjeto(id: string): void {
+    this.vinculoSelectedIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  protected salvarVinculo(): void {
+    const user = this.vinculoUser();
+    if (!user || this.vinculoSubmitting()) return;
+
+    this.vinculoSubmitting.set(true);
+    this.vinculoError.set(null);
+    this.usersService.setProjetos(user.id, Array.from(this.vinculoSelectedIds())).subscribe({
+      next: (updated) => {
+        this.users.update((lista) => lista.map((u) => (u.id === updated.id ? updated : u)));
+        this.vinculoSubmitting.set(false);
+        this.vinculoUser.set(null);
+      },
+      error: () => {
+        this.vinculoError.set('Não foi possível atualizar os projetos vinculados.');
+        this.vinculoSubmitting.set(false);
       },
     });
   }
