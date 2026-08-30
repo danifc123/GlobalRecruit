@@ -1,6 +1,6 @@
 <div class="stat-card">
   <div class="stat-card__header">
-    <span class="stat-card__label">{{ label() }}</span>
+    <span class="stat-card__label">{{ label() | translate }}</span>
     @if (icon(); as iconName) {
       <span [class]="iconClasses()">
         <app-icon [name]="iconName" [size]="18" />
@@ -13,6 +13,6 @@
   </div>
 
   @if (description(); as desc) {
-    <span [class]="descriptionClasses()">{{ desc }}</span>
+    <span [class]="descriptionClasses()">{{ desc | translate }}</span>
   }
 </div>

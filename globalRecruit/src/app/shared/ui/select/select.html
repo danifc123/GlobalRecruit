@@ -1,6 +1,6 @@
 <div class="form-field">
   <label class="form-field__label" [for]="selectId">
-    {{ label() ?? placeholder() }}
+    {{ (label() ?? placeholder()) | translate }}
     @if (required()) {
       <span class="form-field__required" aria-hidden="true">*</span>
     }
@@ -17,15 +17,15 @@
     (change)="handleChange($event)"
     (blur)="handleBlur()"
   >
-    <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
+    <option value="" disabled [selected]="value() === ''">{{ placeholder() | translate }}</option>
     @for (option of options(); track option.value) {
-      <option [value]="option.value" [selected]="option.value === value()">{{ option.label }}</option>
+      <option [value]="option.value" [selected]="option.value === value()">{{ option.label | translate }}</option>
     }
   </select>
 
   @if (errorMessage() && touched()) {
-    <span [id]="messageId" class="form-field__message form-field__message--error">{{ errorMessage() }}</span>
+    <span [id]="messageId" class="form-field__message form-field__message--error">{{ errorMessage() | translate }}</span>
   } @else if (hint(); as hintText) {
-    <span [id]="messageId" class="form-field__message">{{ hintText }}</span>
+    <span [id]="messageId" class="form-field__message">{{ hintText | translate }}</span>
   }
 </div>

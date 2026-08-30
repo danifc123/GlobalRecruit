@@ -8,7 +8,7 @@
           (click)="trigger(item.id)"
         >
           <app-icon [name]="item.icon" [size]="18" />
-          {{ item.label }}
+          {{ item.label | translate }}
         </button>
       }
     </div>

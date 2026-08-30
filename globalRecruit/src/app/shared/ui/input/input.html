@@ -1,7 +1,7 @@
 <div class="form-field">
   @if (label(); as labelText) {
     <label class="form-field__label" [for]="inputId">
-      {{ labelText }}
+      {{ labelText | translate }}
       @if (required()) {
         <span class="form-field__required" aria-hidden="true">*</span>
       }
@@ -13,7 +13,7 @@
     [class.form-field__control--error]="errorMessage() && touched()"
     [id]="inputId"
     [type]="type()"
-    [placeholder]="placeholder()"
+    [placeholder]="placeholder() | translate"
     [value]="value()"
     [disabled]="disabled()"
     [required]="required()"
@@ -24,8 +24,8 @@
   />
 
   @if (errorMessage() && touched()) {
-    <span [id]="messageId" class="form-field__message form-field__message--error">{{ errorMessage() }}</span>
+    <span [id]="messageId" class="form-field__message form-field__message--error">{{ errorMessage() | translate }}</span>
   } @else if (hint(); as hintText) {
-    <span [id]="messageId" class="form-field__message">{{ hintText }}</span>
+    <span [id]="messageId" class="form-field__message">{{ hintText | translate }}</span>
   }
 </div>

@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-empty-state',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './empty-state.html',
   styleUrl: './empty-state.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

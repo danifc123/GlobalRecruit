@@ -9,11 +9,13 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { IdGenerator } from '../../utils/id-generator';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'search';
 
 @Component({
   selector: 'app-input',
+  imports: [TranslatePipe],
   templateUrl: './input.html',
   styleUrl: './input.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

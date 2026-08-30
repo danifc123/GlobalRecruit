@@ -9,6 +9,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { IdGenerator } from '../../utils/id-generator';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export interface SelectOption {
   value: string;
@@ -17,6 +18,7 @@ export interface SelectOption {
 
 @Component({
   selector: 'app-select',
+  imports: [TranslatePipe],
   templateUrl: './select.html',
   styleUrl: './select.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

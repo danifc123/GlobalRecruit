@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export type StatTone = 'moss' | 'accent' | 'info' | 'success' | 'danger' | 'neutral';
 export type StatStatusTone = 'neutral' | 'success';
 
 @Component({
   selector: 'app-stat-card',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './stat-card.html',
   styleUrl: './stat-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

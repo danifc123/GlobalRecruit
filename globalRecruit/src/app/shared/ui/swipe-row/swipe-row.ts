@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export interface SwipeAction {
   id: string;
@@ -16,7 +17,7 @@ const ACTION_WIDTH = 68;
 // horizontal supera o vertical — antes disso a lista rola normalmente.
 @Component({
   selector: 'app-swipe-row',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './swipe-row.html',
   styleUrl: './swipe-row.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
