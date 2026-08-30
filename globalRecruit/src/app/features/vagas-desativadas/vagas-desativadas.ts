@@ -7,6 +7,7 @@ import { ActionsMenu, Banner, EmptyState, Icon, Input, Page, Skeleton, Table } f
 import { VagasService } from '@app/core/data/vagas.service';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { Vaga } from '@app/core/models/vaga';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 const STATUS_LABELS: Record<string, string> = {
   pausada: 'Pausada',
@@ -15,7 +16,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-vagas-desativadas',
-  imports: [ActionsMenu, Banner, EmptyState, FormsModule, Icon, Input, Page, RouterLink, Skeleton, Table],
+  imports: [ActionsMenu, Banner, EmptyState, FormsModule, Icon, Input, Page, RouterLink, Skeleton, Table, TranslatePipe],
   templateUrl: './vagas-desativadas.html',
   styleUrl: './vagas-desativadas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
