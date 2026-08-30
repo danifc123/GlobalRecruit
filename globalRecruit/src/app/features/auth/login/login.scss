@@ -15,6 +15,50 @@
   animation: page-enter var(--gr-transition-base);
 }
 
+// botão de idioma existe nas 3 árvores (login não tem a topbar do Shell,
+// que é onde ele mora no resto do app) — parceiro internacional pode nem
+// ler "Entrar" em português antes de conseguir trocar.
+.login-lang-toggle {
+  position: absolute;
+  top: var(--gr-space-4);
+  right: var(--gr-space-4);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: var(--gr-space-2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color var(--gr-transition-fast);
+}
+
+.login-lang-toggle--mobile {
+  border: var(--gr-border-width) solid rgba(255, 255, 255, 0.24);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--gr-color-text-inverse);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.login-lang-toggle--card,
+.login-lang-toggle--split {
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-secondary);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-primary);
+  }
+}
+
 .login-mobile__glow {
   position: absolute;
   border-radius: 999px;
@@ -167,6 +211,7 @@
   }
 
   .page {
+    position: relative;
     display: block;
     width: 100%;
     max-width: 380px;
@@ -212,6 +257,7 @@
   }
 
   .login-split {
+    position: relative;
     display: flex;
     min-height: 100dvh;
   }
