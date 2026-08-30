@@ -127,6 +127,33 @@
   flex-shrink: 0;
 }
 
+// alcançável em qualquer tela ≥640px sem precisar abrir dialog nenhum —
+// diferente do tema (Aparência, dentro de Configurações), idioma é
+// preferência pessoal de leitura, não uma decisão rara de admin.
+.shell__lang-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: var(--gr-space-2);
+  flex-shrink: 0;
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: 999px;
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-secondary);
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color var(--gr-transition-fast);
+
+  &:hover {
+    background-color: var(--gr-color-neutral-100);
+    color: var(--gr-color-text-primary);
+  }
+}
+
 // abaixo de 1024px: link simples pra /conta, igual o e-mail ao lado. A
 // partir de 1024px (identidade "desktop" de verdade — mesmo limiar da
 // Sidebar larga, ver sidebar.scss:114) essa variante some e dá lugar ao

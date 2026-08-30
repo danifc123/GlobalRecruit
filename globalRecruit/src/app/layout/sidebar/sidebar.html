@@ -15,7 +15,7 @@
         @if (item.icon) {
           <app-icon [name]="item.icon" [size]="20" />
         }
-        <span class="sidebar__label">{{ item.label }}</span>
+        <span class="sidebar__label">{{ item.label | translate }}</span>
         @if (item.count !== undefined) {
           <span class="sidebar__count">{{ item.count }}</span>
         }
@@ -28,7 +28,7 @@
       <span class="sidebar__user-avatar">{{ userInitials() }}</span>
       <div class="sidebar__user-info">
         <div class="sidebar__user-email">{{ email }}</div>
-        <div class="sidebar__user-role">{{ userRoleLabel() }}</div>
+        <div class="sidebar__user-role">{{ userRoleLabel() | translate }}</div>
       </div>
     </div>
   }

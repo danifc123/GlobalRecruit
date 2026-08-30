@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { Icon } from '@app/shared/ui';
 import type { TabItem } from '@app/shared/ui/tabs/tabs';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 // Só visível abaixo de 640px (ver bottom-nav.scss) — substitui a Sidebar no
 // celular. `leftItems`/`rightItems` ficam nas pontas; quando `showFab` é
@@ -10,7 +11,7 @@ import type { TabItem } from '@app/shared/ui/tabs/tabs';
 // do FAB; recrutador: só `leftItems`, sem FAB).
 @Component({
   selector: 'app-bottom-nav',
-  imports: [RouterLink, RouterLinkActive, Icon],
+  imports: [RouterLink, RouterLinkActive, Icon, TranslatePipe],
   templateUrl: './bottom-nav.html',
   styleUrl: './bottom-nav.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -12,19 +12,19 @@
     <div class="shell__main">
       <header class="shell__topbar">
         <div class="shell__topbar-title">
-          <h1>{{ pageTitle() }}</h1>
+          <h1>{{ pageTitle() | translate }}</h1>
         </div>
 
         <div class="shell__topbar-end">
           @if (topbarActions.search(); as search) {
             <div class="shell__search">
               <app-icon name="search" [size]="16" />
-              <label for="shell-search" class="shell__search-label">{{ search.placeholder }}</label>
+              <label for="shell-search" class="shell__search-label">{{ search.placeholder | translate }}</label>
               <input
                 id="shell-search"
                 type="text"
                 class="shell__search-input"
-                [placeholder]="search.placeholder"
+                [placeholder]="search.placeholder | translate"
                 [value]="search.query()"
                 (input)="search.query.set($any($event.target).value)"
               />
@@ -36,26 +36,38 @@
               @if (action.icon) {
                 <app-icon [name]="action.icon" [size]="15" />
               }
-              {{ action.label }}
+              {{ action.label | translate }}
             </app-button>
           }
 
           @if (auth.session(); as session) {
             <div class="shell__topbar-user">
-              <a class="shell__topbar-avatar shell__topbar-avatar--link" routerLink="/conta" aria-label="Minha conta">
+              <button
+                type="button"
+                class="shell__lang-toggle"
+                [attr.aria-label]="lang.language() === 'pt' ? 'Switch to English' : 'Mudar para português'"
+                (click)="lang.toggle()"
+              >
+                {{ lang.language() === 'pt' ? 'EN' : 'PT' }}
+              </button>
+              <a
+                class="shell__topbar-avatar shell__topbar-avatar--link"
+                routerLink="/conta"
+                [attr.aria-label]="'Minha conta' | translate"
+              >
                 {{ userInitials() }}
               </a>
               <button
                 type="button"
                 class="shell__topbar-avatar shell__topbar-avatar--button"
-                aria-label="Abrir configurações"
+                [attr.aria-label]="'Abrir configurações' | translate"
                 (click)="configuracoesOpen.set(true)"
               >
                 {{ userInitials() }}
                 <span class="shell__topbar-avatar-tooltip">{{ session.email }} · {{ userRoleLabel() }}</span>
               </button>
               <a class="shell__topbar-email" routerLink="/conta">{{ session.email }}</a>
-              <app-button variant="ghost" size="sm" (clicked)="logout()">Sair</app-button>
+              <app-button variant="ghost" size="sm" (clicked)="logout()">{{ 'Sair' | translate }}</app-button>
             </div>
           }
         </div>
