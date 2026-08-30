@@ -55,4 +55,10 @@ export class UsersService {
       nova_senha: novaSenha,
     });
   }
+
+  setActive(id: string, isActive: boolean): Observable<AppUser> {
+    return this.http
+      .patch<UserApi>(`${this.baseUrl}/${id}/status`, { is_active: isActive })
+      .pipe(map(toUser));
+  }
 }
