@@ -12,12 +12,13 @@ import { Vaga } from '@app/core/models/vaga';
 import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/models/candidato';
 import { getInitials } from '@app/shared/utils/initials';
 import { diasDesde, tempoRelativo } from '@app/shared/utils/relative-time';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 const DIAS_PARADO_ALERTA = 10;
 
 @Component({
   selector: 'app-vaga-detalhe',
-  imports: [EmptyState, Icon, Skeleton, RouterLink],
+  imports: [EmptyState, Icon, Skeleton, RouterLink, TranslatePipe],
   templateUrl: './vaga-detalhe.html',
   styleUrl: './vaga-detalhe.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
