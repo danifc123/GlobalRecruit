@@ -1,76 +1,76 @@
 <div class="perfil-form">
   <section class="perfil-form__section">
-    <h3 class="perfil-form__title">Dados</h3>
+    <h3 class="perfil-form__title">{{ 'Dados' | translate }}</h3>
 
     @if (dadosSucesso()) {
-      <app-banner tone="success">Dados salvos.</app-banner>
+      <app-banner tone="success">{{ 'Dados salvos.' | translate }}</app-banner>
     }
-    @if (dadosErro()) {
-      <app-banner tone="danger">{{ dadosErro() }}</app-banner>
+    @if (dadosErro(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()" class="perfil-form__form">
-      <app-input label="Nome" formControlName="nome" placeholder="Como quer ser chamado" />
+      <app-input [label]="'Nome' | translate" formControlName="nome" [placeholder]="'Como quer ser chamado' | translate" />
       <app-input
-        label="Email"
+        [label]="'Email' | translate"
         type="email"
         formControlName="email"
         [required]="true"
         [errorMessage]="
           dadosForm.controls.email.touched && dadosForm.controls.email.invalid
-            ? 'Informe um email válido'
+            ? ('Informe um email válido' | translate)
             : undefined
         "
       />
-      <app-button type="submit" [loading]="savingDados()">Salvar dados</app-button>
+      <app-button type="submit" [loading]="savingDados()">{{ 'Salvar dados' | translate }}</app-button>
     </form>
   </section>
 
   <section class="perfil-form__section">
-    <h3 class="perfil-form__title">Senha</h3>
+    <h3 class="perfil-form__title">{{ 'Senha' | translate }}</h3>
 
     @if (senhaSucesso()) {
-      <app-banner tone="success">Senha alterada.</app-banner>
+      <app-banner tone="success">{{ 'Senha alterada.' | translate }}</app-banner>
     }
-    @if (senhaErro()) {
-      <app-banner tone="danger">{{ senhaErro() }}</app-banner>
+    @if (senhaErro(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="senhaForm" (ngSubmit)="salvarSenha()" class="perfil-form__form">
       <app-input
-        label="Senha atual"
+        [label]="'Senha atual' | translate"
         type="password"
         formControlName="senhaAtual"
         [required]="true"
         [errorMessage]="
           senhaForm.controls.senhaAtual.touched && senhaForm.controls.senhaAtual.invalid
-            ? 'Mínimo de 8 caracteres'
+            ? ('Mínimo de 8 caracteres' | translate)
             : undefined
         "
       />
       <app-input
-        label="Nova senha"
+        [label]="'Nova senha' | translate"
         type="password"
         formControlName="novaSenha"
         [required]="true"
         [errorMessage]="
           senhaForm.controls.novaSenha.touched && senhaForm.controls.novaSenha.invalid
-            ? 'Mínimo de 8 caracteres'
+            ? ('Mínimo de 8 caracteres' | translate)
             : undefined
         "
       />
       <app-input
-        label="Confirmar nova senha"
+        [label]="'Confirmar nova senha' | translate"
         type="password"
         formControlName="confirmarSenha"
         [required]="true"
         [errorMessage]="
           senhaForm.controls.confirmarSenha.touched && senhaForm.errors?.['senhasDiferentes']
-            ? 'As senhas não coincidem'
+            ? ('As senhas não coincidem' | translate)
             : undefined
         "
       />
-      <app-button type="submit" [loading]="savingSenha()">Alterar senha</app-button>
+      <app-button type="submit" [loading]="savingSenha()">{{ 'Alterar senha' | translate }}</app-button>
     </form>
   </section>
 </div>

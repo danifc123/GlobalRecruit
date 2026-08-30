@@ -10,10 +10,33 @@
 }
 
 .mobile-header {
+  position: relative;
   background-color: var(--gr-color-primary-900);
   color: var(--gr-color-text-inverse);
   padding: var(--gr-space-3) var(--gr-space-5) var(--gr-space-5);
   flex-shrink: 0;
+}
+
+// só aparece aqui abaixo de 640px — acima disso a topbar do Shell já tem
+// o mesmo botão ao lado do avatar (ver shell.html/.scss)
+.conta__lang-toggle {
+  position: absolute;
+  top: var(--gr-space-3);
+  right: var(--gr-space-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: var(--gr-space-2);
+  border: var(--gr-border-width) solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--gr-color-text-inverse);
+  font-size: 11px;
+  font-weight: var(--gr-font-weight-semibold);
+  letter-spacing: 0.02em;
+  cursor: pointer;
 }
 
 .conta__profile {
@@ -201,6 +224,10 @@
     border-radius: var(--gr-radius-xl);
     margin: var(--gr-space-6) auto 0;
     max-width: 640px;
+  }
+
+  .conta__lang-toggle {
+    display: none;
   }
 
   .conta__body {
