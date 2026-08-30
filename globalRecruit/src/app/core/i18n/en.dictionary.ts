@@ -300,4 +300,12 @@ export const EN_DICTIONARY: Record<string, string> = {
   // ---- Configurações Dialog ----
   Configurações: 'Settings',
   Aparência: 'Appearance',
+
+  // ---- Usuários — ativar/desativar ----
+  'Ações do usuário': 'User actions',
+  'Atualizando…': 'Updating…',
+  Desativar: 'Deactivate',
+  Reativar: 'Reactivate',
+  'Não foi possível desativar o usuário.': 'Could not deactivate the user.',
+  'Não foi possível reativar o usuário.': 'Could not reactivate the user.',
 };

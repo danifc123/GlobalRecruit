@@ -9,6 +9,10 @@
     }
   </div>
 
+  @if (statusError(); as msg) {
+    <app-banner tone="danger">{{ msg | translate }}</app-banner>
+  }
+
   <div class="usuarios-mobile__list">
     @if (loading()) {
       <app-skeleton height="70px" radius="18px" />
@@ -37,6 +41,26 @@
               </div>
             </div>
             <span class="usuarios-mobile__badge usuarios-mobile__badge--{{ user.role }}">{{ roleLabel(user.role) | translate }}</span>
+            @if (!isSelf(user)) {
+              <app-actions-menu [label]="'Ações do usuário' | translate">
+                <button
+                  type="button"
+                  class="actions-menu__item"
+                  [disabled]="togglingId() === user.id"
+                  (click)="toggleActive(user)"
+                >
+                  <app-icon [name]="user.isActive ? 'close' : 'refresh'" [size]="15" />
+                  {{
+                    (togglingId() === user.id
+                      ? 'Atualizando…'
+                      : user.isActive
+                        ? 'Desativar'
+                        : 'Reativar'
+                    ) | translate
+                  }}
+                </button>
+              </app-actions-menu>
+            }
           </div>
           @if (user.projetos.length) {
             <div class="usuarios-mobile__tags">
@@ -67,6 +91,9 @@
   @if (createdEmail(); as email) {
     <app-banner tone="success">{{ 'Usuário {0} criado.' | translate: email }}</app-banner>
   }
+  @if (statusError(); as msg) {
+    <app-banner tone="danger">{{ msg | translate }}</app-banner>
+  }
 
   @if (!loading() && !error()) {
     <app-chip-filter class="usuarios__chips" [options]="filtroOptions()" [(selected)]="filtro" />
@@ -84,6 +111,28 @@
         <td [attr.data-label]="'Papel' | translate">{{ roleLabel(user.role) | translate }}</td>
         <td [attr.data-label]="'Projetos' | translate">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
         <td [attr.data-label]="'Status' | translate">{{ (user.isActive ? 'Ativo' : 'Inativo') | translate }}</td>
+        <td [attr.data-label]="'Ações' | translate" class="usuarios__actions" (click)="$event.stopPropagation()">
+          @if (!isSelf(user)) {
+            <app-actions-menu [label]="'Ações do usuário' | translate">
+              <button
+                type="button"
+                class="actions-menu__item"
+                [disabled]="togglingId() === user.id"
+                (click)="toggleActive(user)"
+              >
+                <app-icon [name]="user.isActive ? 'close' : 'refresh'" [size]="15" />
+                {{
+                  (togglingId() === user.id
+                    ? 'Atualizando…'
+                    : user.isActive
+                      ? 'Desativar'
+                      : 'Reativar'
+                  ) | translate
+                }}
+              </button>
+            </app-actions-menu>
+          }
+        </td>
       </tr>
     }
   </app-table>

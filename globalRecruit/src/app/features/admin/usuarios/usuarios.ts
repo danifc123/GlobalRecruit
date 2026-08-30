@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, Table, type SelectOption } from '@app/shared/ui';
+import { ActionsMenu, Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, Table, type SelectOption } from '@app/shared/ui';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { AuthService } from '@app/core/auth/auth.service';
 import { AppUser, ROLE_LABELS as ROLE_LABELS_CURTO } from '@app/core/models/user';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 import { getInitials } from '@app/shared/utils/initials';
@@ -25,6 +26,7 @@ const ROLE_LABELS: Record<string, string> = Object.fromEntries(
   selector: 'app-usuarios',
   imports: [
     ReactiveFormsModule,
+    ActionsMenu,
     Banner,
     Button,
     ChipFilter,
@@ -47,10 +49,11 @@ export class Usuarios {
   private readonly usersService = inject(UsersService);
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly topbarActions = inject(TopbarActionsService);
+  private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly roleOptions = ROLE_OPTIONS;
-  protected readonly columns = ['Email', 'Papel', 'Projetos', 'Status'];
+  protected readonly columns = ['Email', 'Papel', 'Projetos', 'Status', 'Ações'];
   protected readonly getInitials = getInitials;
 
   protected readonly users = signal<AppUser[]>([]);
@@ -88,6 +91,8 @@ export class Usuarios {
   protected readonly showForm = signal(false);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly togglingId = signal<string | null>(null);
+  protected readonly statusError = signal<string | null>(null);
   // guarda só o email criado — a frase ao redor é montada no template com
   // 'Usuário {0} criado.' | translate, senão o texto fixo ficaria preso
   // dentro da string interpolada e não teria como traduzir
@@ -193,6 +198,30 @@ export class Usuarios {
           this.submitting.set(false);
         },
       });
+  }
+
+  // ninguém desativa a própria conta — o backend também barra isso, esse
+  // check aqui é só pra não nem mostrar o botão pra esse caso
+  protected isSelf(user: AppUser): boolean {
+    return user.id === this.auth.session()?.userId;
+  }
+
+  protected toggleActive(user: AppUser): void {
+    if (this.togglingId()) return;
+    this.togglingId.set(user.id);
+    this.statusError.set(null);
+    this.usersService.setActive(user.id, !user.isActive).subscribe({
+      next: (updated) => {
+        this.users.update((lista) => lista.map((u) => (u.id === updated.id ? updated : u)));
+        this.togglingId.set(null);
+      },
+      error: () => {
+        this.statusError.set(
+          user.isActive ? 'Não foi possível desativar o usuário.' : 'Não foi possível reativar o usuário.',
+        );
+        this.togglingId.set(null);
+      },
+    });
   }
 
   private loadUsers(): void {

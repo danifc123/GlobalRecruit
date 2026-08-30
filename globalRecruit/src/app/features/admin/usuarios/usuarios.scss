@@ -8,6 +8,11 @@ app-page {
   display: none;
 }
 
+.usuarios__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .usuarios__form {
   display: flex;
   flex-direction: column;
