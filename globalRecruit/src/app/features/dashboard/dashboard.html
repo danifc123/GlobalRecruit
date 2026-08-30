@@ -2,7 +2,7 @@
   <div class="mobile-header">
     <div class="dashboard-mobile__top">
       <div>
-        <div class="dashboard-mobile__date">{{ today | date: "EEEE, d 'de' MMMM" }}</div>
+        <div class="dashboard-mobile__date">{{ today | date: 'dd/MM/yyyy' }}</div>
         <div class="dashboard-mobile__greeting">{{ 'Olá' | translate }}@if (primeiroNome()) {, {{ primeiroNome() }} }</div>
       </div>
       <span class="dashboard-mobile__status" [class.dashboard-mobile__status--offline]="error()">
