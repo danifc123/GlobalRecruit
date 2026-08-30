@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ActionsMenu, Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, Table, type SelectOption } from '@app/shared/ui';
@@ -110,7 +110,14 @@ export class Usuarios {
     role: ['', [Validators.required]],
   });
 
-  protected readonly isRecrutadorRole = computed(() => this.form.controls.role.value === 'recruiter');
+  // FormControl.value não é um signal — ler ele direto dentro de computed()
+  // não registra dependência nenhuma, então o computed calculava uma vez só
+  // (com o form ainda vazio) e nunca mais atualizava, mesmo trocando o papel
+  // pelos cards/segmented/select. toSignal(valueChanges) resolve isso.
+  private readonly roleValue = toSignal(this.form.controls.role.valueChanges, {
+    initialValue: this.form.controls.role.value,
+  });
+  protected readonly isRecrutadorRole = computed(() => this.roleValue() === 'recruiter');
 
   constructor() {
     this.loadUsers();
