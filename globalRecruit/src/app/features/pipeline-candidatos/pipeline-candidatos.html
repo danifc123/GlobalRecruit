@@ -17,6 +17,12 @@
       <app-skeleton width="50%" height="11px" />
     } @else if (error()) {
       <app-empty-state icon="signal" [title]="'Não conseguimos carregar o pipeline' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
+    } @else if (semVinculo()) {
+      <app-empty-state
+        icon="shield"
+        [title]="'Você ainda não está vinculado a nenhum projeto' | translate"
+        [description]="'Peça a um administrador para te vincular a um projeto em Usuários.' | translate"
+      />
     } @else if (rowsFiltradas().length === 0) {
       <app-empty-state icon="filter" [description]="'Nenhum candidato nessa etapa.' | translate" />
     } @else {
@@ -75,6 +81,12 @@
       </div>
     } @else if (error()) {
       <app-empty-state icon="signal" [title]="'Não conseguimos carregar o pipeline' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
+    } @else if (semVinculo()) {
+      <app-empty-state
+        icon="shield"
+        [title]="'Você ainda não está vinculado a nenhum projeto' | translate"
+        [description]="'Peça a um administrador para te vincular a um projeto em Usuários.' | translate"
+      />
     } @else {
       <div class="pipeline__kanban">
         @for (coluna of kanbanColunas(); track coluna.estagio) {
@@ -134,6 +146,11 @@
     <app-banner tone="danger">{{ msg | translate }}</app-banner>
   }
 
+  @if (semVinculo()) {
+    <app-banner tone="warning" icon="shield">
+      {{ 'Você ainda não está vinculado a nenhum projeto — peça a um administrador para te vincular em Usuários antes de indicar um candidato.' | translate }}
+    </app-banner>
+  } @else {
   <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
     <app-input
       [label]="'Nome' | translate"
@@ -162,4 +179,5 @@
       <app-button type="submit" [loading]="submitting()">{{ 'Registrar candidato' | translate }}</app-button>
     </div>
   </form>
+  }
 </app-sheet>

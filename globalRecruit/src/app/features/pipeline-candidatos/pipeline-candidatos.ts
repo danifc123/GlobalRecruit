@@ -8,9 +8,12 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { Banner, Button, ChipFilter, type ChipOption, EmptyState, Icon, Input, Page, Select, Sheet, Skeleton, type SelectOption } from '@app/shared/ui';
 import { VagasService } from '@app/core/data/vagas.service';
 import { CandidatosService } from '@app/core/data/candidatos.service';
+import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { AuthService } from '@app/core/auth/auth.service';
 import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/models/candidato';
 import { Vaga } from '@app/core/models/vaga';
+import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 import { getInitials } from '@app/shared/utils/initials';
 import { diasDesde } from '@app/shared/utils/relative-time';
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
@@ -46,9 +49,11 @@ export class PipelineCandidatos {
   private readonly fb = inject(FormBuilder);
   private readonly vagasService = inject(VagasService);
   private readonly candidatosService = inject(CandidatosService);
+  private readonly projetosService = inject(ProjetosParceirosService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly topbarActions = inject(TopbarActionsService);
+  private readonly auth = inject(AuthService);
 
   protected readonly getInitials = getInitials;
   protected readonly estagioLabels = ESTAGIO_LABELS;
@@ -56,6 +61,13 @@ export class PipelineCandidatos {
   protected readonly vagas = signal<Vaga[]>([]);
   protected readonly vagaOptions = computed<SelectOption[]>(() =>
     this.vagas().map((vaga) => ({ value: vaga.id, label: `${vaga.cargo} — ${vaga.cliente}` })),
+  );
+
+  // só pra distinguir "recrutador sem nenhum projeto vinculado" (ação certa:
+  // pedir pro admin vincular) de "vinculado mas sem vaga aberta no momento"
+  protected readonly projetos = signal<ProjetoParceiro[]>([]);
+  protected readonly semVinculo = computed(
+    () => this.auth.session()?.role === 'recruiter' && !this.loading() && this.projetos().length === 0,
   );
 
   protected readonly rows = signal<CandidatoRow[]>([]);
@@ -118,6 +130,10 @@ export class PipelineCandidatos {
 
   constructor() {
     this.loadRows();
+    this.projetosService
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((projetos) => this.projetos.set(projetos));
 
     const params = this.route.snapshot.queryParamMap;
     if (params.get('novo') === '1') {

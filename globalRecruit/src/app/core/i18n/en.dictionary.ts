@@ -313,4 +313,11 @@ export const EN_DICTIONARY: Record<string, string> = {
   '{0} — escolha os projetos que ele enxerga.': "{0} — choose the projects they can see.",
   'Salvar vínculo': 'Save link',
   'Não foi possível atualizar os projetos vinculados.': 'Could not update the linked projects.',
+
+  // ---- Recrutador sem vínculo de projeto ----
+  'Você ainda não está vinculado a nenhum projeto': "You're not linked to any project yet",
+  'Peça a um administrador para te vincular a um projeto em Usuários.':
+    'Ask an administrator to link you to a project in Users.',
+  'Você ainda não está vinculado a nenhum projeto — peça a um administrador para te vincular em Usuários antes de indicar um candidato.':
+    "You're not linked to any project yet — ask an administrator to link you in Users before referring a candidate.",
 };

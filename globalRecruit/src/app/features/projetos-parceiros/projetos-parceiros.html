@@ -20,6 +20,12 @@
       <app-skeleton height="90px" radius="16px" />
     } @else if (error()) {
       <app-empty-state icon="signal" [title]="'Não conseguimos carregar suas vagas' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
+    } @else if (semVinculo()) {
+      <app-empty-state
+        icon="shield"
+        [title]="'Você ainda não está vinculado a nenhum projeto' | translate"
+        [description]="'Peça a um administrador para te vincular a um projeto em Usuários.' | translate"
+      />
     } @else if (isEmpty()) {
       <app-empty-state icon="users" [description]="'Nenhum projeto atribuído a você ainda.' | translate" />
     } @else {
@@ -60,11 +66,20 @@
     </span>
   </app-banner>
 
+  @if (semVinculo()) {
+    <app-empty-state
+      icon="shield"
+      [title]="'Você ainda não está vinculado a nenhum projeto' | translate"
+      [description]="'Peça a um administrador para te vincular a um projeto em Usuários.' | translate"
+    />
+  }
+
   <app-table
     [columns]="columns"
     [isEmpty]="isEmpty()"
     emptyIcon="users"
     [emptyMessage]="'Nenhuma vaga encontrada.' | translate"
+    [hidden]="semVinculo()"
   >
     @for (vaga of vagasFiltradas(); track vaga.id) {
       <tr>
