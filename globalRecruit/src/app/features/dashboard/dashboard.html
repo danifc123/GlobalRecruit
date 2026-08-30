@@ -3,11 +3,11 @@
     <div class="dashboard-mobile__top">
       <div>
         <div class="dashboard-mobile__date">{{ today | date: "EEEE, d 'de' MMMM" }}</div>
-        <div class="dashboard-mobile__greeting">Olá@if (primeiroNome()) {, {{ primeiroNome() }} }</div>
+        <div class="dashboard-mobile__greeting">{{ 'Olá' | translate }}@if (primeiroNome()) {, {{ primeiroNome() }} }</div>
       </div>
       <span class="dashboard-mobile__status" [class.dashboard-mobile__status--offline]="error()">
         <span class="dashboard-mobile__status-dot"></span>
-        {{ error() ? 'API indisponível' : 'API online' }}
+        {{ (error() ? 'API indisponível' : 'API online') | translate }}
       </span>
     </div>
 
@@ -21,15 +21,15 @@
       <div class="dashboard-mobile__kpis">
         <div class="dashboard-mobile__kpi">
           <div class="dashboard-mobile__kpi-value">{{ s.vagasAbertas }}</div>
-          <div class="dashboard-mobile__kpi-label">vagas abertas</div>
+          <div class="dashboard-mobile__kpi-label">{{ 'vagas abertas' | translate }}</div>
         </div>
         <div class="dashboard-mobile__kpi">
           <div class="dashboard-mobile__kpi-value dashboard-mobile__kpi-value--pipeline">{{ s.candidatosEmPipeline }}</div>
-          <div class="dashboard-mobile__kpi-label">no pipeline</div>
+          <div class="dashboard-mobile__kpi-label">{{ 'no pipeline' | translate }}</div>
         </div>
         <div class="dashboard-mobile__kpi">
           <div class="dashboard-mobile__kpi-value dashboard-mobile__kpi-value--alta">{{ s.vagasAltaPrioridade }}</div>
-          <div class="dashboard-mobile__kpi-label">alta prioridade</div>
+          <div class="dashboard-mobile__kpi-label">{{ 'alta prioridade' | translate }}</div>
         </div>
       </div>
     }
@@ -42,7 +42,7 @@
     } @else if (stats(); as s) {
       @if (s.candidatosParados.length > 0 || s.vagasSemCandidato.length > 0) {
         <div class="dashboard-mobile__section">
-          <span class="dashboard-mobile__section-title">Precisa de você hoje</span>
+          <span class="dashboard-mobile__section-title">{{ 'Precisa de você hoje' | translate }}</span>
           <div class="dashboard-mobile__card">
             @for (c of s.candidatosParados; track c.id) {
               <a class="dashboard-mobile__attention" [routerLink]="['/pipeline-candidatos', c.id]">
@@ -50,7 +50,7 @@
                   <app-icon name="clock" [size]="16" />
                 </span>
                 <div class="dashboard-mobile__attention-body">
-                  <div class="dashboard-mobile__attention-title">{{ c.nome }} parado há {{ c.diasParado }}d</div>
+                  <div class="dashboard-mobile__attention-title">{{ '{0} parado há {1}d' | translate: c.nome : c.diasParado }}</div>
                   <div class="dashboard-mobile__attention-meta">{{ c.vagaCargo }}</div>
                 </div>
               </a>
@@ -61,7 +61,7 @@
                   <app-icon name="briefcase" [size]="16" />
                 </span>
                 <div class="dashboard-mobile__attention-body">
-                  <div class="dashboard-mobile__attention-title">{{ v.cargo }} sem candidato</div>
+                  <div class="dashboard-mobile__attention-title">{{ '{0} sem candidato' | translate: v.cargo }}</div>
                   <div class="dashboard-mobile__attention-meta">{{ v.cliente }}</div>
                 </div>
               </a>
@@ -73,8 +73,8 @@
       @if (s.vagasPorIdioma.length > 0) {
         <div class="dashboard-mobile__card">
           <div class="dashboard-mobile__card-header">
-            <span>Vagas por idioma exigido</span>
-            <span class="dashboard-mobile__card-count">{{ s.vagasAbertas }} vagas</span>
+            <span>{{ 'Vagas por idioma exigido' | translate }}</span>
+            <span class="dashboard-mobile__card-count">{{ s.vagasAbertas }} {{ 'vagas' | translate }}</span>
           </div>
           <div class="dashboard-mobile__bars">
             @for (item of s.vagasPorIdioma; track item.idioma) {
@@ -94,11 +94,11 @@
 
       <div class="dashboard-mobile__stats-row">
         <div class="dashboard-mobile__stat">
-          <div class="dashboard-mobile__stat-label">Clientes ativos</div>
+          <div class="dashboard-mobile__stat-label">{{ 'Clientes ativos' | translate }}</div>
           <div class="dashboard-mobile__stat-value">{{ s.clientesAtivos }}</div>
         </div>
         <div class="dashboard-mobile__stat">
-          <div class="dashboard-mobile__stat-label">Modalidade remota</div>
+          <div class="dashboard-mobile__stat-label">{{ 'Modalidade remota' | translate }}</div>
           <div class="dashboard-mobile__stat-value">{{ s.pctModalidadeRemota }}%</div>
         </div>
       </div>
@@ -109,33 +109,33 @@
 <div class="dashboard">
   <div class="dashboard__grid">
     <app-stat-card
-      label="Vagas Ativas"
+      [label]="'Vagas Ativas' | translate"
       icon="flame"
       tone="accent"
-      [description]="stats() ? '+' + stats()!.vagasNovasSemana + ' nesta semana' : 'Em aberto'"
+      [description]="stats() ? '+' + stats()!.vagasNovasSemana + ' ' + ('nesta semana' | translate) : ('Em aberto' | translate)"
       statusTone="success"
     >
       {{ stats()?.vagasAbertas ?? '—' }}
     </app-stat-card>
 
-    <app-stat-card label="Candidatos no Pipeline" icon="users" tone="info" description="Em processo">
+    <app-stat-card [label]="'Candidatos no Pipeline' | translate" icon="users" tone="info" [description]="'Em processo' | translate">
       {{ stats()?.candidatosEmPipeline ?? '—' }}
     </app-stat-card>
 
-    <app-stat-card label="Clientes Ativos" icon="building" tone="moss" description="Empresas parceiras">
+    <app-stat-card [label]="'Clientes Ativos' | translate" icon="building" tone="moss" [description]="'Empresas parceiras' | translate">
       {{ stats()?.clientesAtivos ?? '—' }}
     </app-stat-card>
 
     @if (isDeveloper()) {
       <app-stat-card
-        label="Estado da Conexão"
+        [label]="'Estado da Conexão' | translate"
         icon="signal"
         [tone]="error() ? 'danger' : 'success'"
         description="GlobalRecruit API"
       >
         <span class="dashboard__status">
           <span class="dashboard__status-dot" [class.dashboard__status-dot--error]="error()"></span>
-          {{ error() ? 'Indisponível' : 'Online' }}
+          {{ (error() ? 'Indisponível' : 'Online') | translate }}
         </span>
       </app-stat-card>
     }
@@ -146,7 +146,7 @@
       <app-card class="dashboard__attention-card">
         <div card-header class="dashboard__chart-header">
           <app-icon name="clock" [size]="18" />
-          <h3>Precisa de você hoje</h3>
+          <h3>{{ 'Precisa de você hoje' | translate }}</h3>
         </div>
         <div class="dashboard__attention-list">
           @for (c of s.candidatosParados; track c.id) {
@@ -155,7 +155,7 @@
                 <app-icon name="clock" [size]="16" />
               </span>
               <div class="dashboard-mobile__attention-body">
-                <div class="dashboard-mobile__attention-title">{{ c.nome }} parado há {{ c.diasParado }}d</div>
+                <div class="dashboard-mobile__attention-title">{{ '{0} parado há {1}d' | translate: c.nome : c.diasParado }}</div>
                 <div class="dashboard-mobile__attention-meta">{{ c.vagaCargo }}</div>
               </div>
             </a>
@@ -166,7 +166,7 @@
                 <app-icon name="briefcase" [size]="16" />
               </span>
               <div class="dashboard-mobile__attention-body">
-                <div class="dashboard-mobile__attention-title">{{ v.cargo }} sem candidato</div>
+                <div class="dashboard-mobile__attention-title">{{ '{0} sem candidato' | translate: v.cargo }}</div>
                 <div class="dashboard-mobile__attention-meta">{{ v.cliente }}</div>
               </div>
             </a>
@@ -177,8 +177,10 @@
                 <app-icon name="filter" [size]="16" />
               </span>
               <div class="dashboard-mobile__attention-body">
-                <div class="dashboard-mobile__attention-title">{{ p.nome }} — proposta aguardando resposta</div>
-                <div class="dashboard-mobile__attention-meta">{{ p.vagaCargo }} · enviada em {{ p.enviadaEm | date: 'dd/MM' }}</div>
+                <div class="dashboard-mobile__attention-title">{{ '{0} — proposta aguardando resposta' | translate: p.nome }}</div>
+                <div class="dashboard-mobile__attention-meta">
+                  {{ p.vagaCargo }} · {{ 'enviada em' | translate }} {{ p.enviadaEm | date: 'dd/MM' }}
+                </div>
               </div>
             </a>
           }
@@ -190,7 +192,7 @@
   <app-card class="dashboard__idioma-card">
     <div card-header class="dashboard__chart-header">
       <app-icon name="pie-chart" [size]="18" />
-      <h3>Vagas por Idioma Exigido</h3>
+      <h3>{{ 'Vagas por Idioma Exigido' | translate }}</h3>
     </div>
     @if (stats()?.vagasPorIdioma?.length) {
       <div class="dashboard__bars">
@@ -209,7 +211,7 @@
     } @else {
       <app-empty-state
         icon="pie-chart"
-        description="Ainda não há vagas suficientes para gerar este gráfico."
+        [description]="'Ainda não há vagas suficientes para gerar este gráfico.' | translate"
       />
     }
   </app-card>
@@ -218,12 +220,12 @@
     <app-card class="dashboard__funil-card">
       <div card-header class="dashboard__chart-header">
         <app-icon name="filter" [size]="18" />
-        <h3>Funil geral</h3>
+        <h3>{{ 'Funil geral' | translate }}</h3>
       </div>
       <div class="dashboard__funil">
         @for (item of s.funilPorEtapa; track item.estagio) {
           <div class="dashboard__funil-row">
-            <span class="dashboard__funil-label">{{ estagioLabels[item.estagio] }}</span>
+            <span class="dashboard__funil-label">{{ estagioLabels[item.estagio] | translate }}</span>
             <div class="dashboard__funil-track">
               <div
                 class="dashboard__funil-fill dashboard__funil-fill--{{ item.estagio }}"

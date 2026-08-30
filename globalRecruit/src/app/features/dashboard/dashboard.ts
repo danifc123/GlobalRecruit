@@ -10,10 +10,11 @@ import { DashboardStats } from '@app/core/models/dashboard';
 import { ESTAGIO_LABELS } from '@app/core/models/candidato';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Card, EmptyState, Icon, Skeleton, StatCard, RouterLink, DatePipe],
+  imports: [Card, EmptyState, Icon, Skeleton, StatCard, RouterLink, DatePipe, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
