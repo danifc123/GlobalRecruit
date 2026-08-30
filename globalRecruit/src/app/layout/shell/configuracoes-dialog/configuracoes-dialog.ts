@@ -6,6 +6,7 @@ import { isStaffRole } from '@app/core/auth/is-staff';
 
 import { PerfilForm } from '@app/features/conta/perfil-form/perfil-form';
 import { AparenciaForm } from '@app/features/conta/aparencia-form/aparencia-form';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 type Aba = 'perfil' | 'aparencia';
 
@@ -18,7 +19,7 @@ const ABA_OPTIONS: SegmentedOption<Aba>[] = [
 // disso o avatar continua levando pra /conta, esse dialog nem monta.
 @Component({
   selector: 'app-configuracoes-dialog',
-  imports: [Sheet, SegmentedControl, PerfilForm, AparenciaForm],
+  imports: [Sheet, SegmentedControl, PerfilForm, AparenciaForm, TranslatePipe],
   templateUrl: './configuracoes-dialog.html',
   styleUrl: './configuracoes-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

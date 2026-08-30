@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from '@an
 
 import { Button } from '../button/button';
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export type BannerTone = 'info' | 'success' | 'warning' | 'danger';
 export type BannerLayout = 'bar' | 'boxed';
 
 @Component({
   selector: 'app-banner',
-  imports: [Icon, Button],
+  imports: [Icon, Button, TranslatePipe],
   templateUrl: './banner.html',
   styleUrl: './banner.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

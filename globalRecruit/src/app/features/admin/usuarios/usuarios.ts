@@ -9,6 +9,7 @@ import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
 import { AppUser, ROLE_LABELS as ROLE_LABELS_CURTO } from '@app/core/models/user';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 import { getInitials } from '@app/shared/utils/initials';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 const ROLE_OPTIONS: SelectOption[] = [
   { value: 'admin', label: 'Administrador' },
@@ -35,6 +36,7 @@ const ROLE_LABELS: Record<string, string> = Object.fromEntries(
     Sheet,
     Skeleton,
     Table,
+    TranslatePipe,
   ],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.scss',
@@ -86,7 +88,10 @@ export class Usuarios {
   protected readonly showForm = signal(false);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly successMessage = signal<string | null>(null);
+  // guarda só o email criado — a frase ao redor é montada no template com
+  // 'Usuário {0} criado.' | translate, senão o texto fixo ficaria preso
+  // dentro da string interpolada e não teria como traduzir
+  protected readonly createdEmail = signal<string | null>(null);
 
   // "Recrutador" pode estar vinculado a vários projetos ao mesmo tempo — o
   // Select do UI kit só suporta valor único, então o vínculo aqui é uma
@@ -162,7 +167,7 @@ export class Usuarios {
 
     this.submitting.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
+    this.createdEmail.set(null);
     const { email, password, role } = this.form.getRawValue();
 
     this.usersService
@@ -174,7 +179,7 @@ export class Usuarios {
       })
       .subscribe({
         next: () => {
-          this.successMessage.set(`Usuário ${email} criado.`);
+          this.createdEmail.set(email);
           this.form.reset({ email: '', password: '', role: '' });
           this.selectedProjetoIds.set(new Set());
           this.submitting.set(false);

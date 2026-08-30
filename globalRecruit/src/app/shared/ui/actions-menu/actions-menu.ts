@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild, input, signal } from '@angular/core';
 
 import { Icon } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 // Primeiro menu de ações do app — botão "..." que abre um painel pequeno
 // ancorado embaixo dele. `position: fixed` (coordenadas calculadas do
@@ -13,7 +14,7 @@ import { Icon } from '../icon/icon';
 // ao clicar em qualquer item projetado (o clique borbulha até o painel).
 @Component({
   selector: 'app-actions-menu',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './actions-menu.html',
   styleUrl: './actions-menu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

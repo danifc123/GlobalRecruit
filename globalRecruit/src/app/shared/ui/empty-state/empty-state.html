@@ -5,10 +5,10 @@
     </span>
   }
   @if (title(); as titleText) {
-    <h3 class="empty-state__title">{{ titleText }}</h3>
+    <h3 class="empty-state__title">{{ titleText | translate }}</h3>
   }
   @if (description(); as descriptionText) {
-    <p class="empty-state__description">{{ descriptionText }}</p>
+    <p class="empty-state__description">{{ descriptionText | translate }}</p>
   }
   <ng-content />
 </div>

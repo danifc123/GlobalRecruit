@@ -1,9 +1,9 @@
 <div class="usuarios-mobile">
   <div class="mobile-header">
     <div class="usuarios-mobile__top">
-      <span class="usuarios-mobile__breadcrumb">Administração</span>
+      <span class="usuarios-mobile__breadcrumb">{{ 'Administração' | translate }}</span>
     </div>
-    <div class="usuarios-mobile__title">Usuários e acessos</div>
+    <div class="usuarios-mobile__title">{{ 'Usuários e acessos' | translate }}</div>
     @if (!loading() && !error()) {
       <app-chip-filter class="usuarios-mobile__chips" [options]="filtroOptions()" [(selected)]="filtro" />
     }
@@ -14,9 +14,9 @@
       <app-skeleton height="70px" radius="18px" />
       <app-skeleton height="70px" radius="18px" />
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar os usuários" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar os usuários' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
     } @else if (usersFiltrados().length === 0) {
-      <app-empty-state icon="users" description="Nenhum usuário encontrado para esse filtro." />
+      <app-empty-state icon="users" [description]="'Nenhum usuário encontrado para esse filtro.' | translate" />
     } @else {
       @for (user of usersFiltrados(); track user.id) {
         <div class="usuarios-mobile__card" [class.usuarios-mobile__card--inativo]="!user.isActive">
@@ -26,15 +26,17 @@
               <div class="usuarios-mobile__email" [class.usuarios-mobile__email--riscado]="!user.isActive">{{ user.email }}</div>
               <div class="usuarios-mobile__meta">
                 @if (!user.isActive) {
-                  Inativo
-                } @else if (user.projetos.length) {
-                  {{ user.projetos.length }} projeto{{ user.projetos.length > 1 ? 's' : '' }} vinculado{{ user.projetos.length > 1 ? 's' : '' }}
+                  {{ 'Inativo' | translate }}
+                } @else if (user.projetos.length > 1) {
+                  {{ '{0} projetos vinculados' | translate: user.projetos.length }}
+                } @else if (user.projetos.length === 1) {
+                  {{ '{0} projeto vinculado' | translate: user.projetos.length }}
                 } @else {
-                  Acesso total
+                  {{ 'Acesso total' | translate }}
                 }
               </div>
             </div>
-            <span class="usuarios-mobile__badge usuarios-mobile__badge--{{ user.role }}">{{ roleLabel(user.role) }}</span>
+            <span class="usuarios-mobile__badge usuarios-mobile__badge--{{ user.role }}">{{ roleLabel(user.role) | translate }}</span>
           </div>
           @if (user.projetos.length) {
             <div class="usuarios-mobile__tags">
@@ -51,19 +53,19 @@
   <div class="usuarios-mobile__footer">
     <button type="button" class="usuarios-mobile__novo" (click)="toggleForm()">
       <app-icon name="plus" [size]="17" />
-      Novo usuário
+      {{ 'Novo usuário' | translate }}
     </button>
   </div>
 </div>
 
-<app-page description="Gestão de contas e níveis de acesso.">
+<app-page [description]="'Gestão de contas e níveis de acesso.' | translate">
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
-    Novo usuário
+    {{ 'Novo usuário' | translate }}
   </app-button>
 
-  @if (successMessage()) {
-    <app-banner tone="success">{{ successMessage() }}</app-banner>
+  @if (createdEmail(); as email) {
+    <app-banner tone="success">{{ 'Usuário {0} criado.' | translate: email }}</app-banner>
   }
 
   @if (!loading() && !error()) {
@@ -74,52 +76,52 @@
     [columns]="columns"
     [isEmpty]="!loading() && usersFiltrados().length === 0"
     emptyIcon="users"
-    emptyMessage="Nenhum usuário encontrado para esse filtro."
+    [emptyMessage]="'Nenhum usuário encontrado para esse filtro.' | translate"
   >
     @for (user of usersFiltrados(); track user.id) {
       <tr>
-        <td data-label="Email">{{ user.email }}</td>
-        <td data-label="Papel">{{ roleLabel(user.role) }}</td>
-        <td data-label="Projetos">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
-        <td data-label="Status">{{ user.isActive ? 'Ativo' : 'Inativo' }}</td>
+        <td [attr.data-label]="'Email' | translate">{{ user.email }}</td>
+        <td [attr.data-label]="'Papel' | translate">{{ roleLabel(user.role) | translate }}</td>
+        <td [attr.data-label]="'Projetos' | translate">{{ user.projetos.length ? user.projetos.map(p => p.nome).join(', ') : '—' }}</td>
+        <td [attr.data-label]="'Status' | translate">{{ (user.isActive ? 'Ativo' : 'Inativo') | translate }}</td>
       </tr>
     }
   </app-table>
 </app-page>
 
-<app-sheet [open]="showForm()" [drawer]="true" title="Novo usuário" (closed)="toggleForm()">
-    @if (errorMessage()) {
-      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+<app-sheet [open]="showForm()" [drawer]="true" [title]="'Novo usuário' | translate" (closed)="toggleForm()">
+    @if (errorMessage(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="usuarios__form">
       <app-input
-        label="Email"
+        [label]="'Email' | translate"
         type="email"
         formControlName="email"
         [required]="true"
-        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+        [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? ('Informe um email válido' | translate) : undefined"
       />
       <app-input
-        label="Senha temporária"
+        [label]="'Senha temporária' | translate"
         type="password"
         formControlName="password"
         [required]="true"
-        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+        [errorMessage]="form.controls.password.touched && form.controls.password.invalid ? ('Mínimo de 8 caracteres' | translate) : undefined"
       />
 
       <div class="usuarios__role-select">
         <app-select
-          label="Papel"
+          [label]="'Papel' | translate"
           formControlName="role"
           [options]="roleOptions"
           [required]="true"
-          [errorMessage]="form.controls.role.touched && form.controls.role.invalid ? 'Selecione um papel' : undefined"
+          [errorMessage]="form.controls.role.touched && form.controls.role.invalid ? ('Selecione um papel' | translate) : undefined"
         />
       </div>
 
       <div class="usuarios__role-cards">
-        <span class="usuarios__field-label">Papel</span>
+        <span class="usuarios__field-label">{{ 'Papel' | translate }}</span>
         <button
           type="button"
           class="usuarios__role-card"
@@ -132,8 +134,8 @@
             }
           </span>
           <span>
-            <span class="usuarios__role-card-title">Recrutador</span>
-            <span class="usuarios__role-card-desc">Só leitura, restrito aos projetos vinculados.</span>
+            <span class="usuarios__role-card-title">{{ 'Recrutador' | translate }}</span>
+            <span class="usuarios__role-card-desc">{{ 'Só leitura, restrito aos projetos vinculados.' | translate }}</span>
           </span>
         </button>
         <button
@@ -148,14 +150,14 @@
             }
           </span>
           <span>
-            <span class="usuarios__role-card-title">Admin</span>
-            <span class="usuarios__role-card-desc">Cria vagas, candidatos, projetos e usuários.</span>
+            <span class="usuarios__role-card-title">{{ 'Admin' | translate }}</span>
+            <span class="usuarios__role-card-desc">{{ 'Cria vagas, candidatos, projetos e usuários.' | translate }}</span>
           </span>
         </button>
       </div>
 
       <div class="usuarios__role-segmented">
-        <span class="usuarios__field-label">Papel</span>
+        <span class="usuarios__field-label">{{ 'Papel' | translate }}</span>
         <div class="usuarios__segmented">
           @for (opcao of roleOptions; track opcao.value) {
             <button
@@ -164,7 +166,7 @@
               [class.usuarios__segment--active]="form.controls.role.value === opcao.value"
               (click)="selecionarRole($any(opcao.value))"
             >
-              {{ roleLabelCurto(opcao.value) }}
+              {{ roleLabelCurto(opcao.value) | translate }}
             </button>
           }
         </div>
@@ -173,10 +175,10 @@
       @if (isRecrutadorRole()) {
         <fieldset class="usuarios__checkbox-group">
           <legend>
-            <span>Projetos vinculados <span class="usuarios__required">*</span></span>
-            <span class="usuarios__checkbox-count">{{ selectedProjetoIds().size }} de {{ projetos().length }}</span>
+            <span>{{ 'Projetos vinculados' | translate }} <span class="usuarios__required">*</span></span>
+            <span class="usuarios__checkbox-count">{{ '{0} de {1}' | translate: selectedProjetoIds().size : projetos().length }}</span>
           </legend>
-          <p class="usuarios__hint">Obrigatório ao menos um — restringe os dados que este recrutador enxerga.</p>
+          <p class="usuarios__hint">{{ 'Obrigatório ao menos um — restringe os dados que este recrutador enxerga.' | translate }}</p>
           @for (projeto of projetos(); track projeto.id) {
             <label class="usuarios__checkbox">
               <input
@@ -189,6 +191,6 @@
           }
         </fieldset>
       }
-      <app-button type="submit" [loading]="submitting()">Criar usuário</app-button>
+      <app-button type="submit" [loading]="submitting()">{{ 'Criar usuário' | translate }}</app-button>
     </form>
   </app-sheet>

@@ -1,4 +1,4 @@
-<app-sheet [open]="open()" [drawer]="true" title="Configurações" (closed)="close()">
+<app-sheet [open]="open()" [drawer]="true" [title]="'Configurações' | translate" (closed)="close()">
   @if (isStaff()) {
     <app-segmented-control class="configuracoes-dialog__abas" [options]="abaOptions" [(value)]="aba" />
   }

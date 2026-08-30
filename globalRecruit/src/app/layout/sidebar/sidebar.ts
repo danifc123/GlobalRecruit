@@ -3,10 +3,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { Icon } from '@app/shared/ui';
 import type { TabItem } from '@app/shared/ui/tabs/tabs';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, Icon],
+  imports: [RouterLink, RouterLinkActive, Icon, TranslatePipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
+
 export interface ChipOption {
   value: string;
   label: string;
@@ -10,6 +12,7 @@ export interface ChipOption {
 // rápido (substitui o header escuro dos mockups: "Todas · 24", "Alta · 9"...)
 @Component({
   selector: 'app-chip-filter',
+  imports: [TranslatePipe],
   templateUrl: './chip-filter.html',
   styleUrl: './chip-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

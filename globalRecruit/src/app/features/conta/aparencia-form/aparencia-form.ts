@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Banner, Button } from '@app/shared/ui';
 import { ThemeColors, ThemeService } from '@app/core/ui/theme.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 interface ColorField {
   key: keyof ThemeColors;
@@ -27,7 +28,7 @@ const FIELDS: ColorField[] = [
 // variável CSS cada cor sobrescreve exatamente.
 @Component({
   selector: 'app-aparencia-form',
-  imports: [Banner, Button],
+  imports: [Banner, Button, TranslatePipe],
   templateUrl: './aparencia-form.html',
   styleUrl: './aparencia-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

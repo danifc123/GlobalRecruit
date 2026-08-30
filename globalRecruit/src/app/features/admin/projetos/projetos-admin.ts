@@ -5,10 +5,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Banner, Button, EmptyState, Icon, Input, Page, Sheet, Skeleton, Table } from '@app/shared/ui';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-projetos-admin',
-  imports: [ReactiveFormsModule, Banner, Button, EmptyState, Icon, Input, Page, Sheet, Skeleton, Table, DatePipe],
+  imports: [ReactiveFormsModule, Banner, Button, EmptyState, Icon, Input, Page, Sheet, Skeleton, Table, DatePipe, TranslatePipe],
   templateUrl: './projetos-admin.html',
   styleUrl: './projetos-admin.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,9 @@ export class ProjetosAdmin {
   protected readonly showForm = signal(false);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly successMessage = signal<string | null>(null);
+  // guarda só o nome do projeto criado — a frase ao redor é montada no
+  // template com 'Projeto {0} criado.' | translate
+  protected readonly createdProjetoNome = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required]],
@@ -51,12 +54,12 @@ export class ProjetosAdmin {
 
     this.submitting.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
+    this.createdProjetoNome.set(null);
     const { nome, cliente } = this.form.getRawValue();
 
     this.projetosService.create(nome, cliente).subscribe({
       next: (projeto) => {
-        this.successMessage.set(`Projeto ${projeto.nome} criado.`);
+        this.createdProjetoNome.set(projeto.nome);
         this.form.reset({ nome: '', cliente: '' });
         this.submitting.set(false);
         this.showForm.set(false);

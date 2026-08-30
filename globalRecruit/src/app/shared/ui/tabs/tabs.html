@@ -9,7 +9,7 @@
       @if (item.icon) {
         <app-icon [name]="item.icon" [size]="16" />
       }
-      <span>{{ i + 1 }}. {{ item.label }}</span>
+      <span>{{ i + 1 }}. {{ item.label | translate }}</span>
     </a>
   }
 </nav>

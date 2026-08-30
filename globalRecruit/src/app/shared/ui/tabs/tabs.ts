@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export interface TabItem {
   path: string;
@@ -12,7 +13,7 @@ export interface TabItem {
 
 @Component({
   selector: 'app-tabs',
-  imports: [RouterLink, RouterLinkActive, Icon],
+  imports: [RouterLink, RouterLinkActive, Icon, TranslatePipe],
   templateUrl: './tabs.html',
   styleUrl: './tabs.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,6 +11,8 @@ import { isStaffRole } from '@app/core/auth/is-staff';
 import { UsersService } from '@app/core/data/users.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { getEmailInitials, getInitials } from '@app/shared/utils/initials';
+import { LanguageService } from '@app/core/i18n/language.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 import { PerfilForm } from './perfil-form/perfil-form';
 
 // caixa alta deliberada — visual do badge desta tela (não é o mesmo
@@ -23,7 +25,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-conta',
-  imports: [Icon, RouterLink, PerfilForm],
+  imports: [Icon, RouterLink, PerfilForm, TranslatePipe],
   templateUrl: './conta.html',
   styleUrl: './conta.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +33,7 @@ const ROLE_LABELS: Record<string, string> = {
 export class Conta {
   private readonly http = inject(HttpClient);
   protected readonly auth = inject(AuthService);
+  protected readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly usersService = inject(UsersService);
   private readonly projetosService = inject(ProjetosParceirosService);

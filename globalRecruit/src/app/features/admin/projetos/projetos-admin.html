@@ -1,8 +1,8 @@
 <div class="projetos-mobile">
   <div class="mobile-header">
-    <span class="projetos-mobile__breadcrumb">Administração</span>
-    <div class="projetos-mobile__title">Projetos parceiros</div>
-    <p class="projetos-mobile__subtitle">Cadastro de projetos de clientes — vinculados a recrutadores em Usuários.</p>
+    <span class="projetos-mobile__breadcrumb">{{ 'Administração' | translate }}</span>
+    <div class="projetos-mobile__title">{{ 'Projetos parceiros' | translate }}</div>
+    <p class="projetos-mobile__subtitle">{{ 'Cadastro de projetos de clientes — vinculados a recrutadores em Usuários.' | translate }}</p>
   </div>
 
   <div class="projetos-mobile__list">
@@ -10,9 +10,9 @@
       <app-skeleton height="66px" radius="18px" />
       <app-skeleton height="66px" radius="18px" />
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar os projetos" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar os projetos' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
     } @else if (isEmpty()) {
-      <app-empty-state icon="briefcase" description="Nenhum projeto parceiro cadastrado ainda." />
+      <app-empty-state icon="briefcase" [description]="'Nenhum projeto parceiro cadastrado ainda.' | translate" />
     } @else {
       @for (projeto of projetos(); track projeto.id) {
         <div class="projetos-mobile__row">
@@ -20,16 +20,20 @@
           <div class="projetos-mobile__row-body">
             <div class="projetos-mobile__nome">{{ projeto.nome }}</div>
             <div class="projetos-mobile__meta">
-              {{ projeto.cliente }} · {{ projeto.status === 'ativo' ? ('desde ' + (projeto.createdAt | date: 'dd/MM/yyyy')) : 'pausado' }}
+              @if (projeto.status === 'ativo') {
+                {{ 'desde {0}' | translate: (projeto.createdAt | date: 'dd/MM/yyyy') ?? '' }}
+              } @else {
+                {{ 'pausado' | translate }}
+              }
             </div>
           </div>
           @if (projeto.status === 'ativo') {
             <div class="projetos-mobile__count">
               <div class="projetos-mobile__count-value">{{ projeto.vagasCount }}</div>
-              <div class="projetos-mobile__count-label">vagas</div>
+              <div class="projetos-mobile__count-label">{{ 'vagas' | translate }}</div>
             </div>
           } @else {
-            <span class="projetos-mobile__paused">Pausado</span>
+            <span class="projetos-mobile__paused">{{ 'Pausado' | translate }}</span>
           }
         </div>
       }
@@ -39,56 +43,56 @@
   <div class="projetos-mobile__footer">
     <button type="button" class="projetos-mobile__novo" (click)="toggleForm()">
       <app-icon name="plus" [size]="17" />
-      Novo projeto
+      {{ 'Novo projeto' | translate }}
     </button>
   </div>
 </div>
 
-<app-page description="Cadastro dos projetos de clientes parceiros, vinculados a recrutadores em Usuários.">
+<app-page [description]="'Cadastro dos projetos de clientes parceiros, vinculados a recrutadores em Usuários.' | translate">
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
-    Novo projeto
+    {{ 'Novo projeto' | translate }}
   </app-button>
 
-  @if (successMessage()) {
-    <app-banner tone="success">{{ successMessage() }}</app-banner>
+  @if (createdProjetoNome(); as nome) {
+    <app-banner tone="success">{{ 'Projeto {0} criado.' | translate: nome }}</app-banner>
   }
 
   <app-table
     [columns]="columns"
     [isEmpty]="isEmpty()"
     emptyIcon="briefcase"
-    emptyMessage="Nenhum projeto parceiro cadastrado ainda."
+    [emptyMessage]="'Nenhum projeto parceiro cadastrado ainda.' | translate"
   >
     @for (projeto of projetos(); track projeto.id) {
       <tr>
-        <td data-label="Nome">{{ projeto.nome }}</td>
-        <td data-label="Cliente">{{ projeto.cliente }}</td>
-        <td data-label="Status">{{ projeto.status }}</td>
-        <td data-label="Criado em">{{ projeto.createdAt | date: 'dd/MM/yyyy' }}</td>
+        <td [attr.data-label]="'Nome' | translate">{{ projeto.nome }}</td>
+        <td [attr.data-label]="'Cliente' | translate">{{ projeto.cliente }}</td>
+        <td [attr.data-label]="'Status' | translate">{{ projeto.status | translate }}</td>
+        <td [attr.data-label]="'Criado em' | translate">{{ projeto.createdAt | date: 'dd/MM/yyyy' }}</td>
       </tr>
     }
   </app-table>
 </app-page>
 
-<app-sheet [open]="showForm()" [drawer]="true" title="Novo projeto" (closed)="toggleForm()">
-  @if (errorMessage()) {
-    <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+<app-sheet [open]="showForm()" [drawer]="true" [title]="'Novo projeto' | translate" (closed)="toggleForm()">
+  @if (errorMessage(); as msg) {
+    <app-banner tone="danger">{{ msg | translate }}</app-banner>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="projetos-admin__form">
     <app-input
-      label="Nome do projeto"
+      [label]="'Nome do projeto' | translate"
       formControlName="nome"
       [required]="true"
-      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? ('Obrigatório' | translate) : undefined"
     />
     <app-input
-      label="Cliente"
+      [label]="'Cliente' | translate"
       formControlName="cliente"
       [required]="true"
-      [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+      [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? ('Obrigatório' | translate) : undefined"
     />
-    <app-button type="submit" [loading]="submitting()">Criar projeto</app-button>
+    <app-button type="submit" [loading]="submitting()">{{ 'Criar projeto' | translate }}</app-button>
   </form>
 </app-sheet>

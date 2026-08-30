@@ -25,6 +25,7 @@ import { VagasService } from '@app/core/data/vagas.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 import { Vaga } from '@app/core/models/vaga';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 
@@ -65,6 +66,7 @@ const SWIPE_ACTIONS: SwipeAction[] = [
     Skeleton,
     SwipeRow,
     Table,
+    TranslatePipe,
   ],
   templateUrl: './vagas-ativas.html',
   styleUrl: './vagas-ativas.scss',

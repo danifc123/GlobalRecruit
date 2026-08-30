@@ -1,18 +1,18 @@
 <div class="vagas-mobile">
   <div class="mobile-header">
     <div class="vagas-mobile__top">
-      <span class="vagas-mobile__title">Vagas ativas</span>
+      <span class="vagas-mobile__title">{{ 'Vagas ativas' | translate }}</span>
       <div class="vagas-mobile__top-actions">
-        <a class="vagas-mobile__desativadas" routerLink="/vagas-desativadas">Desativadas</a>
-        <button type="button" class="vagas-mobile__add" aria-label="Nova vaga" (click)="toggleForm()">
+        <a class="vagas-mobile__desativadas" routerLink="/vagas-desativadas">{{ 'Desativadas' | translate }}</a>
+        <button type="button" class="vagas-mobile__add" [attr.aria-label]="'Nova vaga' | translate" (click)="toggleForm()">
           <app-icon name="plus" [size]="18" />
         </button>
       </div>
     </div>
     @if (!loading() && !error()) {
       <div class="vagas-mobile__stats">
-        <div><div class="vagas-mobile__stat-value">{{ vagas().length }}</div><div class="vagas-mobile__stat-label">abertas</div></div>
-        <div><div class="vagas-mobile__stat-value vagas-mobile__stat-value--accent">{{ filtroOptions()[1].count }}</div><div class="vagas-mobile__stat-label">prioridade alta</div></div>
+        <div><div class="vagas-mobile__stat-value">{{ vagas().length }}</div><div class="vagas-mobile__stat-label">{{ 'abertas' | translate }}</div></div>
+        <div><div class="vagas-mobile__stat-value vagas-mobile__stat-value--accent">{{ filtroOptions()[1].count }}</div><div class="vagas-mobile__stat-label">{{ 'prioridade alta' | translate }}</div></div>
       </div>
       <app-chip-filter class="vagas-mobile__chips" [options]="filtroOptions()" [(selected)]="filtro" />
     }
@@ -29,9 +29,13 @@
         <app-skeleton width="72%" height="11px" />
       </div>
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar as vagas" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state
+        icon="signal"
+        [title]="'Não conseguimos carregar as vagas' | translate"
+        [description]="'Verifique sua conexão e tente de novo.' | translate"
+      />
     } @else if (isEmpty()) {
-      <app-empty-state icon="briefcase" description="Nenhuma vaga encontrada para esse filtro." />
+      <app-empty-state icon="briefcase" [description]="'Nenhuma vaga encontrada para esse filtro.' | translate" />
     } @else {
       @for (vaga of vagasFiltradas(); track vaga.id) {
         <app-swipe-row [actions]="swipeActions" (action)="handleSwipeAction(vaga.id, $event)">
@@ -43,11 +47,11 @@
               </div>
               <div class="vagas-mobile__row-meta">{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }@if (vaga.idioma) { · {{ vaga.idioma }} }</div>
               <div class="vagas-mobile__row-tags">
-                <span class="vagas-mobile__tag vagas-mobile__tag--prioridade-{{ vaga.prioridade }}">{{ vaga.prioridade }}</span>
+                <span class="vagas-mobile__tag vagas-mobile__tag--prioridade-{{ vaga.prioridade }}">{{ vaga.prioridade | translate }}</span>
                 @if (vaga.candidatosCount === 0) {
-                  <span class="vagas-mobile__tag vagas-mobile__tag--warning">sem candidato</span>
+                  <span class="vagas-mobile__tag vagas-mobile__tag--warning">{{ 'sem candidato' | translate }}</span>
                 } @else {
-                  <span class="vagas-mobile__tag">{{ vaga.candidatosCount }} no pipeline</span>
+                  <span class="vagas-mobile__tag">{{ '{0} no pipeline' | translate: vaga.candidatosCount }}</span>
                 }
               </div>
             </div>
@@ -58,11 +62,11 @@
   </div>
 </div>
 
-<app-page description="Gestão de vagas operacionais.">
-  <a page-actions class="vagas__desativadas-link" routerLink="/vagas-desativadas">Vagas desativadas</a>
+<app-page [description]="'Gestão de vagas operacionais.' | translate">
+  <a page-actions class="vagas__desativadas-link" routerLink="/vagas-desativadas">{{ 'Vagas desativadas' | translate }}</a>
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
-    Nova Vaga
+    {{ 'Nova Vaga' | translate }}
   </app-button>
 
   <div class="vagas__body" [class.vagas__body--detail-open]="hasDetail()">
@@ -74,7 +78,7 @@
         [columns]="columns"
         [isEmpty]="isEmpty()"
         emptyIcon="briefcase"
-        emptyMessage="Nenhuma vaga aberta no momento."
+        [emptyMessage]="'Nenhuma vaga aberta no momento.' | translate"
       >
         @for (vaga of vagasFiltradas(); track vaga.id) {
           <tr
@@ -82,23 +86,23 @@
             [class.vagas__row--selected]="selectedVagaId() === vaga.id"
             (click)="selectVaga(vaga.id)"
           >
-            <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
-            <td data-label="Cliente">{{ vaga.cliente }}</td>
-            <td data-label="Cargo">{{ vaga.cargo }}</td>
-            <td data-label="Idioma">{{ vaga.idioma ?? '—' }}</td>
-            <td data-label="País">{{ vaga.pais ?? '—' }}</td>
-            <td data-label="Modalidade">{{ vaga.modalidade ?? '—' }}</td>
-            <td data-label="Salário">{{ vaga.salario ?? '—' }}</td>
-            <td data-label="Comissão">{{ vaga.comissao ?? '—' }}</td>
-            <td data-label="Prioridade">{{ vaga.prioridade }}</td>
-            <td data-label="Ações" class="vagas__actions" (click)="$event.stopPropagation()">
-              <a class="vagas__action" [routerLink]="['/vagas-ativas', vaga.id]" aria-label="Ver detalhes da vaga">
+            <td [attr.data-label]="'ID Vaga' | translate">{{ vaga.id.slice(0, 8) }}</td>
+            <td [attr.data-label]="'Cliente' | translate">{{ vaga.cliente }}</td>
+            <td [attr.data-label]="'Cargo' | translate">{{ vaga.cargo }}</td>
+            <td [attr.data-label]="'Idioma' | translate">{{ vaga.idioma ?? '—' }}</td>
+            <td [attr.data-label]="'País' | translate">{{ vaga.pais ?? '—' }}</td>
+            <td [attr.data-label]="'Modalidade' | translate">{{ vaga.modalidade ? (vaga.modalidade | translate) : '—' }}</td>
+            <td [attr.data-label]="'Salário' | translate">{{ vaga.salario ?? '—' }}</td>
+            <td [attr.data-label]="'Comissão' | translate">{{ vaga.comissao ?? '—' }}</td>
+            <td [attr.data-label]="'Prioridade' | translate">{{ vaga.prioridade | translate }}</td>
+            <td [attr.data-label]="'Ações' | translate" class="vagas__actions" (click)="$event.stopPropagation()">
+              <a class="vagas__action" [routerLink]="['/vagas-ativas', vaga.id]" [attr.aria-label]="'Ver detalhes da vaga' | translate">
                 <app-icon name="search" [size]="15" />
               </a>
               <button
                 type="button"
                 class="vagas__action"
-                aria-label="Indicar candidato para esta vaga"
+                [attr.aria-label]="'Indicar candidato para esta vaga' | translate"
                 (click)="handleSwipeAction(vaga.id, 'indicar')"
               >
                 <app-icon name="user-plus" [size]="15" />
@@ -110,52 +114,52 @@
   </div>
 </app-page>
 
-<app-sheet [open]="showForm()" [drawer]="true" [title]="editingVagaId() ? 'Editar vaga' : 'Nova vaga'" (closed)="toggleForm()">
+<app-sheet [open]="showForm()" [drawer]="true" [title]="(editingVagaId() ? 'Editar vaga' : 'Nova vaga')" (closed)="toggleForm()">
     <div class="vagas-wizard__progress">
       <div class="vagas-wizard__steps">
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 1"></span>
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 2"></span>
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 3"></span>
       </div>
-      <span class="vagas-wizard__step-label">Etapa {{ currentStep() }} de 3</span>
+      <span class="vagas-wizard__step-label">{{ 'Etapa {0} de 3' | translate: currentStep() }}</span>
     </div>
 
-    @if (errorMessage()) {
-      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    @if (errorMessage(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="vagas__form">
       <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 1">
         <app-select
-          label="Projeto"
+          [label]="'Projeto' | translate"
           formControlName="projetoId"
           [options]="projetoOptions()"
           [required]="true"
           [errorMessage]="
             form.controls.projetoId.touched && form.controls.projetoId.invalid
-              ? 'Selecione o projeto'
+              ? ('Selecione o projeto' | translate)
               : undefined
           "
         />
         <app-input
-          label="Cargo"
+          [label]="'Cargo' | translate"
           formControlName="cargo"
           [required]="true"
-          [errorMessage]="form.controls.cargo.touched && form.controls.cargo.invalid ? 'Obrigatório' : undefined"
+          [errorMessage]="form.controls.cargo.touched && form.controls.cargo.invalid ? ('Obrigatório' | translate) : undefined"
         />
         <app-input
-          label="Cliente"
+          [label]="'Cliente' | translate"
           formControlName="cliente"
           [required]="true"
-          [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? 'Obrigatório' : undefined"
+          [errorMessage]="form.controls.cliente.touched && form.controls.cliente.invalid ? ('Obrigatório' | translate) : undefined"
         />
       </div>
 
       <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 2">
-        <app-input label="País" formControlName="pais" />
-        <app-input label="Idioma" formControlName="idioma" />
+        <app-input [label]="'País' | translate" formControlName="pais" />
+        <app-input [label]="'Idioma' | translate" formControlName="idioma" />
         <div class="vagas-wizard__field">
-          <span class="vagas-wizard__field-label">Modalidade</span>
+          <span class="vagas-wizard__field-label">{{ 'Modalidade' | translate }}</span>
           <div class="vagas-wizard__segmented">
             @for (opcao of modalidadeOpcoes; track opcao) {
               <button
@@ -164,24 +168,24 @@
                 [class.vagas-wizard__segment--active]="form.controls.modalidade.value === opcao"
                 (click)="selecionarModalidade(opcao)"
               >
-                {{ opcao }}
+                {{ opcao | translate }}
               </button>
             }
           </div>
         </div>
-        <app-input label="Salário" type="number" formControlName="salario" />
+        <app-input [label]="'Salário' | translate" type="number" formControlName="salario" />
       </div>
 
       <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 3">
-        <app-input label="Comissão" type="number" formControlName="comissao" />
+        <app-input [label]="'Comissão' | translate" type="number" formControlName="comissao" />
         <app-select
-          label="Prioridade"
+          [label]="'Prioridade' | translate"
           formControlName="prioridade"
           [options]="prioridadeOptions"
           [required]="true"
           [errorMessage]="
             form.controls.prioridade.touched && form.controls.prioridade.invalid
-              ? 'Selecione a prioridade'
+              ? ('Selecione a prioridade' | translate)
               : undefined
           "
         />
@@ -189,26 +193,26 @@
 
       <div class="vagas-wizard__nav">
         @if (currentStep() > 1) {
-          <button type="button" class="vagas-wizard__back" aria-label="Etapa anterior" (click)="prevStep()">
+          <button type="button" class="vagas-wizard__back" [attr.aria-label]="'Etapa anterior' | translate" (click)="prevStep()">
             <app-icon name="chevron-down" [size]="18" class="vagas-wizard__back-icon" />
           </button>
         }
         @if (currentStep() < 3) {
-          <button type="button" class="vagas-wizard__continue" (click)="nextStep()">Continuar</button>
+          <button type="button" class="vagas-wizard__continue" (click)="nextStep()">{{ 'Continuar' | translate }}</button>
         } @else {
           <button type="submit" class="vagas-wizard__continue" [disabled]="submitting()">
             @if (submitting()) {
               <span class="vagas-wizard__spinner"></span>
             }
-            {{ editingVagaId() ? 'Salvar alterações' : 'Criar vaga' }}
+            {{ (editingVagaId() ? 'Salvar alterações' : 'Criar vaga') | translate }}
           </button>
         }
       </div>
 
       <div class="vagas__form-actions">
-        <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
+        <app-button type="button" variant="outline" (clicked)="toggleForm()">{{ 'Cancelar' | translate }}</app-button>
         <app-button type="submit" [loading]="submitting()">
-          {{ editingVagaId() ? 'Salvar alterações' : 'Criar vaga' }}
+          {{ (editingVagaId() ? 'Salvar alterações' : 'Criar vaga') | translate }}
         </app-button>
       </div>
     </form>

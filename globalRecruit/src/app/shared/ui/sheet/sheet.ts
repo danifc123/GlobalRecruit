@@ -14,6 +14,7 @@ import {
 
 import { Icon } from '../icon/icon';
 import { IdGenerator } from '../../utils/id-generator';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 // Abaixo de 640px vira um painel de tela cheia deslizando de baixo pra cima
 // (modal de verdade, com backdrop e foco preso); de 640px pra cima renderiza
@@ -21,7 +22,7 @@ import { IdGenerator } from '../../utils/id-generator';
 // formulários de criação já usavam antes deste componente existir).
 @Component({
   selector: 'app-sheet',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './sheet.html',
   styleUrl: './sheet.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

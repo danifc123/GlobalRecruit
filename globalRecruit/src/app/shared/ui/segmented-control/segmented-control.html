@@ -10,7 +10,7 @@
       @if (option.icon) {
         <app-icon [name]="option.icon" [size]="16" />
       }
-      <span>{{ option.label }}</span>
+      <span>{{ option.label | translate }}</span>
     </button>
   }
 </div>

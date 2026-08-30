@@ -1,17 +1,25 @@
 <div class="conta">
   <header class="conta__header mobile-header">
+    <button
+      type="button"
+      class="conta__lang-toggle"
+      [attr.aria-label]="lang.language() === 'pt' ? 'Switch to English' : 'Mudar para português'"
+      (click)="lang.toggle()"
+    >
+      {{ lang.language() === 'pt' ? 'EN' : 'PT' }}
+    </button>
     <div class="conta__profile">
       <span class="conta__avatar">{{ initials() }}</span>
       <div>
         <div class="conta__email">{{ auth.session()?.email }}</div>
-        <span class="conta__role-badge conta__role-badge--{{ auth.session()?.role }}">{{ roleLabel() }}</span>
+        <span class="conta__role-badge conta__role-badge--{{ auth.session()?.role }}">{{ roleLabel() | translate }}</span>
       </div>
     </div>
   </header>
 
   <div class="conta__body" [class.conta__body--staff]="isStaff()">
     <section class="conta__section conta__section--perfil">
-      <span class="conta__section-title">Perfil</span>
+      <span class="conta__section-title">{{ 'Perfil' | translate }}</span>
       <div class="conta__card conta__card--form">
         <app-perfil-form />
       </div>
@@ -19,27 +27,27 @@
 
     @if (isStaff()) {
       <section class="conta__section conta__section--dados">
-        <span class="conta__section-title">Dados</span>
+        <span class="conta__section-title">{{ 'Dados' | translate }}</span>
         <div class="conta__card">
           <a class="conta__row" routerLink="/banco-talentos">
             <span class="conta__row-icon conta__row-icon--moss"><app-icon name="database" [size]="17" /></span>
-            <span class="conta__row-label">Banco de Talentos</span>
+            <span class="conta__row-label">{{ 'Banco de Talentos' | translate }}</span>
           </a>
           <div class="conta__divider"></div>
           <a class="conta__row" routerLink="/projetos-parceiros">
             <span class="conta__row-icon conta__row-icon--moss"><app-icon name="users" [size]="17" /></span>
-            <span class="conta__row-label">Visão do Recrutador</span>
+            <span class="conta__row-label">{{ 'Visão do Recrutador' | translate }}</span>
             <app-icon name="chevron-down" [size]="16" class="conta__row-chevron" />
           </a>
         </div>
       </section>
 
       <section class="conta__section conta__section--admin">
-        <span class="conta__section-title">Administração</span>
+        <span class="conta__section-title">{{ 'Administração' | translate }}</span>
         <div class="conta__card">
           <a class="conta__row" routerLink="/admin/usuarios">
             <span class="conta__row-icon conta__row-icon--accent"><app-icon name="shield" [size]="17" /></span>
-            <span class="conta__row-label">Usuários e acessos</span>
+            <span class="conta__row-label">{{ 'Usuários e acessos' | translate }}</span>
             @if (usuariosCount(); as count) {
               <span class="conta__row-count">{{ count }}</span>
             }
@@ -47,7 +55,7 @@
           <div class="conta__divider"></div>
           <a class="conta__row" routerLink="/admin/projetos">
             <span class="conta__row-icon conta__row-icon--accent"><app-icon name="briefcase" [size]="17" /></span>
-            <span class="conta__row-label">Projetos parceiros</span>
+            <span class="conta__row-label">{{ 'Projetos parceiros' | translate }}</span>
             @if (projetosCount(); as count) {
               <span class="conta__row-count">{{ count }}</span>
             }
@@ -57,18 +65,18 @@
     }
 
     <section class="conta__section conta__section--sistema">
-      <span class="conta__section-title">Sistema</span>
+      <span class="conta__section-title">{{ 'Sistema' | translate }}</span>
       <div class="conta__card">
         <div class="conta__row">
           <span class="conta__row-icon conta__row-icon--moss"><app-icon name="signal" [size]="17" /></span>
-          <span class="conta__row-label">Estado da conexão</span>
+          <span class="conta__row-label">{{ 'Estado da conexão' | translate }}</span>
           <span class="conta__status" [class.conta__status--offline]="!apiOnline()">
             <span class="conta__status-dot"></span>
-            {{ apiOnline() ? 'Online' : 'Offline' }}
+            {{ (apiOnline() ? 'Online' : 'Indisponível') | translate }}
           </span>
         </div>
       </div>
-      <button type="button" class="conta__logout" (click)="logout()">Sair da conta</button>
+      <button type="button" class="conta__logout" (click)="logout()">{{ 'Sair da conta' | translate }}</button>
     </section>
   </div>
 </div>

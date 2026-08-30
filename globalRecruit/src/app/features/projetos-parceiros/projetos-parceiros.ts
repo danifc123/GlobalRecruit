@@ -10,6 +10,7 @@ import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.serv
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
 import { Vaga } from '@app/core/models/vaga';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 interface GrupoProjeto {
   projeto: ProjetoParceiro;
@@ -18,7 +19,7 @@ interface GrupoProjeto {
 
 @Component({
   selector: 'app-projetos-parceiros',
-  imports: [Banner, EmptyState, Icon, Page, RouterLink, Skeleton, Table],
+  imports: [Banner, EmptyState, Icon, Page, RouterLink, Skeleton, Table, TranslatePipe],
   templateUrl: './projetos-parceiros.html',
   styleUrl: './projetos-parceiros.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

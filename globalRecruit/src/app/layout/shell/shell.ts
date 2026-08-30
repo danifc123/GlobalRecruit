@@ -7,6 +7,8 @@ import type { TabItem } from '@app/shared/ui';
 import { Button, Icon } from '@app/shared/ui';
 import { AuthService } from '@app/core/auth/auth.service';
 import { isStaffRole } from '@app/core/auth/is-staff';
+import { LanguageService } from '@app/core/i18n/language.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { ThemeService } from '@app/core/ui/theme.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
@@ -58,7 +60,7 @@ const RECRUTADOR_PHONE_ITEMS: TabItem[] = [
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, Sidebar, BottomNav, Button, Icon, ConfiguracoesDialog],
+  imports: [RouterOutlet, RouterLink, Sidebar, BottomNav, Button, Icon, ConfiguracoesDialog, TranslatePipe],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,6 +73,7 @@ export class Shell {
   private readonly dashboardService = inject(DashboardService);
   private readonly usersService = inject(UsersService);
   private readonly theme = inject(ThemeService);
+  protected readonly lang = inject(LanguageService);
   // capturado aqui (contexto de injeção válido) pra poder ser passado
   // explicitamente pro takeUntilDestroyed() dentro do effect() abaixo —
   // dentro do effect não é mais contexto de injeção, take UntilDestroyed()

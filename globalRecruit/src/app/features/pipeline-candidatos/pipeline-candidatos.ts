@@ -13,6 +13,7 @@ import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/mod
 import { Vaga } from '@app/core/models/vaga';
 import { getInitials } from '@app/shared/utils/initials';
 import { diasDesde } from '@app/shared/utils/relative-time';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 interface CandidatoRow extends Candidato {
   vagaCargo: string;
@@ -35,6 +36,7 @@ const DIAS_PARADO_ALERTA = 10;
     Select,
     Sheet,
     Skeleton,
+    TranslatePipe,
   ],
   templateUrl: './pipeline-candidatos.html',
   styleUrl: './pipeline-candidatos.scss',

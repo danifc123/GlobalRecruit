@@ -1,14 +1,14 @@
 <div class="vagas-desat-mobile">
   <div class="mobile-header">
     <div class="vagas-desat-mobile__top">
-      <a class="vagas-desat-mobile__voltar" routerLink="/vagas-ativas" aria-label="Voltar pra vagas ativas">
+      <a class="vagas-desat-mobile__voltar" routerLink="/vagas-ativas" [attr.aria-label]="'Voltar pra vagas ativas' | translate">
         <app-icon name="chevron-down" [size]="16" class="vagas-desat-mobile__voltar-icon" />
       </a>
-      <span class="vagas-desat-mobile__title">Vagas desativadas</span>
+      <span class="vagas-desat-mobile__title">{{ 'Vagas desativadas' | translate }}</span>
     </div>
     <app-input
       class="vagas-desat-mobile__search"
-      placeholder="Buscar por cliente, cargo ou país"
+      [placeholder]="'Buscar por cliente, cargo ou país' | translate"
       [ngModel]="search()"
       (ngModelChange)="search.set($event)"
     />
@@ -16,7 +16,7 @@
 
   <div class="vagas-desat-mobile__banner">
     <app-icon name="signal" [size]="16" />
-    <span>Vagas pausadas ou fechadas — fora da operação ativa, mantidas aqui só pra consulta.</span>
+    <span>{{ 'Vagas pausadas ou fechadas — fora da operação ativa, mantidas aqui só pra consulta.' | translate }}</span>
   </div>
 
   <div class="vagas-desat-mobile__list">
@@ -26,9 +26,9 @@
         <app-skeleton width="80%" height="11px" />
       </div>
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar as vagas" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar as vagas' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
     } @else if (isEmpty()) {
-      <app-empty-state icon="briefcase" description="Nenhuma vaga desativada encontrada." />
+      <app-empty-state icon="briefcase" [description]="'Nenhuma vaga desativada encontrada.' | translate" />
     } @else {
       @for (vaga of desativadasFiltradas(); track vaga.id) {
         <a class="vagas-desat-mobile__row" [routerLink]="['/vagas-ativas', vaga.id]">
@@ -37,28 +37,28 @@
             <span class="vagas-desat-mobile__row-cargo">{{ vaga.cargo }}</span>
             <div class="vagas-desat-mobile__row-meta">{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }</div>
           </div>
-          <span class="vagas-desat-mobile__tag vagas-desat-mobile__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] }}</span>
+          <span class="vagas-desat-mobile__tag vagas-desat-mobile__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] | translate }}</span>
         </a>
       }
     }
   </div>
 </div>
 
-<app-page description="Vagas pausadas ou fechadas — fora da operação ativa.">
+<app-page [description]="'Vagas pausadas ou fechadas — fora da operação ativa.' | translate">
   <a page-actions class="vagas-desat__voltar" routerLink="/vagas-ativas">
     <app-icon name="chevron-down" [size]="15" class="vagas-desat__voltar-icon" />
-    Vagas ativas
+    {{ 'Vagas ativas' | translate }}
   </a>
 
   <app-banner tone="warning" icon="signal">
-    Esta tela reúne vagas <strong>pausadas</strong> ou <strong>fechadas</strong> — elas não aparecem mais em Vagas
-    Ativas nem entram nas contagens do dashboard. Use a busca abaixo pra encontrar uma vaga específica.
+    {{ 'Esta tela reúne vagas' | translate }} <strong>{{ 'pausadas' | translate }}</strong> {{ 'ou' | translate }}
+    <strong>{{ 'fechadas' | translate }}</strong> {{ '— elas não aparecem mais em Vagas Ativas nem entram nas contagens do dashboard. Use a busca abaixo pra encontrar uma vaga específica.' | translate }}
   </app-banner>
 
   <app-input
     class="vagas-desat__search"
-    label="Buscar"
-    placeholder="Cliente, cargo ou país"
+    [label]="'Buscar' | translate"
+    [placeholder]="'Cliente, cargo ou país' | translate"
     [ngModel]="search()"
     (ngModelChange)="search.set($event)"
   />
@@ -67,26 +67,26 @@
     [columns]="columns"
     [isEmpty]="isEmpty()"
     emptyIcon="briefcase"
-    emptyMessage="Nenhuma vaga desativada encontrada."
+    [emptyMessage]="'Nenhuma vaga desativada encontrada.' | translate"
   >
     @for (vaga of desativadasFiltradas(); track vaga.id) {
       <tr>
-        <td data-label="ID Vaga">{{ vaga.id.slice(0, 8) }}</td>
-        <td data-label="Cliente">{{ vaga.cliente }}</td>
-        <td data-label="Cargo">{{ vaga.cargo }}</td>
-        <td data-label="País">{{ vaga.pais ?? '—' }}</td>
-        <td data-label="Status">
-          <span class="vagas-desat__tag vagas-desat__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] }}</span>
+        <td [attr.data-label]="'ID Vaga' | translate">{{ vaga.id.slice(0, 8) }}</td>
+        <td [attr.data-label]="'Cliente' | translate">{{ vaga.cliente }}</td>
+        <td [attr.data-label]="'Cargo' | translate">{{ vaga.cargo }}</td>
+        <td [attr.data-label]="'País' | translate">{{ vaga.pais ?? '—' }}</td>
+        <td [attr.data-label]="'Status' | translate">
+          <span class="vagas-desat__tag vagas-desat__tag--{{ vaga.status }}">{{ statusLabels[vaga.status] | translate }}</span>
         </td>
-        <td data-label="Ações" class="vagas-desat__actions">
-          <app-actions-menu label="Ações da vaga">
+        <td [attr.data-label]="'Ações' | translate" class="vagas-desat__actions">
+          <app-actions-menu [label]="'Ações da vaga' | translate">
             <button type="button" class="actions-menu__item" (click)="editar(vaga)">
               <app-icon name="edit" [size]="15" />
-              Editar
+              {{ 'Editar' | translate }}
             </button>
             <button type="button" class="actions-menu__item" [disabled]="ativandoId() === vaga.id" (click)="ativar(vaga)">
               <app-icon name="refresh" [size]="15" />
-              {{ ativandoId() === vaga.id ? 'Ativando…' : 'Ativar' }}
+              {{ (ativandoId() === vaga.id ? 'Ativando…' : 'Ativar') | translate }}
             </button>
           </app-actions-menu>
         </td>

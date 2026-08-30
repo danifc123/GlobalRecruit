@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 
 import { Icon, type IconName } from '../icon/icon';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 export interface SegmentedOption<T> {
   value: T;
@@ -10,7 +11,7 @@ export interface SegmentedOption<T> {
 
 @Component({
   selector: 'app-segmented-control',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   templateUrl: './segmented-control.html',
   styleUrl: './segmented-control.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

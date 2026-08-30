@@ -1,8 +1,8 @@
 <div class="pipeline-mobile">
   <div class="mobile-header">
     <div class="pipeline-mobile__top">
-      <span class="pipeline-mobile__title">Pipeline</span>
-      <button type="button" class="pipeline-mobile__add" aria-label="Registrar candidato" (click)="toggleForm()">
+      <span class="pipeline-mobile__title">{{ 'Pipeline' | translate }}</span>
+      <button type="button" class="pipeline-mobile__add" [attr.aria-label]="'Registrar candidato' | translate" (click)="toggleForm()">
         <app-icon name="user-plus" [size]="18" />
       </button>
     </div>
@@ -16,13 +16,13 @@
       <app-skeleton width="70%" height="14px" />
       <app-skeleton width="50%" height="11px" />
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar o pipeline" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar o pipeline' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
     } @else if (rowsFiltradas().length === 0) {
-      <app-empty-state icon="filter" description="Nenhum candidato nessa etapa." />
+      <app-empty-state icon="filter" [description]="'Nenhum candidato nessa etapa.' | translate" />
     } @else {
       <div class="pipeline-mobile__section-header">
-        <span>{{ estagioLabels[estagioFiltro()] }} · {{ rowsFiltradas().length }} candidatos</span>
-        <span>mais antigos primeiro</span>
+        <span>{{ '{0} · {1} candidatos' | translate: (estagioLabels[estagioFiltro()] | translate) : rowsFiltradas().length }}</span>
+        <span>{{ 'mais antigos primeiro' | translate }}</span>
       </div>
       @for (row of rowsFiltradas(); track row.id) {
         <a
@@ -38,7 +38,7 @@
               <span class="pipeline-mobile__row-nome">{{ row.nome }}</span>
               <span class="pipeline-mobile__row-tempo">
                 @if (estaParado(row)) {
-                  {{ diasParado(row) }}d parado
+                  {{ '{0}d parado' | translate: diasParado(row) }}
                 } @else {
                   {{ diasParado(row) }}d
                 }
@@ -52,15 +52,15 @@
   </div>
 </div>
 
-<app-page description="Acompanhamento de candidatos por etapa do processo seletivo.">
+<app-page [description]="'Acompanhamento de candidatos por etapa do processo seletivo.' | translate">
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="user-plus" [size]="16" />
-    Registar Candidato
+    {{ 'Registar Candidato' | translate }}
   </app-button>
 
   <div class="pipeline__kanban-view">
     @if (kanbanError(); as msg) {
-      <app-banner tone="danger" [dismissible]="true">{{ msg }}</app-banner>
+      <app-banner tone="danger" [dismissible]="true">{{ msg | translate }}</app-banner>
     }
 
     @if (loading()) {
@@ -74,7 +74,7 @@
         }
       </div>
     } @else if (error()) {
-      <app-empty-state icon="signal" title="Não conseguimos carregar o pipeline" description="Verifique sua conexão e tente de novo." />
+      <app-empty-state icon="signal" [title]="'Não conseguimos carregar o pipeline' | translate" [description]="'Verifique sua conexão e tente de novo.' | translate" />
     } @else {
       <div class="pipeline__kanban">
         @for (coluna of kanbanColunas(); track coluna.estagio) {
@@ -87,7 +87,7 @@
           >
             <div class="pipeline__kanban-col-header">
               <span class="pipeline__kanban-dot pipeline__kanban-dot--{{ coluna.estagio }}"></span>
-              <span class="pipeline__kanban-col-title">{{ coluna.label }}</span>
+              <span class="pipeline__kanban-col-title">{{ coluna.label | translate }}</span>
               <span class="pipeline__kanban-col-count">{{ coluna.rows.length }}</span>
             </div>
             <div class="pipeline__kanban-col-body">
@@ -112,14 +112,14 @@
                   </div>
                   <div class="pipeline__kanban-card-tempo" [class.pipeline__kanban-card-tempo--parado]="estaParado(row)">
                     @if (estaParado(row)) {
-                      {{ diasParado(row) }}d — parado
+                      {{ '{0}d — parado' | translate: diasParado(row) }}
                     } @else {
-                      {{ diasParado(row) }}d nesta etapa
+                      {{ '{0}d nesta etapa' | translate: diasParado(row) }}
                     }
                   </div>
                 </a>
               } @empty {
-                <div class="pipeline__kanban-empty">Nenhum candidato aqui.</div>
+                <div class="pipeline__kanban-empty">{{ 'Nenhum candidato aqui.' | translate }}</div>
               }
             </div>
           </div>
@@ -129,37 +129,37 @@
   </div>
 </app-page>
 
-<app-sheet [open]="showForm()" [drawer]="true" title="Novo candidato" (closed)="toggleForm()">
-  @if (errorMessage()) {
-    <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+<app-sheet [open]="showForm()" [drawer]="true" [title]="'Novo candidato' | translate" (closed)="toggleForm()">
+  @if (errorMessage(); as msg) {
+    <app-banner tone="danger">{{ msg | translate }}</app-banner>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="pipeline__form">
     <app-input
-      label="Nome"
+      [label]="'Nome' | translate"
       formControlName="nome"
       [required]="true"
-      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? 'Obrigatório' : undefined"
+      [errorMessage]="form.controls.nome.touched && form.controls.nome.invalid ? ('Obrigatório' | translate) : undefined"
     />
     <app-input
-      label="Email"
+      [label]="'Email' | translate"
       type="email"
       formControlName="email"
       [required]="true"
-      [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? 'Informe um email válido' : undefined"
+      [errorMessage]="form.controls.email.touched && form.controls.email.invalid ? ('Informe um email válido' | translate) : undefined"
     />
     <app-select
-      label="Vaga alvo"
+      [label]="'Vaga alvo' | translate"
       formControlName="vagaId"
       [options]="vagaOptions()"
       [required]="true"
       [errorMessage]="
-        form.controls.vagaId.touched && form.controls.vagaId.invalid ? 'Selecione a vaga' : undefined
+        form.controls.vagaId.touched && form.controls.vagaId.invalid ? ('Selecione a vaga' | translate) : undefined
       "
     />
     <div class="pipeline__form-actions">
-      <app-button type="button" variant="outline" (clicked)="toggleForm()">Cancelar</app-button>
-      <app-button type="submit" [loading]="submitting()">Registrar candidato</app-button>
+      <app-button type="button" variant="outline" (clicked)="toggleForm()">{{ 'Cancelar' | translate }}</app-button>
+      <app-button type="submit" [loading]="submitting()">{{ 'Registrar candidato' | translate }}</app-button>
     </div>
   </form>
 </app-sheet>

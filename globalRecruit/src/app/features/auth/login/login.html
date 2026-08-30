@@ -2,27 +2,31 @@
   <span class="login-mobile__glow login-mobile__glow--1"></span>
   <span class="login-mobile__glow login-mobile__glow--2"></span>
 
+  <button type="button" class="login-lang-toggle login-lang-toggle--mobile" (click)="lang.toggle()">
+    {{ lang.language() === 'pt' ? 'EN' : 'PT' }}
+  </button>
+
   <div class="login-mobile__content">
     <div class="login-mobile__brand">
       <span class="login-mobile__logo">G</span>
       <span class="login-mobile__title">GlobalRecruit</span>
-      <span class="login-mobile__subtitle">Operação de vagas internacionais, no seu bolso.</span>
+      <span class="login-mobile__subtitle">{{ 'Operação de vagas internacionais, no seu bolso.' | translate }}</span>
     </div>
 
-    @if (errorMessage()) {
-      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    @if (errorMessage(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="formMobile" (ngSubmit)="submit(formMobile)" class="login-mobile__form">
       <label class="login-mobile__field">
-        <span class="login-mobile__label">E-mail</span>
+        <span class="login-mobile__label">{{ 'E-mail' | translate }}</span>
         <input class="login-mobile__input" type="email" formControlName="email" autocomplete="email" />
         @if (formMobile.controls.email.touched && formMobile.controls.email.invalid) {
-          <span class="login-mobile__error">Informe um email válido</span>
+          <span class="login-mobile__error">{{ 'Informe um email válido' | translate }}</span>
         }
       </label>
       <label class="login-mobile__field">
-        <span class="login-mobile__label">Senha</span>
+        <span class="login-mobile__label">{{ 'Senha' | translate }}</span>
         <input
           class="login-mobile__input"
           type="password"
@@ -30,49 +34,65 @@
           autocomplete="current-password"
         />
         @if (formMobile.controls.password.touched && formMobile.controls.password.invalid) {
-          <span class="login-mobile__error">Mínimo de 8 caracteres</span>
+          <span class="login-mobile__error">{{ 'Mínimo de 8 caracteres' | translate }}</span>
         }
       </label>
       <button type="submit" class="login-mobile__submit" [disabled]="loading()">
         @if (loading()) {
           <span class="login-mobile__spinner"></span>
         }
-        Entrar
+        {{ 'Entrar' | translate }}
       </button>
     </form>
   </div>
 </div>
 
 <div class="page">
+  <button type="button" class="login-lang-toggle login-lang-toggle--card" (click)="lang.toggle()">
+    {{ lang.language() === 'pt' ? 'EN' : 'PT' }}
+  </button>
+
   <app-card class="login-card">
     <h1 class="login-card__title">GlobalRecruit</h1>
-    <p class="login-card__subtitle">Entre com sua conta para continuar.</p>
+    <p class="login-card__subtitle">{{ 'Entre com sua conta para continuar.' | translate }}</p>
 
-    @if (errorMessage()) {
-      <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+    @if (errorMessage(); as msg) {
+      <app-banner tone="danger">{{ msg | translate }}</app-banner>
     }
 
     <form [formGroup]="formCard" (ngSubmit)="submit(formCard)" class="login-card__form">
       <app-input
-        label="Email"
+        [label]="'Email' | translate"
         type="email"
         formControlName="email"
         [required]="true"
-        [errorMessage]="formCard.controls.email.touched && formCard.controls.email.invalid ? 'Informe um email válido' : undefined"
+        [errorMessage]="
+          formCard.controls.email.touched && formCard.controls.email.invalid
+            ? ('Informe um email válido' | translate)
+            : undefined
+        "
       />
       <app-input
-        label="Senha"
+        [label]="'Senha' | translate"
         type="password"
         formControlName="password"
         [required]="true"
-        [errorMessage]="formCard.controls.password.touched && formCard.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+        [errorMessage]="
+          formCard.controls.password.touched && formCard.controls.password.invalid
+            ? ('Mínimo de 8 caracteres' | translate)
+            : undefined
+        "
       />
-      <app-button type="submit" [fullWidth]="true" [loading]="loading()">Entrar</app-button>
+      <app-button type="submit" [fullWidth]="true" [loading]="loading()">{{ 'Entrar' | translate }}</app-button>
     </form>
   </app-card>
 </div>
 
 <div class="login-split">
+  <button type="button" class="login-lang-toggle login-lang-toggle--split" (click)="lang.toggle()">
+    {{ lang.language() === 'pt' ? 'EN' : 'PT' }}
+  </button>
+
   <div class="login-split__brand">
     <span class="login-split__glow login-split__glow--1"></span>
     <span class="login-split__glow login-split__glow--2"></span>
@@ -81,43 +101,55 @@
       <span class="login-split__brand-name">GlobalRecruit</span>
     </div>
     <div class="login-split__pitch">
-      <h1 class="login-split__headline">Sua operação<br />de vagas<br />internacionais</h1>
+      <h1 class="login-split__headline">
+        {{ 'Sua operação' | translate }}<br />{{ 'de vagas' | translate }}<br />{{ 'internacionais' | translate }}
+      </h1>
       <p class="login-split__lead">
-        Vagas, pipeline e projetos parceiros num só lugar — do celular do recrutador ao desktop da
-        operação.
+        {{
+          'Vagas, pipeline e projetos parceiros num só lugar — do celular do recrutador ao desktop da operação.'
+            | translate
+        }}
       </p>
     </div>
     <div class="login-split__stats">
-      <span>Vagas, candidatos e clientes</span>
-      <span>num só painel</span>
+      <span>{{ 'Vagas, candidatos e clientes' | translate }}</span>
+      <span>{{ 'num só painel' | translate }}</span>
     </div>
   </div>
 
   <div class="login-split__form-col">
     <div class="login-split__form-wrap">
-      <h2 class="login-split__form-title">Entrar</h2>
-      <p class="login-split__form-subtitle">Use a conta fornecida pela sua operação.</p>
+      <h2 class="login-split__form-title">{{ 'Entrar' | translate }}</h2>
+      <p class="login-split__form-subtitle">{{ 'Use a conta fornecida pela sua operação.' | translate }}</p>
 
-      @if (errorMessage()) {
-        <app-banner tone="danger">{{ errorMessage() }}</app-banner>
+      @if (errorMessage(); as msg) {
+        <app-banner tone="danger">{{ msg | translate }}</app-banner>
       }
 
       <form [formGroup]="formSplit" (ngSubmit)="submit(formSplit)" class="login-split__form">
         <app-input
-          label="Email"
+          [label]="'Email' | translate"
           type="email"
           formControlName="email"
           [required]="true"
-          [errorMessage]="formSplit.controls.email.touched && formSplit.controls.email.invalid ? 'Informe um email válido' : undefined"
+          [errorMessage]="
+            formSplit.controls.email.touched && formSplit.controls.email.invalid
+              ? ('Informe um email válido' | translate)
+              : undefined
+          "
         />
         <app-input
-          label="Senha"
+          [label]="'Senha' | translate"
           type="password"
           formControlName="password"
           [required]="true"
-          [errorMessage]="formSplit.controls.password.touched && formSplit.controls.password.invalid ? 'Mínimo de 8 caracteres' : undefined"
+          [errorMessage]="
+            formSplit.controls.password.touched && formSplit.controls.password.invalid
+              ? ('Mínimo de 8 caracteres' | translate)
+              : undefined
+          "
         />
-        <app-button type="submit" [fullWidth]="true" [loading]="loading()">Entrar</app-button>
+        <app-button type="submit" [fullWidth]="true" [loading]="loading()">{{ 'Entrar' | translate }}</app-button>
       </form>
     </div>
   </div>

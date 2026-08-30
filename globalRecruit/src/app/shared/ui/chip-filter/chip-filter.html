@@ -8,7 +8,7 @@
       [attr.aria-selected]="option.value === selected()"
       (click)="selected.set(option.value)"
     >
-      {{ option.label }}@if (option.count !== undefined) {
+      {{ option.label | translate }}@if (option.count !== undefined) {
         <span> · {{ option.count }}</span>
       }
     </button>

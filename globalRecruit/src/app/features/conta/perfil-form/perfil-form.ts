@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Valida
 import { Banner, Button, Input } from '@app/shared/ui';
 import { AuthService } from '@app/core/auth/auth.service';
 import { UsersService } from '@app/core/data/users.service';
+import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 
 // nova senha e confirmação precisam bater — validador no grupo, não no
 // campo, porque depende do valor de dois controles ao mesmo tempo
@@ -21,7 +22,7 @@ function senhasIguaisValidator(): ValidatorFn {
 // pode editar nome/e-mail/senha, independente do papel
 @Component({
   selector: 'app-perfil-form',
-  imports: [ReactiveFormsModule, Banner, Button, Input],
+  imports: [ReactiveFormsModule, Banner, Button, Input, TranslatePipe],
   templateUrl: './perfil-form.html',
   styleUrl: './perfil-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
