@@ -61,4 +61,10 @@ export class UsersService {
       .patch<UserApi>(`${this.baseUrl}/${id}/status`, { is_active: isActive })
       .pipe(map(toUser));
   }
+
+  setProjetos(id: string, projetoIds: string[]): Observable<AppUser> {
+    return this.http
+      .patch<UserApi>(`${this.baseUrl}/${id}/projetos`, { project_ids: projetoIds })
+      .pipe(map(toUser));
+  }
 }

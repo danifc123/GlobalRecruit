@@ -214,12 +214,9 @@ export const EN_DICTIONARY: Record<string, string> = {
   'Cria vagas, candidatos, projetos e usuários.': 'Creates jobs, candidates, projects and users.',
   'Projetos vinculados': 'Linked projects',
   '{0} de {1}': '{0} of {1}',
-  'Obrigatório ao menos um — restringe os dados que este recrutador enxerga.':
-    'At least one required — restricts the data this recruiter can see.',
   'Criar usuário': 'Create user',
   'Já existe um usuário com esse email.': 'A user with this email already exists.',
   'Não foi possível criar o usuário.': 'Could not create the user.',
-  'Selecione ao menos um projeto para o recrutador.': 'Select at least one project for the recruiter.',
 
   // ---- Projetos Admin ----
   'Projetos parceiros': 'Partner projects',
@@ -308,4 +305,19 @@ export const EN_DICTIONARY: Record<string, string> = {
   Reativar: 'Reactivate',
   'Não foi possível desativar o usuário.': 'Could not deactivate the user.',
   'Não foi possível reativar o usuário.': 'Could not reactivate the user.',
+
+  // ---- Usuários — vincular projetos ----
+  'Vincular projetos': 'Link projects',
+  'Restringe os dados que este recrutador enxerga. Pode deixar sem marcar nenhum agora e vincular depois em Ações › Vincular projetos.':
+    'Restricts the data this recruiter can see. You can leave none checked now and link one later via Actions › Link projects.',
+  '{0} — escolha os projetos que ele enxerga.': "{0} — choose the projects they can see.",
+  'Salvar vínculo': 'Save link',
+  'Não foi possível atualizar os projetos vinculados.': 'Could not update the linked projects.',
+
+  // ---- Recrutador sem vínculo de projeto ----
+  'Você ainda não está vinculado a nenhum projeto': "You're not linked to any project yet",
+  'Peça a um administrador para te vincular a um projeto em Usuários.':
+    'Ask an administrator to link you to a project in Users.',
+  'Você ainda não está vinculado a nenhum projeto — peça a um administrador para te vincular em Usuários antes de indicar um candidato.':
+    "You're not linked to any project yet — ask an administrator to link you in Users before referring a candidate.",
 };

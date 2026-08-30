@@ -12,10 +12,12 @@ class UserCreate(BaseModel):
     role: Role
     project_ids: list[uuid.UUID] = Field(default_factory=list)
 
+    # recrutador pode ser criado sem projeto ainda (ex.: nenhum projeto
+    # parceiro cadastrado no sistema no momento) — o admin vincula depois
+    # via PATCH /users/{id}/projetos. Só o inverso continua proibido: papel
+    # que não é recrutador não pode carregar vínculo de projeto nenhum.
     @model_validator(mode="after")
-    def recruiter_requires_projects(self) -> "UserCreate":
-        if self.role == Role.RECRUITER and not self.project_ids:
-            raise ValueError("project_ids é obrigatório para role=recruiter (ao menos um projeto)")
+    def only_recruiter_has_projects(self) -> "UserCreate":
         if self.role != Role.RECRUITER and self.project_ids:
             raise ValueError("project_ids só se aplica a role=recruiter")
         return self
@@ -34,3 +36,7 @@ class UserOut(BaseModel):
 
 class UserStatusUpdate(BaseModel):
     is_active: bool
+
+
+class UserProjetosUpdate(BaseModel):
+    project_ids: list[uuid.UUID]

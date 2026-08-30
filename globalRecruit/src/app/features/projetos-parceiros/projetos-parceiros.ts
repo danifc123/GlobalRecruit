@@ -56,6 +56,13 @@ export class ProjetosParceiros {
 
   protected readonly isEmpty = computed(() => !this.loading() && this.vagasFiltradas().length === 0);
 
+  // recrutador sem nenhum projeto vinculado ainda (admin cria o usuário e
+  // vincula depois em Usuários) — mensagem diferente da de "sem vaga no
+  // momento", porque aqui a ação certa é pedir pro admin vincular um projeto
+  protected readonly semVinculo = computed(
+    () => this.auth.session()?.role === 'recruiter' && !this.loading() && this.projetos().length === 0,
+  );
+
   protected readonly totalVagas = computed(() => this.vagas().length);
   protected readonly totalProjetos = computed(() => this.grupos().length);
 
