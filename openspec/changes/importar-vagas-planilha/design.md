@@ -40,6 +40,10 @@
    - O PATCH de edição substitui todos os campos: `jd_nome`, que não aparece no formulário, é carregado da vaga e reenviado para não ser apagado.
    - Link da JD só vira link clicável se for `http(s)://` (vem da planilha; além da sanitização de `[href]` do Angular).
 
+10. **Aba lida na planilha real: "Active Roles - Live Data Feed" (decisão do Daniel, 2026-11-06).** Verificado no arquivo real: a aba "Active Roles - MAIN" é espelho da Live (2.678 de 2.679 células são `=IF('Active Roles - Live Data Feed'!A2="","",…)`), e a Live vem de fórmulas do Google Sheets exportadas (`__xludf.DUMMYFUNCTION`). As duas têm as mesmas 136 vagas; só a Live tem link da JD (131 vagas). A única célula manual da MAIN (J71, modalidade da DSR-060 = "Hybrid") diverge da fonte ("Hybrid after training/probation").
+   - Alternativa rejeitada: forçar a MAIN — não reduz risco (só repete a Live), perde os links da JD e importa edições manuais que contradizem a fonte.
+   - Alternativa adiada: mostrar na prévia a aba lida e avisar quando faltar a coluna/links da JD. Não implementada por decisão; se a Live for apagada/renomeada, a importação cai na MAIN sem aviso e as vagas entram sem link da JD.
+
 ## Risks / Trade-offs
 
 - [Planilha real difere das variações descritas no prompt] → testes usam fixtures sintéticas; validação final manual com a planilha real em dry-run antes de gravar (depende do Daniel enviar o arquivo).

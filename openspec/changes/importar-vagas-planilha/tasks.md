@@ -42,8 +42,8 @@
 ## 7. Verificação integrada
 
 - [x] 7.1 Rodar suíte do backend, `ng test`, `ng build` e `npm run lint`; todos verdes
-- [ ] 7.2 Com a planilha real do cliente: dry-run (~136 linhas lidas, conferir erros), importação real, reimportação mostrando 0 criadas
-  - Verificado em 2026-11-06 só com planilha SINTÉTICA no formato do cliente (abas MAIN e Live Data Feed, 36 linhas): prévia 31 novas / 1 ignorada / 4 erros; importação real 31; reimportação 0 novas / 31 atualizadas; banco sem duplicatas. Falta repetir com a planilha real.
+- [x] 7.2 Com a planilha real do cliente: dry-run (~136 linhas lidas, conferir erros), importação real, reimportação mostrando 0 criadas
+  - Planilha real (2026-11-06, banco local, projeto separado): aba lida = Active Roles - Live Data Feed; prévia 136 novas / 0 ignoradas / 0 erros; importação real 136 (117 abertas, 19 fechadas; 41 alta, 90 média, 5 baixa; 131 com link da JD); reimportação 0 novas / 136 atualizadas; banco sem duplicatas; 146 vagas abertas listadas numa página. Antes, testado também com planilha sintética (casos de erro, que a real não tem).
 - [ ] 7.3 Texto em linguagem simples para o cliente explicando as mudanças e o uso do botão de importar
 
 ## Workflow follow-up
