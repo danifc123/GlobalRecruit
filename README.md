@@ -209,11 +209,35 @@ independente de quais papéis a rota pediu.
 
 ## Testes
 
-Não há suíte de testes automatizados neste momento — nem `pytest` no
-backend (`requirements.txt` não inclui), nem specs reais no frontend (só o
-`app.spec.ts` padrão gerado pelo Angular CLI, sem cobertura de feature).
-Validação hoje é manual: `ng build` + navegar nas telas, e checar a resposta
-das rotas via `/docs` (Swagger, disponível fora de produção).
+### Backend (pytest)
+
+Pré-requisito: o Postgres do Docker de pé (`docker compose up -d` em
+`backend/`). Uma vez só, instale as dependências de teste:
+
+```bash
+cd backend
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+```
+
+Rodar a suíte (comando único):
+
+```bash
+cd backend
+.venv\Scripts\python -m pytest
+```
+
+Não precisa de setup manual: o `tests/conftest.py` cria o banco
+`globalrecruit_test` no mesmo Postgres (porta 5434) se ele não existir, roda
+`alembic upgrade head` nele e executa cada teste dentro de uma transação
+revertida no fim — o banco de desenvolvimento (`globalrecruit`) nunca é
+tocado. Para usar outro banco, defina `TEST_DATABASE_URL`.
+
+### Frontend (Vitest)
+
+```bash
+cd globalRecruit
+npx ng test
+```
 
 ## Convenções de clean code do projeto
 
