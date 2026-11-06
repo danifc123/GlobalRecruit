@@ -24,13 +24,26 @@ _CANDIDATOS_COUNT = (
 _LIST_COLUMNS = (
     Vaga.id,
     Vaga.projeto_id,
+    Vaga.codigo,
     Vaga.cliente,
     Vaga.cargo,
     Vaga.idioma,
     Vaga.pais,
+    Vaga.localizacao,
     Vaga.modalidade,
+    Vaga.headcount,
+    Vaga.data_inicio,
     Vaga.salario,
+    Vaga.faixa_salarial,
+    Vaga.moeda,
+    Vaga.tipo_salario,
     Vaga.comissao,
+    Vaga.beneficios,
+    Vaga.realocacao,
+    Vaga.requisitos,
+    Vaga.notas_internas,
+    Vaga.jd_nome,
+    Vaga.jd_url,
     Vaga.prioridade,
     Vaga.status,
     Vaga.created_at,
@@ -52,7 +65,8 @@ def _scope_to_user(stmt, user: User):
 async def list_vagas(
     status_filter: StatusVaga | None = Query(default=None, alias="status"),
     page: int = Query(default=0, ge=0),
-    page_size: int = Query(default=20, ge=1, le=100),
+    # 500 cobre a planilha do cliente (~136 vagas) numa página só
+    page_size: int = Query(default=20, ge=1, le=500),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> VagaPage:
@@ -84,21 +98,8 @@ async def create_vaga(
     db.add(vaga)
     await db.commit()
     await db.refresh(vaga)
-    return VagaOut(
-        id=vaga.id,
-        projeto_id=vaga.projeto_id,
-        cliente=vaga.cliente,
-        cargo=vaga.cargo,
-        idioma=vaga.idioma,
-        pais=vaga.pais,
-        modalidade=vaga.modalidade,
-        salario=vaga.salario,
-        comissao=vaga.comissao,
-        prioridade=vaga.prioridade,
-        status=vaga.status,
-        created_at=vaga.created_at,
-        candidatos_count=0,
-    )
+    # vaga recém-criada não tem candidatos: candidatos_count fica no default 0
+    return VagaOut.model_validate(vaga)
 
 
 @router.get("/{vaga_id}", response_model=VagaOut)
