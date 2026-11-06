@@ -28,20 +28,22 @@
 ## 5. Frontend: modelo, serviço e tela de vagas
 
 - [x] 5.1 Atualizar `core/models/vaga.ts` e `core/data/vagas.service.ts` (campos novos, `importar(file, projetoId, dryRun)` com FormData) com teste Vitest do mapeamento snake_case ↔ camelCase e do FormData; verificar `ng test`
-- [ ] 5.2 `loadVagas` com `list(0, 500, 'aberta')` e vagas desativadas com `list(0, 500)`; tabela com código, "país · localização", faixa salarial, headcount e busca por código; verificar `ng build`, `npm run lint` e na tela com dados importados
-- [ ] 5.3 Wizard em 4 etapas (STEP_FIELDS, openEditForm, reset, payload sem salário numérico, modalidade com texto livre); verificar criando e editando uma vaga na tela
-- [ ] 5.4 Componente `importar-planilha` (projeto, arquivo, Pré-visualizar, Confirmar habilitado só após prévia, resumo, erros, recarregar lista), botão só para staff; teste Vitest do estado do botão Confirmar; verificar `ng test` e o fluxo completo na tela
+- [x] 5.2 `loadVagas` com `list(0, 500, 'aberta')` e vagas desativadas com `list(0, 500)`; tabela com código, "país · localização", faixa salarial, headcount e busca por código; verificar `ng build`, `npm run lint` e na tela com dados importados
+- [x] 5.3 Wizard em 4 etapas (STEP_FIELDS, openEditForm, reset, payload sem salário numérico, modalidade com texto livre); verificar criando e editando uma vaga na tela
+- [x] 5.4 Componente `importar-planilha` (projeto, arquivo, Pré-visualizar, Confirmar habilitado só após prévia, resumo, erros, recarregar lista), botão só para staff; teste Vitest do estado do botão Confirmar; verificar `ng test` e o fluxo completo na tela
 
 ## 6. Frontend: detalhe e tradução
 
-- [ ] 6.1 Detalhe (mobile e painel ≥1024px) com todos os campos novos, `white-space: pre-line`, link "Ver JD"; verificar na tela com vaga importada
-- [ ] 6.2 Seletor de status Aberta/Pausada/Fechada no lugar de "Fechar vaga", só para staff, usando `PATCH /vagas/{id}/status`; verificar pausando e reabrindo uma vaga na tela
-- [ ] 6.3 Strings novas em `en.dictionary.ts` e "Pausada"/"pausada" → "On-Hold"/"on-hold"; verificar com o site em inglês que "Paused" não aparece em vagas desativadas
+- [x] 6.1 Detalhe (mobile e painel ≥1024px) com todos os campos novos, `white-space: pre-line`, link "Ver JD"; verificar na tela com vaga importada
+- [x] 6.2 Seletor de status Aberta/Pausada/Fechada no lugar de "Fechar vaga", só para staff, usando `PATCH /vagas/{id}/status`; verificar pausando e reabrindo uma vaga na tela
+  - Na tela (2026-11-06) só foi verificado pausar (PATCH 200, vaga saiu das ativas). Reabrir foi coberto pelos testes de integração do backend, não pela tela.
+- [x] 6.3 Strings novas em `en.dictionary.ts` e "Pausada"/"pausada" → "On-Hold"/"on-hold"; verificar com o site em inglês que "Paused" não aparece em vagas desativadas
 
 ## 7. Verificação integrada
 
-- [ ] 7.1 Rodar suíte do backend, `ng test`, `ng build` e `npm run lint`; todos verdes
+- [x] 7.1 Rodar suíte do backend, `ng test`, `ng build` e `npm run lint`; todos verdes
 - [ ] 7.2 Com a planilha real do cliente: dry-run (~136 linhas lidas, conferir erros), importação real, reimportação mostrando 0 criadas
+  - Verificado em 2026-11-06 só com planilha SINTÉTICA no formato do cliente (abas MAIN e Live Data Feed, 36 linhas): prévia 31 novas / 1 ignorada / 4 erros; importação real 31; reimportação 0 novas / 31 atualizadas; banco sem duplicatas. Falta repetir com a planilha real.
 - [ ] 7.3 Texto em linguagem simples para o cliente explicando as mudanças e o uso do botão de importar
 
 ## Workflow follow-up

@@ -115,6 +115,24 @@ describe('ImportarPlanilha', () => {
     expect(importou).toBe(true);
   });
 
+  // regressão: depois de confirmar, nova prévia com o mesmo arquivo mostrava
+  // o resultado antigo ("Importação concluída") e não liberava Confirmar
+  it('nova pré-visualização depois de importar mostra o resumo novo e libera Confirmar', async () => {
+    await preencherEPrevisualizar();
+    botao('Confirmar importação').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    vagas.resposta = () => of({ ...RESUMO_PREVIA, criadas: 0, atualizadas: 31 });
+
+    botao('Pré-visualizar').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(element.textContent).toContain('Pré-visualização (nada foi gravado)');
+    expect(element.textContent).toContain('31');
+    expect(botao('Confirmar importação').disabled).toBe(false);
+  });
+
   it('erro da API mostra a mensagem devolvida pelo servidor e não emite importado', async () => {
     let importou = false;
     fixture.componentInstance.importado.subscribe(() => (importou = true));

@@ -69,6 +69,10 @@ export class ImportarPlanilha {
   }
 
   protected previsualizar(): void {
+    // nova prévia substitui o resultado de uma importação anterior (ex.:
+    // reimportar o mesmo arquivo para conferir que só atualiza)
+    this.resultadoFinal.set(null);
+    this.previa.set(null);
     this.executar(true, (resultado) => this.previa.set(resultado));
   }
 
