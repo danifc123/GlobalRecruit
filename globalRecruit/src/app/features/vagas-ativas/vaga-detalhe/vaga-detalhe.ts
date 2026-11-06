@@ -4,21 +4,25 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, map } from 'rxjs';
 
 import { EmptyState, Icon, Skeleton } from '@app/shared/ui';
+import { AuthService } from '@app/core/auth/auth.service';
+import { isStaffRole } from '@app/core/auth/is-staff';
 import { VagasService } from '@app/core/data/vagas.service';
 import { CandidatosService } from '@app/core/data/candidatos.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
-import { Vaga } from '@app/core/models/vaga';
+import { StatusVaga, Vaga } from '@app/core/models/vaga';
 import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/models/candidato';
 import { getInitials } from '@app/shared/utils/initials';
 import { diasDesde, tempoRelativo } from '@app/shared/utils/relative-time';
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
+import { VagaInfo } from './vaga-info/vaga-info';
+import { VagaStatusSelect } from './vaga-status-select/vaga-status-select';
 
 const DIAS_PARADO_ALERTA = 10;
 
 @Component({
   selector: 'app-vaga-detalhe',
-  imports: [EmptyState, Icon, Skeleton, RouterLink, TranslatePipe],
+  imports: [EmptyState, Icon, Skeleton, RouterLink, TranslatePipe, VagaInfo, VagaStatusSelect],
   templateUrl: './vaga-detalhe.html',
   styleUrl: './vaga-detalhe.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +34,7 @@ export class VagaDetalhe {
   private readonly candidatosService = inject(CandidatosService);
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly quickCreate = inject(QuickCreateService);
+  private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly getInitials = getInitials;
@@ -41,7 +46,10 @@ export class VagaDetalhe {
   protected readonly candidatos = signal<Candidato[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
-  protected readonly fechando = signal(false);
+  protected readonly alterandoStatus = signal(false);
+  protected readonly erroStatus = signal(false);
+  // troca de status é ação de gestão — a API também barra recrutador (403)
+  protected readonly isStaff = computed(() => isStaffRole(this.auth.session()?.role));
 
   protected readonly pipelineCounts = computed<{ estagio: Estagio; count: number }[]>(() => {
     const counts = new Map<Estagio, number>();
@@ -109,20 +117,25 @@ export class VagaDetalhe {
     if (vaga) this.quickCreate.editVaga(vaga);
   }
 
-  protected fecharVaga(): void {
+  protected alterarStatus(status: StatusVaga): void {
     const vaga = this.vaga();
-    if (!vaga || this.fechando()) return;
+    if (!vaga || this.alterandoStatus()) return;
 
-    this.fechando.set(true);
+    this.alterandoStatus.set(true);
+    this.erroStatus.set(false);
     this.vagasService
-      .updateStatus(vaga.id, 'fechada')
+      .updateStatus(vaga.id, status)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (atualizada) => {
           this.vaga.set(atualizada);
-          this.fechando.set(false);
+          this.alterandoStatus.set(false);
+          this.quickCreate.notificarStatusAlterado();
         },
-        error: () => this.fechando.set(false),
+        error: () => {
+          this.alterandoStatus.set(false);
+          this.erroStatus.set(true);
+        },
       });
   }
 

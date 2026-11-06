@@ -18,16 +18,20 @@ import {
   Skeleton,
   SwipeRow,
   Table,
+  Textarea,
   type SelectOption,
   type SwipeAction,
 } from '@app/shared/ui';
+import { AuthService } from '@app/core/auth/auth.service';
+import { isStaffRole } from '@app/core/auth/is-staff';
 import { VagasService } from '@app/core/data/vagas.service';
 import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.service';
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
-import { Vaga } from '@app/core/models/vaga';
+import { Vaga, VagaCreate } from '@app/core/models/vaga';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
+import { ImportarPlanilha } from './importar-planilha/importar-planilha';
 
 const PRIORIDADE_OPTIONS: SelectOption[] = [
   { value: 'alta', label: 'Alta' },
@@ -35,18 +39,63 @@ const PRIORIDADE_OPTIONS: SelectOption[] = [
   { value: 'baixa', label: 'Baixa' },
 ];
 
+// atalhos — o campo continua aceitando texto livre (a planilha do cliente
+// traz valores como "Hybrid after training/probation")
 const MODALIDADE_OPCOES = ['Presencial', 'Híbrido', 'Remoto'];
 
+// valores gravados em maiúsculas, como a importação normaliza a planilha
+const TIPO_SALARIO_OPCOES: SelectOption[] = [
+  { value: 'GROSS', label: 'Bruto' },
+  { value: 'NET', label: 'Líquido' },
+];
+
+// a planilha do cliente tem ~136 vagas; 500 é o máximo aceito pela API
+const VAGAS_POR_PAGINA = 500;
+
+type Etapa = 1 | 2 | 3 | 4;
+const TOTAL_ETAPAS: Etapa = 4;
+
 const STEP_FIELDS = {
-  1: ['projetoId', 'cargo', 'cliente'],
-  2: ['pais', 'idioma', 'modalidade', 'salario'],
-  3: ['comissao', 'prioridade'],
+  1: ['projetoId', 'codigo', 'cargo', 'cliente'],
+  2: ['pais', 'localizacao', 'idioma', 'modalidade', 'headcount', 'dataInicio'],
+  3: ['faixaSalarial', 'moeda', 'tipoSalario', 'comissao', 'prioridade'],
+  4: ['requisitos', 'beneficios', 'realocacao', 'notasInternas', 'jdUrl'],
 } as const;
+
+const FORM_VAZIO = {
+  projetoId: '',
+  codigo: '',
+  cliente: '',
+  cargo: '',
+  pais: '',
+  localizacao: '',
+  idioma: '',
+  modalidade: '',
+  headcount: '',
+  dataInicio: '',
+  faixaSalarial: '',
+  moeda: '',
+  tipoSalario: '',
+  comissao: '',
+  prioridade: '',
+  requisitos: '',
+  beneficios: '',
+  realocacao: '',
+  notasInternas: '',
+  jdNome: '',
+  jdUrl: '',
+};
 
 const SWIPE_ACTIONS: SwipeAction[] = [
   { id: 'indicar', label: 'Indicar', icon: 'user-plus', tone: 'primary' },
   { id: 'priorizar', label: 'Priorizar', icon: 'flame', tone: 'accent' },
 ];
+
+/** Campo opcional do formulário: string vazia vira "não informado". */
+function opcional(valor: string): string | undefined {
+  const limpo = valor.trim();
+  return limpo ? limpo : undefined;
+}
 
 @Component({
   selector: 'app-vagas-ativas',
@@ -57,6 +106,7 @@ const SWIPE_ACTIONS: SwipeAction[] = [
     ChipFilter,
     EmptyState,
     Icon,
+    ImportarPlanilha,
     Input,
     Page,
     RouterLink,
@@ -66,6 +116,7 @@ const SWIPE_ACTIONS: SwipeAction[] = [
     Skeleton,
     SwipeRow,
     Table,
+    Textarea,
     TranslatePipe,
   ],
   templateUrl: './vagas-ativas.html',
@@ -74,6 +125,7 @@ const SWIPE_ACTIONS: SwipeAction[] = [
 })
 export class VagasAtivas {
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly vagasService = inject(VagasService);
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly quickCreate = inject(QuickCreateService);
@@ -89,6 +141,7 @@ export class VagasAtivas {
     'Idioma',
     'País',
     'Modalidade',
+    'Headcount',
     'Salário',
     'Comissão',
     'Prioridade',
@@ -97,6 +150,12 @@ export class VagasAtivas {
 
   protected readonly swipeActions = SWIPE_ACTIONS;
   protected readonly modalidadeOpcoes = MODALIDADE_OPCOES;
+  protected readonly tipoSalarioOpcoes = TIPO_SALARIO_OPCOES;
+  protected readonly totalEtapas = TOTAL_ETAPAS;
+
+  // importação de planilha é ação de gestão — a API também barra recrutador
+  protected readonly isStaff = computed(() => isStaffRole(this.auth.session()?.role));
+  protected readonly showImport = signal(false);
 
   protected readonly vagas = signal<Vaga[]>([]);
   protected readonly loading = signal(true);
@@ -129,6 +188,7 @@ export class VagasAtivas {
     if (!termo) return porFiltro;
     return porFiltro.filter(
       (v) =>
+        (v.codigo?.toLowerCase().includes(termo) ?? false) ||
         v.cliente.toLowerCase().includes(termo) ||
         v.cargo.toLowerCase().includes(termo) ||
         (v.pais?.toLowerCase().includes(termo) ?? false),
@@ -165,20 +225,16 @@ export class VagasAtivas {
   protected readonly showForm = signal(false);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
-  protected readonly currentStep = signal<1 | 2 | 3>(1);
+  protected readonly currentStep = signal<Etapa>(1);
   // não-nulo quando o wizard foi aberto via "Editar vaga" (painel de
   // detalhe, ver QuickCreateService.editVaga) em vez de "Nova vaga"
   protected readonly editingVagaId = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
+    ...FORM_VAZIO,
     projetoId: ['', [Validators.required]],
     cliente: ['', [Validators.required]],
     cargo: ['', [Validators.required]],
-    idioma: [''],
-    pais: [''],
-    modalidade: [''],
-    salario: [''],
-    comissao: [''],
     prioridade: ['', [Validators.required]],
   });
 
@@ -201,12 +257,21 @@ export class VagasAtivas {
       if (vaga) this.openEditForm(vaga);
     });
 
+    // status trocado no painel de detalhe: a vaga pode ter saído das ativas
+    let ultimaAlteracaoVista = this.quickCreate.statusAlterado();
+    effect(() => {
+      const alteracao = this.quickCreate.statusAlterado();
+      if (alteracao === ultimaAlteracaoVista) return;
+      ultimaAlteracaoVista = alteracao;
+      this.loadVagas();
+    });
+
     this.topbarActions.setAction({
       label: 'Nova vaga',
       icon: 'plus',
       onClick: () => this.toggleForm(),
     });
-    this.topbarActions.setSearch({ placeholder: 'Cliente, cargo ou país', query: this.search });
+    this.topbarActions.setSearch({ placeholder: 'Código, cliente, cargo ou país', query: this.search });
     this.destroyRef.onDestroy(() => {
       this.topbarActions.clearAction();
       this.topbarActions.clearSearch();
@@ -220,6 +285,18 @@ export class VagasAtivas {
     this.editingVagaId.set(null);
   }
 
+  protected abrirImportacao(): void {
+    this.showImport.set(true);
+  }
+
+  protected fecharImportacao(): void {
+    this.showImport.set(false);
+  }
+
+  protected aoImportar(): void {
+    this.loadVagas();
+  }
+
   protected openEditForm(vaga: Vaga): void {
     this.quickCreate.consumeEdit();
     this.editingVagaId.set(vaga.id);
@@ -227,14 +304,26 @@ export class VagasAtivas {
     this.errorMessage.set(null);
     this.form.setValue({
       projetoId: vaga.projetoId,
+      codigo: vaga.codigo ?? '',
       cliente: vaga.cliente,
       cargo: vaga.cargo,
-      idioma: vaga.idioma ?? '',
       pais: vaga.pais ?? '',
+      localizacao: vaga.localizacao ?? '',
+      idioma: vaga.idioma ?? '',
       modalidade: vaga.modalidade ?? '',
-      salario: vaga.salario?.toString() ?? '',
+      headcount: vaga.headcount ?? '',
+      dataInicio: vaga.dataInicio ?? '',
+      faixaSalarial: vaga.faixaSalarial ?? '',
+      moeda: vaga.moeda ?? '',
+      tipoSalario: vaga.tipoSalario ?? '',
       comissao: vaga.comissao?.toString() ?? '',
       prioridade: vaga.prioridade,
+      requisitos: vaga.requisitos ?? '',
+      beneficios: vaga.beneficios ?? '',
+      realocacao: vaga.realocacao ?? '',
+      notasInternas: vaga.notasInternas ?? '',
+      jdNome: vaga.jdNome ?? '',
+      jdUrl: vaga.jdUrl ?? '',
     });
     this.showForm.set(true);
   }
@@ -248,15 +337,24 @@ export class VagasAtivas {
       if (control.invalid) valid = false;
     }
     if (!valid) return;
-    if (this.currentStep() < 3) this.currentStep.update((step) => (step + 1) as 1 | 2 | 3);
+    if (this.currentStep() < TOTAL_ETAPAS) this.currentStep.update((step) => (step + 1) as Etapa);
   }
 
   protected prevStep(): void {
-    if (this.currentStep() > 1) this.currentStep.update((step) => (step - 1) as 1 | 2 | 3);
+    if (this.currentStep() > 1) this.currentStep.update((step) => (step - 1) as Etapa);
   }
 
   protected selecionarModalidade(valor: string): void {
     this.form.controls.modalidade.setValue(valor);
+  }
+
+  protected selecionarTipoSalario(valor: string): void {
+    this.form.controls.tipoSalario.setValue(valor);
+  }
+
+  /** "País · Localização" com só o que existir (ex.: "Portugal · Lisbon"). */
+  protected paisComLocalizacao(vaga: Vaga): string {
+    return [vaga.pais, vaga.localizacao].filter(Boolean).join(' · ');
   }
 
   protected selectVaga(vagaId: string): void {
@@ -283,18 +381,7 @@ export class VagasAtivas {
 
     this.submitting.set(true);
     this.errorMessage.set(null);
-    const raw = this.form.getRawValue();
-    const payload = {
-      projetoId: raw.projetoId,
-      cliente: raw.cliente,
-      cargo: raw.cargo,
-      idioma: raw.idioma || undefined,
-      pais: raw.pais || undefined,
-      modalidade: raw.modalidade || undefined,
-      salario: raw.salario ? Number(raw.salario) : undefined,
-      comissao: raw.comissao ? Number(raw.comissao) : undefined,
-      prioridade: raw.prioridade as Vaga['prioridade'],
-    };
+    const payload = this.montarPayload();
 
     const editingId = this.editingVagaId();
     const request = editingId ? this.vagasService.update(editingId, payload) : this.vagasService.create(payload);
@@ -306,17 +393,7 @@ export class VagasAtivas {
         this.showForm.set(false);
         this.currentStep.set(1);
         this.editingVagaId.set(null);
-        this.form.reset({
-          projetoId: '',
-          cliente: '',
-          cargo: '',
-          idioma: '',
-          pais: '',
-          modalidade: '',
-          salario: '',
-          comissao: '',
-          prioridade: '',
-        });
+        this.form.reset(FORM_VAZIO);
         this.loadVagas();
       },
       error: () => {
@@ -326,11 +403,39 @@ export class VagasAtivas {
     });
   }
 
+  // o PATCH substitui todos os campos: o que estiver vazio aqui é apagado
+  private montarPayload(): VagaCreate {
+    const raw = this.form.getRawValue();
+    return {
+      projetoId: raw.projetoId,
+      codigo: opcional(raw.codigo),
+      cliente: raw.cliente.trim(),
+      cargo: raw.cargo.trim(),
+      pais: opcional(raw.pais),
+      localizacao: opcional(raw.localizacao),
+      idioma: opcional(raw.idioma),
+      modalidade: opcional(raw.modalidade),
+      headcount: opcional(raw.headcount),
+      dataInicio: opcional(raw.dataInicio),
+      faixaSalarial: opcional(raw.faixaSalarial),
+      moeda: opcional(raw.moeda)?.toUpperCase(),
+      tipoSalario: opcional(raw.tipoSalario),
+      comissao: raw.comissao ? Number(raw.comissao) : undefined,
+      prioridade: raw.prioridade as Vaga['prioridade'],
+      requisitos: opcional(raw.requisitos),
+      beneficios: opcional(raw.beneficios),
+      realocacao: opcional(raw.realocacao),
+      notasInternas: opcional(raw.notasInternas),
+      jdNome: opcional(raw.jdNome),
+      jdUrl: opcional(raw.jdUrl),
+    };
+  }
+
   private loadVagas(): void {
     this.loading.set(true);
     this.error.set(false);
     this.vagasService
-      .list(0, 50, 'aberta')
+      .list(0, VAGAS_POR_PAGINA, 'aberta')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (page) => {

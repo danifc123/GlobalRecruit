@@ -39,4 +39,14 @@ export class QuickCreateService {
     if (vaga) this.editSignal.set(null);
     return vaga;
   }
+
+  // troca de status feita no painel de detalhe — VagasAtivas recarrega a
+  // lista (vaga pausada/fechada sai das ativas). Contador, não boolean, pra
+  // duas trocas seguidas dispararem o effect duas vezes.
+  private readonly statusAlteradoSignal = signal(0);
+  readonly statusAlterado = this.statusAlteradoSignal.asReadonly();
+
+  notificarStatusAlterado(): void {
+    this.statusAlteradoSignal.update((contador) => contador + 1);
+  }
 }

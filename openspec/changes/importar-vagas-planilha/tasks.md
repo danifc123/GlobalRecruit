@@ -27,7 +27,7 @@
 
 ## 5. Frontend: modelo, serviço e tela de vagas
 
-- [ ] 5.1 Atualizar `core/models/vaga.ts` e `core/data/vagas.service.ts` (campos novos, `importar(file, projetoId, dryRun)` com FormData) com teste Vitest do mapeamento snake_case ↔ camelCase e do FormData; verificar `ng test`
+- [x] 5.1 Atualizar `core/models/vaga.ts` e `core/data/vagas.service.ts` (campos novos, `importar(file, projetoId, dryRun)` com FormData) com teste Vitest do mapeamento snake_case ↔ camelCase e do FormData; verificar `ng test`
 - [ ] 5.2 `loadVagas` com `list(0, 500, 'aberta')` e vagas desativadas com `list(0, 500)`; tabela com código, "país · localização", faixa salarial, headcount e busca por código; verificar `ng build`, `npm run lint` e na tela com dados importados
 - [ ] 5.3 Wizard em 4 etapas (STEP_FIELDS, openEditForm, reset, payload sem salário numérico, modalidade com texto livre); verificar criando e editando uma vaga na tela
 - [ ] 5.4 Componente `importar-planilha` (projeto, arquivo, Pré-visualizar, Confirmar habilitado só após prévia, resumo, erros, recarregar lista), botão só para staff; teste Vitest do estado do botão Confirmar; verificar `ng test` e o fluxo completo na tela

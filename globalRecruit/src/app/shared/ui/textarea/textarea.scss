@@ -1,0 +1,9 @@
+// sobrescreve só o que muda em relação ao input de uma linha
+.form-field__control--multiline {
+  height: auto;
+  min-height: 5.5rem;
+  padding-block: var(--gr-space-2);
+  resize: vertical;
+  line-height: 1.45;
+  font: inherit;
+}

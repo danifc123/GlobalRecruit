@@ -1,0 +1,70 @@
+<app-sheet [open]="open()" [drawer]="true" [title]="'Importar planilha'" (closed)="fechar()">
+  <div class="importar">
+    <p class="importar__ajuda">
+      {{ 'Envie a planilha .xlsx do cliente. Vagas já existentes são atualizadas e nenhuma vaga é apagada.' | translate }}
+    </p>
+
+    <app-select [label]="'Projeto' | translate" [formControl]="projeto" [options]="projetoOptions()" [required]="true" />
+
+    <div class="importar__arquivo">
+      <label class="importar__label" for="importar-arquivo">{{ 'Arquivo (.xlsx, até 10 MB)' | translate }}</label>
+      <input
+        id="importar-arquivo"
+        class="importar__input"
+        type="file"
+        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        (change)="escolherArquivo($event)"
+      />
+    </div>
+
+    @if (erro(); as mensagem) {
+      <app-banner tone="danger">{{ mensagem | translate }}</app-banner>
+    }
+
+    @if (resultadoFinal() ?? previa(); as resumo) {
+      <section class="importar__resumo" aria-live="polite">
+        <h3 class="importar__resumo-titulo">
+          {{ (resultadoFinal() ? 'Importação concluída' : 'Pré-visualização (nada foi gravado)') | translate }}
+        </h3>
+        <dl class="importar__numeros">
+          <div>
+            <dt>{{ (resultadoFinal() ? 'Criadas' : 'Novas') | translate }}</dt>
+            <dd>{{ resumo.criadas }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'Atualizadas' | translate }}</dt>
+            <dd>{{ resumo.atualizadas }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'Ignoradas (sem cargo)' | translate }}</dt>
+            <dd>{{ resumo.ignoradas }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'Com erro' | translate }}</dt>
+            <dd>{{ resumo.erros.length }}</dd>
+          </div>
+        </dl>
+
+        @if (resumo.erros.length > 0) {
+          <h4 class="importar__erros-titulo">{{ 'Linhas com erro (não serão gravadas)' | translate }}</h4>
+          <ul class="importar__erros">
+            @for (erroLinha of resumo.erros; track erroLinha.linha) {
+              <li>
+                <strong>{{ 'Linha {0}' | translate: erroLinha.linha }}</strong>: {{ erroLinha.motivo }}
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+
+    <div class="importar__acoes">
+      <app-button variant="outline" [disabled]="!podePrevisualizar()" [loading]="carregando() && !previa()" (clicked)="previsualizar()">
+        {{ 'Pré-visualizar' | translate }}
+      </app-button>
+      <app-button variant="primary" [disabled]="!podeConfirmar()" [loading]="carregando() && !!previa()" (clicked)="confirmar()">
+        {{ 'Confirmar importação' | translate }}
+      </app-button>
+    </div>
+  </div>
+</app-sheet>

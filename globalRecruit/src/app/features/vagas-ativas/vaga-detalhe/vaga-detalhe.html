@@ -48,7 +48,7 @@
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Salário' | translate }}</div>
-          <div class="vaga-detalhe__stat-value">{{ vaga()!.salario ?? '—' }}</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Comissão' | translate }}</div>
@@ -59,6 +59,8 @@
           <div class="vaga-detalhe__stat-value">{{ projetoNome() ?? '—' }}</div>
         </div>
       </div>
+
+      <app-vaga-info [vaga]="vaga()!" />
 
       <div class="vaga-detalhe__card">
         <div class="vaga-detalhe__card-header">
@@ -96,17 +98,13 @@
     <div class="vaga-detalhe__footer">
       <div class="vaga-detalhe__footer-row">
         <button type="button" class="vaga-detalhe__editar" (click)="editar()">{{ 'Editar vaga' | translate }}</button>
-        @if (vaga()!.status === 'aberta') {
-          <button
-            type="button"
-            class="vaga-detalhe__fechar"
-            [disabled]="fechando()"
-            (click)="fecharVaga()"
-          >
-            {{ (fechando() ? 'Fechando…' : 'Fechar vaga') | translate }}
-          </button>
+        @if (isStaff()) {
+          <app-vaga-status-select [status]="vaga()!.status" [disabled]="alterandoStatus()" (alterar)="alterarStatus($event)" />
         }
       </div>
+      @if (erroStatus()) {
+        <p class="vaga-detalhe__erro-status" role="alert">{{ 'Não foi possível alterar o status.' | translate }}</p>
+      }
       <a
         class="vaga-detalhe__indicar"
         [routerLink]="['/pipeline-candidatos']"
@@ -171,7 +169,7 @@
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Salário' | translate }}</div>
-          <div class="vaga-detalhe__stat-value">{{ vaga()!.salario ?? '—' }}</div>
+          <div class="vaga-detalhe__stat-value">{{ vaga()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Comissão' | translate }}</div>
@@ -182,6 +180,8 @@
           <div class="vaga-detalhe__stat-value">{{ projetoNome() ?? '—' }}</div>
         </div>
       </div>
+
+      <app-vaga-info [vaga]="vaga()!" />
 
       <div class="vaga-panel__pipeline">
         <div class="vaga-panel__pipeline-header">
@@ -241,17 +241,13 @@
     <div class="vaga-detalhe__footer">
       <div class="vaga-detalhe__footer-row">
         <button type="button" class="vaga-detalhe__editar" (click)="editar()">{{ 'Editar vaga' | translate }}</button>
-        @if (vaga()!.status === 'aberta') {
-          <button
-            type="button"
-            class="vaga-detalhe__fechar"
-            [disabled]="fechando()"
-            (click)="fecharVaga()"
-          >
-            {{ (fechando() ? 'Fechando…' : 'Fechar vaga') | translate }}
-          </button>
+        @if (isStaff()) {
+          <app-vaga-status-select [status]="vaga()!.status" [disabled]="alterandoStatus()" (alterar)="alterarStatus($event)" />
         }
       </div>
+      @if (erroStatus()) {
+        <p class="vaga-detalhe__erro-status" role="alert">{{ 'Não foi possível alterar o status.' | translate }}</p>
+      }
       <a
         class="vaga-detalhe__indicar"
         [routerLink]="['/pipeline-candidatos']"

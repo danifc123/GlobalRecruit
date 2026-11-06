@@ -34,6 +34,11 @@
 7. **Migration `0007`**: `add_column` nullable para os campos novos, `alter_column` aumentando `idioma`/`pais`/`modalidade`, índice em `codigo`, `UPDATE vagas SET faixa_salarial = salario::text WHERE salario IS NOT NULL`. Downgrade remove colunas/índice e volta os tamanhos (falha se houver valor maior que o tamanho antigo — aceitável e documentado).
 8. **Testes do backend**: `pytest` + `pytest-asyncio` + `httpx.AsyncClient` com `ASGITransport`. Banco de teste `globalrecruit_test` no mesmo Postgres do Docker, criado automaticamente pelo `conftest.py` e migrado com Alembic; cada teste roda numa transação revertida. Planilhas de teste geradas em memória com openpyxl (fixtures), cobrindo as variações observadas na planilha real. Dependências de teste em `backend/requirements-dev.txt`.
 9. **Frontend**: `VagasService.importar(file, projetoId, dryRun)` com `FormData`; o painel de importação é um componente próprio em `features/vagas-ativas/importar-planilha/` (evita inchar `vagas-ativas.ts`, já com 346 linhas). Testes Vitest para o mapeamento do serviço e para o estado do painel (confirmar desabilitado sem prévia).
+   - Detalhe da vaga: os dois layouts (mobile e painel ≥1024px) usam os mesmos componentes novos `vaga-info` (campos da planilha) e `vaga-status-select` (Aberta/Pausada/Fechada), em vez de duplicar marcação — e o `vaga-detalhe.scss`, já acima do orçamento, não cresce.
+   - Troca de status no detalhe avisa a lista pelo `QuickCreateService.notificarStatusAlterado()` (mesmo canal pai↔filho já usado por "Editar vaga"), para a vaga pausada/fechada sair das ativas.
+   - Novo `app-textarea` em `shared/ui` (mesmo contrato do `app-input`, reaproveita o `input.scss`) e ícone `upload`.
+   - O PATCH de edição substitui todos os campos: `jd_nome`, que não aparece no formulário, é carregado da vaga e reenviado para não ser apagado.
+   - Link da JD só vira link clicável se for `http(s)://` (vem da planilha; além da sanitização de `[href]` do Angular).
 
 ## Risks / Trade-offs
 

@@ -1,0 +1,40 @@
+.vaga-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gr-space-3);
+  margin: 0;
+  padding: var(--gr-space-3);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+}
+
+.vaga-info__item {
+  min-width: 0;
+}
+
+.vaga-info__item--longo {
+  grid-column: 1 / -1;
+}
+
+.vaga-info__rotulo {
+  font-size: var(--gr-font-size-xs);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-info__valor {
+  margin: 0;
+  font-size: var(--gr-font-size-sm);
+  color: var(--gr-color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+// mantém as quebras de linha da planilha (requisitos, notas internas)
+.vaga-info__valor--multilinha {
+  white-space: pre-line;
+}
+
+.vaga-info__link {
+  color: var(--gr-color-primary-600);
+  font-weight: var(--gr-font-weight-medium);
+}

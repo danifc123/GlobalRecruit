@@ -282,21 +282,10 @@
   cursor: pointer;
 }
 
-.vaga-detalhe__fechar {
-  flex: 1;
-  height: 50px;
-  border: var(--gr-border-width) solid var(--gr-color-danger-100);
-  border-radius: var(--gr-radius-md);
-  background-color: var(--gr-color-surface);
+.vaga-detalhe__erro-status {
+  margin: 0;
+  font-size: var(--gr-font-size-sm);
   color: var(--gr-color-danger-700);
-  font-size: var(--gr-font-size-md);
-  font-weight: var(--gr-font-weight-medium);
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 }
 
 .vaga-detalhe__indicar {
