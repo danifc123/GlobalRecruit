@@ -21,7 +21,9 @@
 
 ## Decisions
 
-1. **Módulo novo `backend/app/services/importacao_vagas.py`** com três partes: leitura (`openpyxl`, `data_only=True`, `read_only=False` para ter acesso a hyperlinks), normalização linha → dados da vaga + erros, e planejamento (cruza com as vagas existentes do projeto e decide criar/atualizar/ignorar). A rota só valida o upload, chama o service e faz `commit` ou `rollback` conforme `dry_run`.
+1. **Pacote novo `backend/app/services/importacao_vagas/`** com três módulos: `leitura.py` (`openpyxl`, `data_only=True`, `read_only=False` para ter acesso a hyperlinks; roda em threadpool por ser síncrono), `normalizacao.py` (linha → dados da vaga, linha ignorada ou erro; funções puras) e `aplicacao.py` (cruza com as vagas existentes do projeto e cria/atualiza). A rota fica em `api/routes/importacao_vagas.py` (router separado, mesmo prefixo `/vagas`), só valida o upload, chama o service e faz `commit` ou `rollback` conforme `dry_run`.
+   - Na implementação virou pacote em vez de arquivo único para manter cada módulo abaixo de ~200 linhas.
+   - Coluna ausente na planilha não altera o campo da vaga existente (só célula vazia apaga, P6) — decisão de implementação conservadora, coberta por teste.
    - Alternativa: tudo na rota, como as outras rotas de vaga. Rejeitada: a rota ficaria com centenas de linhas e sem teste unitário possível.
    - Alternativa: pandas. Rejeitada: dependência pesada (numpy) para ler ~136 linhas; openpyxl é o leitor padrão de .xlsx e já é o que o pandas usaria por baixo.
 2. **Regra de reabertura extraída** para uma função `encerrar_candidatos_em_andamento(db, vaga_id)` em `backend/app/services/vagas.py`, usada por `update_status` e pela importação. Refactor em commit separado, coberto por teste de integração antes de mover.
@@ -37,6 +39,7 @@
 
 - [Planilha real difere das variações descritas no prompt] → testes usam fixtures sintéticas; validação final manual com a planilha real em dry-run antes de gravar (depende do Daniel enviar o arquivo).
 - [openpyxl lendo arquivo malicioso (zip bomb / XML)] → limite de 10 MB, só admin/developer; openpyxl usa `defusedxml` se instalado — avaliar adicionar `defusedxml` (decisão pendente, ver Open Questions).
+- [Upload grande consome memória/disco antes do limite de 10 MB: o FastAPI/python-multipart recebe o corpo inteiro antes de a rota checar o tamanho] → o endpoint só é acessível a admin/developer autenticado; limite de corpo no proxy/servidor (Railway/uvicorn) fica como melhoria separada.
 - [Orçamento de SCSS do `vaga-detalhe` já estourado (10.9 kB vs 8 kB) e vai crescer] → hoje é só aviso; não altero o budget sem decisão.
 - [Downgrade da 0007 falha se idioma/país/modalidade tiverem valores longos] → documentado na migration.
 - [Rotas de vaga sem camada repository] → divergência existente da convenção; não corrigida aqui (refactor separado, se aprovado).

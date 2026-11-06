@@ -13,17 +13,17 @@
 
 ## 3. Campos novos da vaga (backend)
 
-- [ ] 3.1 Testes de integração dos cenários de "Campos da vaga", "Salário numérico existente vira faixa salarial" e "Listagem de até 500" (falhando pelo motivo certo)
-- [ ] 3.2 Migration `0007` (colunas novas, tamanhos maiores, índice em `codigo`, cópia de `salario` para `faixa_salarial`, downgrade); verificar `alembic upgrade head`, `downgrade 0006` e `upgrade head` de novo no banco local
-- [ ] 3.3 Atualizar model, schemas (`VagaCreate`/`VagaUpdate`/`VagaOut`), `_LIST_COLUMNS`, retorno do `create_vaga` e `page_size le=500`; verificar testes 3.1 verdes
+- [x] 3.1 Testes de integração dos cenários de "Campos da vaga", "Salário numérico existente vira faixa salarial" e "Listagem de até 500" (falhando pelo motivo certo)
+- [x] 3.2 Migration `0007` (colunas novas, tamanhos maiores, índice em `codigo`, cópia de `salario` para `faixa_salarial`, downgrade); verificar `alembic upgrade head`, `downgrade 0006` e `upgrade head` de novo no banco local
+- [x] 3.3 Atualizar model, schemas (`VagaCreate`/`VagaUpdate`/`VagaOut`), `_LIST_COLUMNS`, retorno do `create_vaga` e `page_size le=500`; verificar testes 3.1 verdes
 
 ## 4. Importação (backend)
 
-- [ ] 4.1 Adicionar `openpyxl` (versão fixa) ao `requirements.txt` e instalar; verificar import na `.venv`
-- [ ] 4.2 Fixtures que geram .xlsx em memória (abas MAIN e Live Data Feed, cabeçalho em linhas diferentes, hyperlink na célula JD, datas reais e texto, "Urgent ", "NA", "eur ", ID duplicado com cargos diferentes, linha sem ROLE)
-- [ ] 4.3 Testes unitários de leitura e normalização (aba/cabeçalho, correspondência de colunas, normalização, status, prioridade, tamanho, linha ignorada) e implementação em `backend/app/services/importacao_vagas.py`; verificar testes verdes
-- [ ] 4.4 Testes de integração do endpoint (permissão, arquivo aceito, criar/atualizar sem duplicar, outro projeto, vaga fora da planilha, reabertura encerra candidatos, dry-run não grava, resumo) e implementação de `POST /api/vagas/importar`; verificar testes verdes
-- [ ] 4.5 Documentar no README a importação, o mapeamento de status/prioridade e as rotas REST novas/alteradas; verificar que as rotas citadas existem em `/docs`
+- [x] 4.1 Adicionar `openpyxl` (versão fixa) ao `requirements.txt` e instalar; verificar import na `.venv`
+- [x] 4.2 Fixtures que geram .xlsx em memória (abas MAIN e Live Data Feed, cabeçalho em linhas diferentes, hyperlink na célula JD, datas reais e texto, "Urgent ", "NA", "eur ", ID duplicado com cargos diferentes, linha sem ROLE)
+- [x] 4.3 Testes unitários de leitura e normalização (aba/cabeçalho, correspondência de colunas, normalização, status, prioridade, tamanho, linha ignorada) e implementação em `backend/app/services/importacao_vagas.py`; verificar testes verdes
+- [x] 4.4 Testes de integração do endpoint (permissão, arquivo aceito, criar/atualizar sem duplicar, outro projeto, vaga fora da planilha, reabertura encerra candidatos, dry-run não grava, resumo) e implementação de `POST /api/vagas/importar`; verificar testes verdes
+- [x] 4.5 Documentar no README a importação, o mapeamento de status/prioridade e as rotas REST novas/alteradas; verificar que as rotas citadas existem em `/docs`
 
 ## 5. Frontend: modelo, serviço e tela de vagas
 

@@ -109,7 +109,7 @@ def criar_projeto(db_session: AsyncSession) -> CriarProjeto:
     async def _criar(nome: str = "Projeto Teste", cliente: str = "Cliente Teste") -> ProjetoParceiro:
         projeto = ProjetoParceiro(nome=nome, cliente=cliente)
         db_session.add(projeto)
-        await db_session.flush()
+        await db_session.commit()
         return projeto
 
     return _criar
@@ -125,7 +125,7 @@ def criar_usuario(db_session: AsyncSession) -> CriarUsuario:
             projetos=projetos or [],
         )
         db_session.add(user)
-        await db_session.flush()
+        await db_session.commit()
         return user
 
     return _criar
@@ -152,7 +152,7 @@ def criar_vaga(db_session: AsyncSession) -> CriarVaga:
         }
         vaga = Vaga(projeto_id=projeto.id, **valores)
         db_session.add(vaga)
-        await db_session.flush()
+        await db_session.commit()
         return vaga
 
     return _criar
@@ -163,11 +163,11 @@ def criar_candidato(db_session: AsyncSession) -> CriarCandidato:
     async def _criar(vaga: Vaga, estagio: Estagio) -> Candidato:
         candidato = Candidato(nome="Fulano", email=f"{uuid.uuid4().hex[:8]}@teste.local", vaga_id=vaga.id)
         db_session.add(candidato)
-        await db_session.flush()
+        await db_session.commit()
         db_session.add(
             PipelineStage(candidato_id=candidato.id, estagio=estagio, updated_at=_ESTAGIO_FIXTURE_UPDATED_AT)
         )
-        await db_session.flush()
+        await db_session.commit()
         return candidato
 
     return _criar
