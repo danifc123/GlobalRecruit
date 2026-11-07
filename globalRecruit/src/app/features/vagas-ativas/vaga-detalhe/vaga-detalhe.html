@@ -36,7 +36,7 @@
       </div>
       <h1 class="vaga-detalhe__title">{{ vaga()!.cargo }}</h1>
       <p class="vaga-detalhe__subtitle">
-        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vaga()!.modalidade) { · {{ vaga()!.modalidade | translate }} }
+        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vagaExibida()!.modalidade) { · {{ vagaExibida()!.modalidade | translate }} }
       </p>
     </div>
 
@@ -48,7 +48,7 @@
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Salário' | translate }}</div>
-          <div class="vaga-detalhe__stat-value">{{ vaga()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
+          <div class="vaga-detalhe__stat-value">{{ vagaExibida()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Comissão' | translate }}</div>
@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <app-vaga-info [vaga]="vaga()!" />
+      <app-vaga-info [vaga]="vagaExibida()!" [estadoTraducao]="estadoTraducao()" (alternarOriginal)="alternarOriginal()" />
 
       <div class="vaga-detalhe__card">
         <div class="vaga-detalhe__card-header">
@@ -157,7 +157,7 @@
       </div>
       <h2 class="vaga-panel__title">{{ vaga()!.cargo }}</h2>
       <p class="vaga-panel__subtitle">
-        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vaga()!.modalidade) { · {{ vaga()!.modalidade | translate }} }
+        {{ vaga()!.cliente }}@if (vaga()!.pais) { · {{ vaga()!.pais }} }@if (vagaExibida()!.modalidade) { · {{ vagaExibida()!.modalidade | translate }} }
       </p>
     </div>
 
@@ -169,7 +169,7 @@
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Salário' | translate }}</div>
-          <div class="vaga-detalhe__stat-value">{{ vaga()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
+          <div class="vaga-detalhe__stat-value">{{ vagaExibida()!.faixaSalarial ?? vaga()!.salario ?? '—' }}</div>
         </div>
         <div class="vaga-detalhe__stat">
           <div class="vaga-detalhe__stat-label">{{ 'Comissão' | translate }}</div>
@@ -181,7 +181,7 @@
         </div>
       </div>
 
-      <app-vaga-info [vaga]="vaga()!" />
+      <app-vaga-info [vaga]="vagaExibida()!" [estadoTraducao]="estadoTraducao()" (alternarOriginal)="alternarOriginal()" />
 
       <div class="vaga-panel__pipeline">
         <div class="vaga-panel__pipeline-header">

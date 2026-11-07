@@ -356,4 +356,9 @@ export const EN_DICTIONARY: Record<string, string> = {
   'Pré-visualizar': 'Preview',
   'Confirmar importação': 'Confirm import',
   'Não foi possível importar a planilha. Tente de novo.': 'Could not import the spreadsheet. Please try again.',
+
+  // ---- Tradução automática dos dados das vagas (change traduzir-dados-vagas) ----
+  'Tradução automática': 'Machine translation',
+  'Ver original': 'View original',
+  'Ver tradução': 'View translation',
 };

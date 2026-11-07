@@ -1,4 +1,14 @@
 @if (campos().length > 0 || jdUrlSegura()) {
+  @if (estadoTraducao() !== 'nenhuma') {
+    <div class="vaga-info__traducao">
+      @if (estadoTraducao() === 'traduzida') {
+        <span class="vaga-info__aviso">{{ 'Tradução automática' | translate }}</span>
+      }
+      <button type="button" class="vaga-info__alternar" (click)="alternarOriginal.emit()">
+        {{ (estadoTraducao() === 'traduzida' ? 'Ver original' : 'Ver tradução') | translate }}
+      </button>
+    </div>
+  }
   <dl class="vaga-info">
     @for (campo of campos(); track campo.rotulo) {
       <div class="vaga-info__item" [class.vaga-info__item--longo]="campo.multilinha">

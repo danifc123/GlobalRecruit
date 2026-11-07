@@ -30,6 +30,7 @@ const VAGA_BASE: Vaga = {
   status: 'aberta',
   createdAt: '2026-11-06T10:00:00Z',
   candidatosCount: 0,
+  traducoes: {},
 };
 
 function renderizar(campos: Partial<Vaga>): HTMLElement {
@@ -78,5 +79,47 @@ describe('VagaInfo', () => {
       '1,250 per month · EUR · GROSS',
     );
     expect(renderizar({ salario: 2500 }).textContent).toContain('2500');
+  });
+});
+
+describe('VagaInfo — tradução automática', () => {
+  beforeEach(() => TestBed.configureTestingModule({ imports: [VagaInfo] }));
+
+  function montar(estado: 'nenhuma' | 'traduzida' | 'original') {
+    const fixture = TestBed.createComponent(VagaInfo);
+    fixture.componentRef.setInput('vaga', { ...VAGA_BASE, requisitos: 'Alemão fluente (C1)' });
+    fixture.componentRef.setInput('estadoTraducao', estado);
+    fixture.detectChanges();
+    const cliques: number[] = [];
+    fixture.componentInstance.alternarOriginal.subscribe(() => cliques.push(1));
+    return { element: fixture.nativeElement as HTMLElement, cliques };
+  }
+
+  it('com texto traduzido mostra o aviso e o link "Ver original"', () => {
+    const { element } = montar('traduzida');
+
+    expect(element.textContent).toContain('Tradução automática');
+    expect(element.querySelector('button')!.textContent).toContain('Ver original');
+  });
+
+  it('mostrando o original o link vira "Ver tradução"', () => {
+    const { element } = montar('original');
+
+    expect(element.querySelector('button')!.textContent).toContain('Ver tradução');
+  });
+
+  it('sem tradução não mostra aviso nem link', () => {
+    const { element } = montar('nenhuma');
+
+    expect(element.textContent).not.toContain('Tradução automática');
+    expect(element.querySelector('button')).toBeNull();
+  });
+
+  it('clicar no link avisa o detalhe para alternar', () => {
+    const { element, cliques } = montar('traduzida');
+
+    element.querySelector('button')!.click();
+
+    expect(cliques.length).toBe(1);
   });
 });

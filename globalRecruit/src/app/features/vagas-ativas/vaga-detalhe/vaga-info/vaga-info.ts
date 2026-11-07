@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
 import { Vaga } from '@app/core/models/vaga';
@@ -10,6 +10,12 @@ interface CampoVaga {
   multilinha: boolean;
 }
 
+/**
+ * nenhuma = nada traduzido para exibir; traduzida = mostrando a tradução
+ * automática; original = o usuário pediu "Ver original" (spec traducao-vagas)
+ */
+export type EstadoTraducao = 'nenhuma' | 'traduzida' | 'original';
+
 /** Dados da vaga vindos da planilha do cliente — usado nos dois layouts do detalhe. */
 @Component({
   selector: 'app-vaga-info',
@@ -19,7 +25,10 @@ interface CampoVaga {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VagaInfo {
+  // já no idioma de exibição (ver vagaNoIdioma) — este componente não traduz
   readonly vaga = input.required<Vaga>();
+  readonly estadoTraducao = input<EstadoTraducao>('nenhuma');
+  readonly alternarOriginal = output<void>();
 
   protected readonly campos = computed<CampoVaga[]>(() => {
     const vaga = this.vaga();
