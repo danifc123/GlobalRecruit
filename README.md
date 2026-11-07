@@ -117,8 +117,10 @@ informação sensível e não são enviadas a terceiros).
 - **Quando:** depois de criar, editar ou importar vagas, em segundo plano — a
   resposta não espera. Só textos novos ou alterados vão para o serviço; o resto
   usa a tradução guardada (`vagas_traducoes`, com hash do original).
-- **Serviço:** DeepL API Free (500 mil caracteres/mês). As 136 vagas reais somam
-  ~200 mil caracteres. Configure `DEEPL_API_KEY` (ver variáveis de ambiente);
+- **Serviço:** DeepL API Free. A conta configurada em 2026-11-07 mostra limite de
+  1.000.000 caracteres/mês (a doc da DeepL citava 500 mil — vale o que a conta
+  mostra em `/v2/usage`). A tradução inicial das vagas locais (136 reais + 32 de
+  teste) usou ~107 mil caracteres. Configure `DEEPL_API_KEY` (ver variáveis de ambiente);
   sem a chave, o sistema funciona e só mostra o original.
 - **Falha ou cota esgotada:** nada é bloqueado; o campo fica sem tradução e é
   tentado de novo na próxima edição/importação ou pelo comando abaixo.

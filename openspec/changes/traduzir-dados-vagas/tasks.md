@@ -31,7 +31,8 @@
 ## 6. Verificação integrada
 
 - [x] 6.1 Suítes, build e lint verdes
-- [ ] 6.2 Com chave real do Daniel no `.env` local: rodar o comando nas 136 vagas reais, conferir caracteres enviados vs cota, ver o detalhe em PT e EN na tela
+- [x] 6.2 Com chave real do Daniel no `.env` local: rodar o comando nas 136 vagas reais, conferir caracteres enviados vs cota, ver o detalhe em PT e EN na tela
+  - Feito em 2026-11-07: comando traduziu 738 campos (136 vagas reais + 32 de teste), 0 falhas, 107.271 caracteres enviados (DeepL contou 106.733 de 1.000.000); segunda execução enviou 0; nenhuma nota interna enviada; detalhe em PT mostrou a tradução da DeepL com aviso e "Ver original".
 
 ## Workflow follow-up
 

@@ -5,7 +5,7 @@
 - Ver proposal.md (Why). Depende da change `importar-vagas-planilha` (campos novos da vaga, `services/`, suíte pytest), ainda no PR #15 — esta change deve ser implementada em branch criada a partir daquela (ou depois do merge).
 - O i18n do frontend é um dicionário estático (`en.dictionary.ts`) que traduz PT→EN; não serve para dados dinâmicos.
 - Volume medido: ~200 mil caracteres traduzíveis nas 136 vagas reais (média 1.365 por vaga, contando requisitos/benefícios/realocação/notas). Sem notas internas o volume é menor.
-- DeepL (verificado na doc oficial em 2026-11-07): `POST /v2/translate`, plano Free em `https://api-free.deepl.com`, `target_lang: "PT-BR"` suportado, até 500 mil caracteres/mês no Free, requisição até 128 KiB, `/v2/usage` informa o consumo. Tratamento de dados do Free "pode diferir" do Pro (P4).
+- DeepL (verificado na doc oficial em 2026-11-07): `POST /v2/translate`, plano Free em `https://api-free.deepl.com`, `target_lang: "PT-BR"` suportado, até 500 mil caracteres/mês no Free segundo a doc (a conta real configurada em 2026-11-07 mostrou limite de 1.000.000 em `/v2/usage`), requisição até 128 KiB, `/v2/usage` informa o consumo. Tratamento de dados do Free "pode diferir" do Pro (P4).
 
 ## Goals / Non-Goals
 
