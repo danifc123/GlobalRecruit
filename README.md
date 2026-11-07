@@ -104,6 +104,37 @@ Reabrir uma vaga pela planilha (de Pausada/Fechada para Aberta) aplica a
 mesma regra da reativação manual: candidatos em triagem, entrevista ou
 proposta passam para "concluído".
 
+### Tradução automática dos dados das vagas (PT-BR)
+
+Os textos das vagas chegam em inglês (planilha do cliente). Com o site em
+português, os campos **requisitos, benefícios, realocação, modalidade, data de
+início e faixa salarial** aparecem traduzidos para português do Brasil, com o
+aviso "Tradução automática" e o link "Ver original". Em inglês, aparece o texto
+original. Cargo, código, cliente, país, localização, moeda, tipo de salário,
+headcount e **notas internas não são traduzidos** (notas internas podem ter
+informação sensível e não são enviadas a terceiros).
+
+- **Quando:** depois de criar, editar ou importar vagas, em segundo plano — a
+  resposta não espera. Só textos novos ou alterados vão para o serviço; o resto
+  usa a tradução guardada (`vagas_traducoes`, com hash do original).
+- **Serviço:** DeepL API Free (500 mil caracteres/mês). As 136 vagas reais somam
+  ~200 mil caracteres. Configure `DEEPL_API_KEY` (ver variáveis de ambiente);
+  sem a chave, o sistema funciona e só mostra o original.
+- **Falha ou cota esgotada:** nada é bloqueado; o campo fica sem tradução e é
+  tentado de novo na próxima edição/importação ou pelo comando abaixo.
+- **Vagas já cadastradas** (ou depois de uma falha) — idempotente, só traduz o
+  que falta:
+
+  ```bash
+  cd backend
+  .venv\Scripts\python -m app.traduzir_vagas
+  ```
+
+- **Privacidade:** o texto desses campos é enviado à DeepL. Segundo a própria
+  DeepL, o tratamento de dados pode diferir entre os planos Free e Pro (só o
+  Pro declara não guardar nem treinar com os textos). Decisão registrada em
+  `openspec/changes/traduzir-dados-vagas/proposal.md` (P2 e P4).
+
 ## Estrutura do projeto
 
 Camadas do backend, dependência sempre numa direção só: `api/` (HTTP) →
@@ -211,6 +242,8 @@ Espera aparecer `➜ Local: http://localhost:4200/`. Abra
 | `REFRESH_TOKEN_EXPIRE_DAYS` | | `7` por padrão |
 | `CORS_ORIGINS` | | Origem exata do frontend — nunca `*` |
 | `ENVIRONMENT` | | `development` ou `production` (esconde `/docs`, `/redoc`, `/openapi.json` em produção) |
+| `DEEPL_API_KEY` | | Chave da DeepL para traduzir os dados das vagas para PT-BR. Vazia = tradução desativada. Nunca commitar |
+| `DEEPL_API_URL` | | `https://api-free.deepl.com` por padrão (plano Free); `https://api.deepl.com` no plano Pro |
 
 ## Rotas REST expostas pelo backend
 
@@ -219,7 +252,7 @@ Todas sob o prefixo `/api`:
 | Prefixo | O que expõe |
 |---|---|
 | `/api/auth/*` | `login` (rate limit 5/min), `refresh` (10/min), `me` |
-| `/api/vagas/*` | Listagem paginada (`page_size` até 500), criação, detalhe, atualização, mudança de `status` e de `prioridade` |
+| `/api/vagas/*` | Listagem paginada (`page_size` até 500), criação, detalhe, atualização, mudança de `status` e de `prioridade`. Cada vaga traz `traducoes` (`{campo: texto PT-BR}`, só campos com tradução válida para o texto atual) |
 | `POST /api/vagas/importar` | Importa a planilha .xlsx do cliente (admin/developer). `multipart/form-data`: `file` (.xlsx, até 10 MB), `projeto_id`, `dry_run` (`true` = só pré-visualiza). Erros: 400 (não é .xlsx, arquivo ilegível, sem colunas ROLE/CLIENT), 403, 404 (projeto), 413 (> 10 MB). Resposta: `{dry_run, aba, criadas, atualizadas, ignoradas, erros: [{linha, motivo}], itens: [{linha, codigo, cargo, cliente, acao}]}` |
 | `/api/candidatos/*` | Listagem, detalhe, criação, mudança de estágio no pipeline |
 | `/api/projetos-parceiros/*` | Listagem e criação |

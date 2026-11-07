@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     cors_origins: str = "http://localhost:4200"
     environment: str = "development"
+    # tradução automática dos textos das vagas (DeepL); sem chave = desativada
+    deepl_api_key: str | None = None
+    deepl_api_url: str = "https://api-free.deepl.com"
 
     @property
     def cors_origins_list(self) -> list[str]:

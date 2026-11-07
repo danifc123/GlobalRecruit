@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +9,14 @@ from app.db.models.candidato import Candidato
 from app.db.models.user import Role, User
 from app.db.models.vaga import StatusVaga, Vaga
 from app.schemas.vaga import VagaCreate, VagaOut, VagaPage, VagaPrioridadeUpdate, VagaStatusUpdate, VagaUpdate
+from app.services.traducao.agendamento import (
+    FabricaSessao,
+    get_fabrica_sessao,
+    get_tradutor,
+    traduzir_vagas_em_segundo_plano,
+)
+from app.services.traducao.pendencias import traducoes_por_vaga
+from app.services.traducao.tradutor import Tradutor
 from app.services.vagas import encerrar_candidatos_em_andamento
 
 router = APIRouter(prefix="/vagas", tags=["vagas"])
@@ -51,6 +59,18 @@ _LIST_COLUMNS = (
 )
 
 
+async def _vagas_out(db: AsyncSession, rows) -> list[VagaOut]:
+    """Converte linhas em VagaOut já com as traduções válidas de cada vaga."""
+    lista = list(rows)
+    traducoes = await traducoes_por_vaga(db, lista)
+    return [VagaOut.model_validate(row).model_copy(update={"traducoes": traducoes[row.id]}) for row in lista]
+
+
+async def _vaga_out_por_id(db: AsyncSession, vaga_id: uuid.UUID) -> VagaOut:
+    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
+    return (await _vagas_out(db, [row]))[0]
+
+
 def _scope_to_user(stmt, user: User):
     # única linha de defesa que importa para o recrutador nunca ver vaga de
     # um projeto ao qual não está vinculado: o filtro vem do usuário
@@ -83,7 +103,7 @@ async def list_vagas(
     rows = await db.execute(
         base.order_by(Vaga.created_at.desc()).offset(page * page_size).limit(page_size)
     )
-    items = [VagaOut.model_validate(row) for row in rows]
+    items = await _vagas_out(db, rows)
 
     return VagaPage(items=items, page=page, page_size=page_size, total=total)
 
@@ -91,14 +111,18 @@ async def list_vagas(
 @router.post("", response_model=VagaOut, status_code=status.HTTP_201_CREATED)
 async def create_vaga(
     payload: VagaCreate,
+    background_tasks: BackgroundTasks,
     user: User = Depends(require_roles(Role.ADMIN)),
     db: AsyncSession = Depends(get_db),
+    fabrica_sessao: FabricaSessao = Depends(get_fabrica_sessao),
+    tradutor: Tradutor = Depends(get_tradutor),
 ) -> VagaOut:
     vaga = Vaga(**payload.model_dump(), status=StatusVaga.ABERTA)
     db.add(vaga)
     await db.commit()
     await db.refresh(vaga)
-    # vaga recém-criada não tem candidatos: candidatos_count fica no default 0
+    background_tasks.add_task(traduzir_vagas_em_segundo_plano, [vaga.id], fabrica_sessao, tradutor)
+    # vaga recém-criada: sem candidatos e ainda sem tradução (gerada depois da resposta)
     return VagaOut.model_validate(vaga)
 
 
@@ -111,15 +135,18 @@ async def get_vaga(
     if row is None:
         # 404, não 403 — não confirmar pra um recrutador que a vaga existe em outro projeto
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
-    return VagaOut.model_validate(row)
+    return (await _vagas_out(db, [row]))[0]
 
 
 @router.patch("/{vaga_id}", response_model=VagaOut)
 async def update_vaga(
     vaga_id: uuid.UUID,
     payload: VagaUpdate,
+    background_tasks: BackgroundTasks,
     user: User = Depends(require_roles(Role.ADMIN)),
     db: AsyncSession = Depends(get_db),
+    fabrica_sessao: FabricaSessao = Depends(get_fabrica_sessao),
+    tradutor: Tradutor = Depends(get_tradutor),
 ) -> VagaOut:
     vaga = await db.get(Vaga, vaga_id)
     if vaga is None:
@@ -128,9 +155,9 @@ async def update_vaga(
     for field, value in payload.model_dump().items():
         setattr(vaga, field, value)
     await db.commit()
+    background_tasks.add_task(traduzir_vagas_em_segundo_plano, [vaga_id], fabrica_sessao, tradutor)
 
-    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
-    return VagaOut.model_validate(row)
+    return await _vaga_out_por_id(db, vaga_id)
 
 
 @router.patch("/{vaga_id}/status", response_model=VagaOut)
@@ -151,8 +178,7 @@ async def update_status(
     vaga.status = payload.status
     await db.commit()
 
-    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
-    return VagaOut.model_validate(row)
+    return await _vaga_out_por_id(db, vaga_id)
 
 
 @router.patch("/{vaga_id}/prioridade", response_model=VagaOut)
@@ -169,5 +195,4 @@ async def update_prioridade(
     vaga.prioridade = payload.prioridade
     await db.commit()
 
-    row = (await db.execute(select(*_LIST_COLUMNS).where(Vaga.id == vaga_id))).first()
-    return VagaOut.model_validate(row)
+    return await _vaga_out_por_id(db, vaga_id)

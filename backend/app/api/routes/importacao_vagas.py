@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
 
@@ -9,6 +9,13 @@ from app.db.models.projeto_parceiro import ProjetoParceiro
 from app.db.models.user import Role, User
 from app.schemas.importacao import ErroLinhaOut, ItemImportacaoOut, ResultadoImportacaoOut
 from app.services.importacao_vagas import PlanilhaInvalidaError, ResultadoImportacao, importar_vagas, ler_planilha
+from app.services.traducao.agendamento import (
+    FabricaSessao,
+    get_fabrica_sessao,
+    get_tradutor,
+    traduzir_vagas_em_segundo_plano,
+)
+from app.services.traducao.tradutor import Tradutor
 
 router = APIRouter(prefix="/vagas", tags=["vagas"])
 
@@ -18,11 +25,14 @@ _EXTENSAO_ACEITA = ".xlsx"
 
 @router.post("/importar", response_model=ResultadoImportacaoOut)
 async def importar_planilha(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     projeto_id: uuid.UUID = Form(...),
     dry_run: bool = Form(False),
     user: User = Depends(require_roles(Role.ADMIN)),
     db: AsyncSession = Depends(get_db),
+    fabrica_sessao: FabricaSessao = Depends(get_fabrica_sessao),
+    tradutor: Tradutor = Depends(get_tradutor),
 ) -> ResultadoImportacaoOut:
     """Cria/atualiza vagas do projeto a partir do .xlsx do cliente.
 
@@ -44,6 +54,8 @@ async def importar_planilha(
         await db.rollback()
     else:
         await db.commit()
+        # tradução depois da resposta; prévia nunca traduz (nada foi gravado)
+        background_tasks.add_task(traduzir_vagas_em_segundo_plano, resultado.vaga_ids, fabrica_sessao, tradutor)
     return _para_resposta(resultado, aba=planilha.aba, dry_run=dry_run)
 
 

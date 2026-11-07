@@ -50,6 +50,8 @@ class ResultadoImportacao:
     ignoradas: int = 0
     erros: list[ErroLinha] = field(default_factory=list)
     itens: list[ItemImportacao] = field(default_factory=list)
+    # vagas criadas/atualizadas, preenchido após o flush (ex.: para traduzir só elas)
+    vaga_ids: list[uuid.UUID] = field(default_factory=list)
 
 
 def chave_vaga(codigo: str | None, cliente: str, cargo: str) -> ChaveVaga:
@@ -63,6 +65,7 @@ async def importar_vagas(db: AsyncSession, projeto_id: uuid.UUID, planilha: Plan
     existentes = await _vagas_do_projeto_por_chave(db, projeto_id)
     primeira_linha_por_chave: dict[ChaveVaga, int] = {}
     resultado = ResultadoImportacao()
+    afetadas: list[Vaga] = []
 
     for linha in planilha.linhas:
         normalizada = normalizar_linha(linha)
@@ -71,9 +74,12 @@ async def importar_vagas(db: AsyncSession, projeto_id: uuid.UUID, planilha: Plan
         elif isinstance(normalizada, LinhaIgnorada):
             _registrar_ignorada(resultado, normalizada)
         else:
-            await _aplicar_vaga(db, projeto_id, normalizada, existentes, primeira_linha_por_chave, resultado)
+            vaga = await _aplicar_vaga(db, projeto_id, normalizada, existentes, primeira_linha_por_chave, resultado)
+            if vaga is not None:
+                afetadas.append(vaga)
 
     await db.flush()
+    resultado.vaga_ids = [vaga.id for vaga in afetadas]
     return resultado
 
 
@@ -98,7 +104,7 @@ async def _aplicar_vaga(
     existentes: dict[ChaveVaga, Vaga],
     primeira_linha_por_chave: dict[ChaveVaga, int],
     resultado: ResultadoImportacao,
-) -> None:
+) -> Vaga | None:
     cliente, cargo = dados.campos["cliente"], dados.campos["cargo"]
     if cliente is None or cargo is None:
         # normalizar_linha já transforma esses casos em erro/ignorada
@@ -108,12 +114,12 @@ async def _aplicar_vaga(
     linha_original = primeira_linha_por_chave.get(chave)
     if linha_original is not None:
         resultado.erros.append(ErroLinha(linha=dados.linha, motivo=f"duplicada da linha {linha_original}"))
-        return
+        return None
     primeira_linha_por_chave[chave] = dados.linha
 
     vaga = existentes.get(chave)
     if vaga is None:
-        _criar_vaga(db, projeto_id, dados)
+        vaga = _criar_vaga(db, projeto_id, dados)
         resultado.criadas += 1
         acao = Acao.CRIAR
     else:
@@ -124,17 +130,18 @@ async def _aplicar_vaga(
     resultado.itens.append(
         ItemImportacao(linha=dados.linha, codigo=dados.campos.get("codigo"), cargo=cargo, cliente=cliente, acao=acao)
     )
+    return vaga
 
 
-def _criar_vaga(db: AsyncSession, projeto_id: uuid.UUID, dados: VagaDaPlanilha) -> None:
-    db.add(
-        Vaga(
-            projeto_id=projeto_id,
-            **dados.campos,
-            status=dados.status or STATUS_PADRAO_VAGA_NOVA,
-            prioridade=dados.prioridade or PRIORIDADE_PADRAO_VAGA_NOVA,
-        )
+def _criar_vaga(db: AsyncSession, projeto_id: uuid.UUID, dados: VagaDaPlanilha) -> Vaga:
+    vaga = Vaga(
+        projeto_id=projeto_id,
+        **dados.campos,
+        status=dados.status or STATUS_PADRAO_VAGA_NOVA,
+        prioridade=dados.prioridade or PRIORIDADE_PADRAO_VAGA_NOVA,
     )
+    db.add(vaga)
+    return vaga
 
 
 async def _atualizar_vaga(db: AsyncSession, vaga: Vaga, dados: VagaDaPlanilha) -> None:
