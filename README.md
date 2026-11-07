@@ -75,8 +75,8 @@ frontend e SQL com o Postgres, e é só isso.
 
 Admin/developer importam as vagas da planilha Excel do cliente (.xlsx, até
 10 MB) para um projeto, pela tela **Vagas Ativas → Importar planilha**.
-Regras completas e cenários: [`openspec/changes/importar-vagas-planilha`](openspec/changes/importar-vagas-planilha/)
-(depois do arquivamento, `openspec/specs/importacao-vagas`).
+Regras completas e cenários: [`openspec/specs/importacao-vagas`](openspec/specs/importacao-vagas/spec.md)
+(histórico da decisão em [`openspec/changes/archive/2026-11-07-importar-vagas-planilha`](openspec/changes/archive/2026-11-07-importar-vagas-planilha/)).
 
 - **Aba e cabeçalho:** o sistema procura, nas 10 primeiras linhas de cada
   aba, um cabeçalho com `ROLE` e `CLIENT` e usa a aba que reconhece mais
