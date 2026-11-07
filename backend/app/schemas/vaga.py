@@ -87,6 +87,9 @@ class VagaOut(BaseModel):
     status: StatusVaga
     created_at: datetime
     candidatos_count: int = 0
+    # tradução automática PT-BR só dos campos que já têm tradução válida para
+    # o texto atual (spec traducao-vagas); o frontend escolhe pelo idioma
+    traducoes: dict[str, str] = Field(default_factory=dict)
 
     model_config = {"from_attributes": True}
 

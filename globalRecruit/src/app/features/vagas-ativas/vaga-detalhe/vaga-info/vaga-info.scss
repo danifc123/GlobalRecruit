@@ -38,3 +38,34 @@
   color: var(--gr-color-primary-600);
   font-weight: var(--gr-font-weight-medium);
 }
+
+// faixa com o aviso de tradução automática e o link para alternar
+.vaga-info__traducao {
+  display: flex;
+  margin-bottom: var(--gr-space-2);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gr-space-2);
+  font-size: var(--gr-font-size-xs);
+}
+
+.vaga-info__aviso {
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-info__alternar {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gr-color-primary-600);
+  font: inherit;
+  font-weight: var(--gr-font-weight-medium);
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--gr-focus-ring);
+  }
+}

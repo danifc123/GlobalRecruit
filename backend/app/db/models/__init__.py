@@ -4,6 +4,7 @@ from app.db.models.pipeline_stage import PipelineStage
 from app.db.models.projeto_parceiro import ProjetoParceiro
 from app.db.models.user import Role, User
 from app.db.models.vaga import Vaga
+from app.db.models.vaga_traducao import VagaTraducao
 
 __all__ = [
     "AppSettings",
@@ -13,4 +14,5 @@ __all__ = [
     "Role",
     "User",
     "Vaga",
+    "VagaTraducao",
 ]

@@ -9,9 +9,11 @@ Sobrescreva com a variável TEST_DATABASE_URL para apontar outro banco.
 """
 
 import asyncio
+import logging
 import os
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -42,6 +44,8 @@ from app.db.models.projeto_parceiro import ProjetoParceiro  # noqa: E402
 from app.db.models.user import Role, User  # noqa: E402
 from app.db.models.vaga import Prioridade, StatusVaga, Vaga  # noqa: E402
 from app.main import app  # noqa: E402
+from app.services.traducao.agendamento import get_fabrica_sessao, get_tradutor  # noqa: E402
+from tests.fakes import FakeTradutor  # noqa: E402
 
 _BACKEND_DIR = Path(__file__).resolve().parent.parent
 
@@ -67,6 +71,11 @@ def _test_database() -> None:
     alembic_config = Config(str(_BACKEND_DIR / "alembic.ini"))
     alembic_config.set_main_option("script_location", str(_BACKEND_DIR / "alembic"))
     command.upgrade(alembic_config, "head")
+    # o fileConfig do alembic/env.py desativa os loggers já criados (padrão
+    # disable_existing_loggers=True); reativa para os testes poderem ler logs
+    for registrado in logging.root.manager.loggerDict.values():
+        if isinstance(registrado, logging.Logger):
+            registrado.disabled = False
 
 
 @pytest.fixture
@@ -86,18 +95,35 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 
 
 @pytest.fixture
-async def client(db_session: AsyncSession) -> AsyncIterator[AsyncClient]:
-    """Cliente HTTP da API usando a mesma sessão transacional do teste."""
+def tradutor_fake() -> FakeTradutor:
+    """Tradutor usado pela API nos testes — nunca chama a rede."""
+    return FakeTradutor()
+
+
+@pytest.fixture
+async def client(db_session: AsyncSession, tradutor_fake: FakeTradutor) -> AsyncIterator[AsyncClient]:
+    """Cliente HTTP da API usando a mesma sessão transacional do teste.
+
+    A tarefa de tradução em segundo plano também usa essa sessão (fábrica
+    substituída), então tudo continua dentro da transação revertida no fim.
+    """
 
     async def _override_get_db() -> AsyncIterator[AsyncSession]:
         yield db_session
 
+    @asynccontextmanager
+    async def _sessao_do_teste() -> AsyncIterator[AsyncSession]:
+        yield db_session
+
     app.dependency_overrides[get_db] = _override_get_db
+    app.dependency_overrides[get_tradutor] = lambda: tradutor_fake
+    app.dependency_overrides[get_fabrica_sessao] = lambda: _sessao_do_teste
     try:
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as http_client:
             yield http_client
     finally:
-        app.dependency_overrides.pop(get_db, None)
+        for dependencia in (get_db, get_tradutor, get_fabrica_sessao):
+            app.dependency_overrides.pop(dependencia, None)
 
 
 CriarProjeto = Callable[..., Awaitable[ProjetoParceiro]]
