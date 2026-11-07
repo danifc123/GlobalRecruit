@@ -57,8 +57,9 @@ export class VagasDesativadas {
   protected readonly ativandoId = signal<string | null>(null);
 
   constructor() {
+    // 500 = máximo da API; cobre todas as vagas da planilha do cliente
     this.vagasService
-      .list(0, 100)
+      .list(0, 500)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (page) => {

@@ -1,0 +1,8 @@
+<div class="vaga-status">
+  <label class="vaga-status__label" [for]="selectId">{{ 'Status' | translate }}</label>
+  <select class="vaga-status__select" [id]="selectId" [disabled]="disabled()" (change)="escolher($event)">
+    @for (opcao of opcoes; track opcao.value) {
+      <option [value]="opcao.value" [selected]="opcao.value === status()">{{ opcao.label | translate }}</option>
+    }
+  </select>
+</div>

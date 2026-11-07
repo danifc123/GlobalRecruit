@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_current_user, get_db, require_roles, scoped_projeto_ids
 from app.db.models.candidato import Candidato
-from app.db.models.pipeline_stage import Estagio, PipelineStage
 from app.db.models.user import Role, User
 from app.db.models.vaga import StatusVaga, Vaga
 from app.schemas.vaga import VagaCreate, VagaOut, VagaPage, VagaPrioridadeUpdate, VagaStatusUpdate, VagaUpdate
+from app.services.vagas import encerrar_candidatos_em_andamento
 
 router = APIRouter(prefix="/vagas", tags=["vagas"])
 
@@ -24,13 +24,26 @@ _CANDIDATOS_COUNT = (
 _LIST_COLUMNS = (
     Vaga.id,
     Vaga.projeto_id,
+    Vaga.codigo,
     Vaga.cliente,
     Vaga.cargo,
     Vaga.idioma,
     Vaga.pais,
+    Vaga.localizacao,
     Vaga.modalidade,
+    Vaga.headcount,
+    Vaga.data_inicio,
     Vaga.salario,
+    Vaga.faixa_salarial,
+    Vaga.moeda,
+    Vaga.tipo_salario,
     Vaga.comissao,
+    Vaga.beneficios,
+    Vaga.realocacao,
+    Vaga.requisitos,
+    Vaga.notas_internas,
+    Vaga.jd_nome,
+    Vaga.jd_url,
     Vaga.prioridade,
     Vaga.status,
     Vaga.created_at,
@@ -52,7 +65,8 @@ def _scope_to_user(stmt, user: User):
 async def list_vagas(
     status_filter: StatusVaga | None = Query(default=None, alias="status"),
     page: int = Query(default=0, ge=0),
-    page_size: int = Query(default=20, ge=1, le=100),
+    # 500 cobre a planilha do cliente (~136 vagas) numa página só
+    page_size: int = Query(default=20, ge=1, le=500),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> VagaPage:
@@ -84,21 +98,8 @@ async def create_vaga(
     db.add(vaga)
     await db.commit()
     await db.refresh(vaga)
-    return VagaOut(
-        id=vaga.id,
-        projeto_id=vaga.projeto_id,
-        cliente=vaga.cliente,
-        cargo=vaga.cargo,
-        idioma=vaga.idioma,
-        pais=vaga.pais,
-        modalidade=vaga.modalidade,
-        salario=vaga.salario,
-        comissao=vaga.comissao,
-        prioridade=vaga.prioridade,
-        status=vaga.status,
-        created_at=vaga.created_at,
-        candidatos_count=0,
-    )
+    # vaga recém-criada não tem candidatos: candidatos_count fica no default 0
+    return VagaOut.model_validate(vaga)
 
 
 @router.get("/{vaga_id}", response_model=VagaOut)
@@ -143,29 +144,9 @@ async def update_status(
     if vaga is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaga não encontrada")
 
-    # reativação: candidatos ainda em processo (triagem/entrevista/proposta)
-    # nessa vaga viram "concluído" — fecha o vínculo sem apagar histórico,
-    # deixando a vaga livre pra receber indicação nova. contratado/rejeitado
-    # ficam como estão, já são desfechos registrados.
+    # reativação: candidatos ainda em processo nessa vaga viram "concluído"
     if payload.status == StatusVaga.ABERTA and vaga.status != StatusVaga.ABERTA:
-        latest_stage = (
-            select(PipelineStage.candidato_id, PipelineStage.estagio)
-            .distinct(PipelineStage.candidato_id)
-            .order_by(PipelineStage.candidato_id, PipelineStage.updated_at.desc())
-            .subquery()
-        )
-        em_andamento_stmt = (
-            select(Candidato.id)
-            .select_from(latest_stage)
-            .join(Candidato, Candidato.id == latest_stage.c.candidato_id)
-            .where(
-                Candidato.vaga_id == vaga_id,
-                latest_stage.c.estagio.in_([Estagio.TRIAGEM, Estagio.ENTREVISTA, Estagio.PROPOSTA]),
-            )
-        )
-        candidato_ids = (await db.execute(em_andamento_stmt)).scalars().all()
-        for candidato_id in candidato_ids:
-            db.add(PipelineStage(candidato_id=candidato_id, estagio=Estagio.CONCLUIDO))
+        await encerrar_candidatos_em_andamento(db, vaga_id)
 
     vaga.status = payload.status
     await db.commit()

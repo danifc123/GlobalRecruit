@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  flex: 1;
+}
+
+.vaga-status {
+  display: flex;
+  align-items: center;
+  gap: var(--gr-space-2);
+}
+
+.vaga-status__label {
+  font-size: var(--gr-font-size-sm);
+  font-weight: var(--gr-font-weight-medium);
+  color: var(--gr-color-text-secondary);
+}
+
+.vaga-status__select {
+  flex: 1;
+  // 44px — alvo mínimo de toque, igual aos botões do rodapé
+  height: 2.75rem;
+  padding-inline: var(--gr-space-3);
+  border: var(--gr-border-width) solid var(--gr-color-border);
+  border-radius: var(--gr-radius-md);
+  background-color: var(--gr-color-surface);
+  color: var(--gr-color-text-primary);
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--gr-color-primary-500);
+    box-shadow: var(--gr-focus-ring);
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+}

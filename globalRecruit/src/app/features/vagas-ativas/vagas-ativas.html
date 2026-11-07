@@ -4,6 +4,11 @@
       <span class="vagas-mobile__title">{{ 'Vagas ativas' | translate }}</span>
       <div class="vagas-mobile__top-actions">
         <a class="vagas-mobile__desativadas" routerLink="/vagas-desativadas">{{ 'Desativadas' | translate }}</a>
+        @if (isStaff()) {
+          <button type="button" class="vagas-mobile__add" [attr.aria-label]="'Importar planilha' | translate" (click)="abrirImportacao()">
+            <app-icon name="upload" [size]="18" />
+          </button>
+        }
         <button type="button" class="vagas-mobile__add" [attr.aria-label]="'Nova vaga' | translate" (click)="toggleForm()">
           <app-icon name="plus" [size]="18" />
         </button>
@@ -45,7 +50,7 @@
               <div class="vagas-mobile__row-top">
                 <span class="vagas-mobile__row-cargo">{{ vaga.cargo }}</span>
               </div>
-              <div class="vagas-mobile__row-meta">{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }@if (vaga.idioma) { · {{ vaga.idioma }} }</div>
+              <div class="vagas-mobile__row-meta">@if (vaga.codigo) {<span>{{ vaga.codigo }} · </span>}{{ vaga.cliente }}@if (vaga.pais) { · {{ vaga.pais }} }@if (vaga.idioma) { · {{ vaga.idioma }} }</div>
               <div class="vagas-mobile__row-tags">
                 <span class="vagas-mobile__tag vagas-mobile__tag--prioridade-{{ vaga.prioridade }}">{{ vaga.prioridade | translate }}</span>
                 @if (vaga.candidatosCount === 0) {
@@ -64,6 +69,12 @@
 
 <app-page [description]="'Gestão de vagas operacionais.' | translate">
   <a page-actions class="vagas__desativadas-link" routerLink="/vagas-desativadas">{{ 'Vagas desativadas' | translate }}</a>
+  @if (isStaff()) {
+    <app-button page-actions variant="outline" (clicked)="abrirImportacao()">
+      <app-icon name="upload" [size]="16" />
+      {{ 'Importar planilha' | translate }}
+    </app-button>
+  }
   <app-button page-actions variant="primary" (clicked)="toggleForm()">
     <app-icon name="plus" [size]="16" />
     {{ 'Nova Vaga' | translate }}
@@ -86,13 +97,14 @@
             [class.vagas__row--selected]="selectedVagaId() === vaga.id"
             (click)="selectVaga(vaga.id)"
           >
-            <td [attr.data-label]="'ID Vaga' | translate">{{ vaga.id.slice(0, 8) }}</td>
+            <td [attr.data-label]="'ID Vaga' | translate">{{ vaga.codigo ?? vaga.id.slice(0, 8) }}</td>
             <td [attr.data-label]="'Cliente' | translate">{{ vaga.cliente }}</td>
             <td [attr.data-label]="'Cargo' | translate">{{ vaga.cargo }}</td>
             <td [attr.data-label]="'Idioma' | translate">{{ vaga.idioma ?? '—' }}</td>
-            <td [attr.data-label]="'País' | translate">{{ vaga.pais ?? '—' }}</td>
+            <td [attr.data-label]="'País' | translate">{{ paisComLocalizacao(vaga) || '—' }}</td>
             <td [attr.data-label]="'Modalidade' | translate">{{ vaga.modalidade ? (vaga.modalidade | translate) : '—' }}</td>
-            <td [attr.data-label]="'Salário' | translate">{{ vaga.salario ?? '—' }}</td>
+            <td [attr.data-label]="'Headcount' | translate">{{ vaga.headcount ?? '—' }}</td>
+            <td [attr.data-label]="'Salário' | translate">{{ vaga.faixaSalarial ?? vaga.salario ?? '—' }}</td>
             <td [attr.data-label]="'Comissão' | translate">{{ vaga.comissao ?? '—' }}</td>
             <td [attr.data-label]="'Prioridade' | translate">{{ vaga.prioridade | translate }}</td>
             <td [attr.data-label]="'Ações' | translate" class="vagas__actions" (click)="$event.stopPropagation()">
@@ -120,8 +132,9 @@
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 1"></span>
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 2"></span>
         <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 3"></span>
+        <span class="vagas-wizard__step-bar" [class.vagas-wizard__step-bar--done]="currentStep() >= 4"></span>
       </div>
-      <span class="vagas-wizard__step-label">{{ 'Etapa {0} de 3' | translate: currentStep() }}</span>
+      <span class="vagas-wizard__step-label">{{ 'Etapa {0} de {1}' | translate: currentStep() : totalEtapas }}</span>
     </div>
 
     @if (errorMessage(); as msg) {
@@ -141,6 +154,7 @@
               : undefined
           "
         />
+        <app-input [label]="'Código da vaga' | translate" formControlName="codigo" placeholder="DSR-001" />
         <app-input
           [label]="'Cargo' | translate"
           formControlName="cargo"
@@ -157,6 +171,7 @@
 
       <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 2">
         <app-input [label]="'País' | translate" formControlName="pais" />
+        <app-input [label]="'Localização' | translate" formControlName="localizacao" />
         <app-input [label]="'Idioma' | translate" formControlName="idioma" />
         <div class="vagas-wizard__field">
           <span class="vagas-wizard__field-label">{{ 'Modalidade' | translate }}</span>
@@ -172,11 +187,33 @@
               </button>
             }
           </div>
+          <app-input
+            formControlName="modalidade"
+            [placeholder]="'Ou digite, ex.: Hybrid after training' | translate"
+          />
         </div>
-        <app-input [label]="'Salário' | translate" type="number" formControlName="salario" />
+        <app-input [label]="'Headcount' | translate" formControlName="headcount" />
+        <app-input [label]="'Data de início' | translate" formControlName="dataInicio" placeholder="ASAP, 16/11/2026..." />
       </div>
 
       <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 3">
+        <app-input [label]="'Faixa salarial' | translate" formControlName="faixaSalarial" placeholder="€1,700–€1,900/ month" />
+        <app-input [label]="'Moeda' | translate" formControlName="moeda" placeholder="EUR" />
+        <div class="vagas-wizard__field">
+          <span class="vagas-wizard__field-label">{{ 'Tipo de salário' | translate }}</span>
+          <div class="vagas-wizard__segmented">
+            @for (opcao of tipoSalarioOpcoes; track opcao.value) {
+              <button
+                type="button"
+                class="vagas-wizard__segment"
+                [class.vagas-wizard__segment--active]="form.controls.tipoSalario.value === opcao.value"
+                (click)="selecionarTipoSalario(opcao.value)"
+              >
+                {{ opcao.label | translate }}
+              </button>
+            }
+          </div>
+        </div>
         <app-input [label]="'Comissão' | translate" type="number" formControlName="comissao" />
         <app-select
           [label]="'Prioridade' | translate"
@@ -191,13 +228,21 @@
         />
       </div>
 
+      <div class="vagas-wizard__step" [class.vagas-wizard__step--active]="currentStep() === 4">
+        <app-textarea [label]="'Requisitos' | translate" formControlName="requisitos" />
+        <app-textarea [label]="'Benefícios' | translate" formControlName="beneficios" [rows]="3" />
+        <app-textarea [label]="'Realocação' | translate" formControlName="realocacao" [rows]="3" />
+        <app-textarea [label]="'Notas internas' | translate" formControlName="notasInternas" [rows]="3" />
+        <app-input [label]="'Link da JD' | translate" formControlName="jdUrl" placeholder="https://..." />
+      </div>
+
       <div class="vagas-wizard__nav">
         @if (currentStep() > 1) {
           <button type="button" class="vagas-wizard__back" [attr.aria-label]="'Etapa anterior' | translate" (click)="prevStep()">
             <app-icon name="chevron-down" [size]="18" class="vagas-wizard__back-icon" />
           </button>
         }
-        @if (currentStep() < 3) {
+        @if (currentStep() < totalEtapas) {
           <button type="button" class="vagas-wizard__continue" (click)="nextStep()">{{ 'Continuar' | translate }}</button>
         } @else {
           <button type="submit" class="vagas-wizard__continue" [disabled]="submitting()">
@@ -217,6 +262,15 @@
       </div>
     </form>
   </app-sheet>
+
+@if (isStaff()) {
+  <app-importar-planilha
+    [open]="showImport()"
+    [projetoOptions]="projetoOptions()"
+    (closed)="fecharImportacao()"
+    (importado)="aoImportar()"
+  />
+}
 
 <div class="vagas__detail" [class.vagas__detail--active]="hasDetail()">
   <router-outlet />

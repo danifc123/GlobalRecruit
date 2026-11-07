@@ -25,7 +25,8 @@ export type IconName =
   | 'plus'
   | 'user-plus'
   | 'more-horizontal'
-  | 'edit';
+  | 'edit'
+  | 'upload';
 
 @Component({
   selector: 'app-icon',

@@ -1,9 +1,19 @@
 from fastapi import APIRouter
 
-from app.api.routes import auth, candidatos, dashboard, projetos_parceiros, settings, users, vagas
+from app.api.routes import (
+    auth,
+    candidatos,
+    dashboard,
+    importacao_vagas,
+    projetos_parceiros,
+    settings,
+    users,
+    vagas,
+)
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth.router)
+api_router.include_router(importacao_vagas.router)
 api_router.include_router(vagas.router)
 api_router.include_router(candidatos.router)
 api_router.include_router(projetos_parceiros.router)

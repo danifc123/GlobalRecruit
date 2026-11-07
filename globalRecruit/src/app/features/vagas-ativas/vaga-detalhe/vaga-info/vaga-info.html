@@ -1,0 +1,20 @@
+@if (campos().length > 0 || jdUrlSegura()) {
+  <dl class="vaga-info">
+    @for (campo of campos(); track campo.rotulo) {
+      <div class="vaga-info__item" [class.vaga-info__item--longo]="campo.multilinha">
+        <dt class="vaga-info__rotulo">{{ campo.rotulo | translate }}</dt>
+        <dd class="vaga-info__valor" [class.vaga-info__valor--multilinha]="campo.multilinha">{{ campo.valor }}</dd>
+      </div>
+    }
+    @if (jdUrlSegura(); as jdUrl) {
+      <div class="vaga-info__item">
+        <dt class="vaga-info__rotulo">{{ 'Descrição da vaga' | translate }}</dt>
+        <dd class="vaga-info__valor">
+          <a class="vaga-info__link" [href]="jdUrl" target="_blank" rel="noopener noreferrer">
+            {{ 'Ver JD' | translate }}@if (vaga().jdNome) { ({{ vaga().jdNome }}) }
+          </a>
+        </dd>
+      </div>
+    }
+  </dl>
+}

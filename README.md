@@ -58,7 +58,7 @@ frontend e SQL com o Postgres, e é só isso.
 | Entidade | Campos-chave | Observação |
 |---|---|---|
 | `User` | `role` (`admin` / `recruiter` / `developer`) | Recrutador é vinculado a N projetos parceiros (`user_projetos_parceiros`) — só enxerga dado desses projetos |
-| `Vaga` | `status` (`aberta` / `pausada` / `fechada`), `prioridade` (`baixa` / `media` / `alta`) | Pertence a um projeto parceiro |
+| `Vaga` | `status` (`aberta` / `pausada` / `fechada`), `prioridade` (`baixa` / `media` / `alta`), `codigo` (Role ID da planilha do cliente) | Pertence a um projeto parceiro. Guarda também os dados da planilha do cliente em texto livre: localização, headcount, data de início, faixa salarial, moeda, tipo de salário, benefícios, realocação, requisitos, notas internas, nome e link da JD. O `salario` numérico é legado (não é mais pedido no formulário) |
 | `Candidato` | vinculado a uma `Vaga` | Histórico de estágio fica em `PipelineStage` |
 | `PipelineStage` | `estagio` (`triagem` → `entrevista` → `proposta` → `contratado` / `rejeitado`) | Uma linha por transição — dá o histórico completo do candidato na vaga |
 | `ProjetoParceiro` | `status` (`ativo` / ...) | Unidade de escopo: todo dado de vaga/candidato pertence a um projeto, e recrutador só vê os seus |
@@ -71,10 +71,45 @@ frontend e SQL com o Postgres, e é só isso.
 | `admin` | Gestão de usuários e projetos parceiros, visão completa de vagas/candidatos |
 | `recruiter` | Só os projetos parceiros aos quais está vinculado (`scoped_projeto_ids`) |
 
+### Importação da planilha do cliente
+
+Admin/developer importam as vagas da planilha Excel do cliente (.xlsx, até
+10 MB) para um projeto, pela tela **Vagas Ativas → Importar planilha**.
+Regras completas e cenários: [`openspec/changes/importar-vagas-planilha`](openspec/changes/importar-vagas-planilha/)
+(depois do arquivamento, `openspec/specs/importacao-vagas`).
+
+- **Aba e cabeçalho:** o sistema procura, nas 10 primeiras linhas de cada
+  aba, um cabeçalho com `ROLE` e `CLIENT` e usa a aba que reconhece mais
+  colunas (na planilha do cliente, "Active Roles - Live Data Feed").
+- **Identificação:** dentro do projeto, a vaga é a mesma se bater
+  `(ID, ROLE)`; sem ID, `(CLIENT, ROLE)` — sem diferenciar maiúsculas.
+  Existe → atualiza; não existe → cria. Reimportar não duplica, e vagas que
+  não estão na planilha nunca são apagadas.
+- **Pré-visualizar antes de gravar:** `dry_run=true` devolve o mesmo resumo
+  (criadas, atualizadas, ignoradas, erros por linha) sem gravar nada.
+- **Linhas:** sem `ROLE` → ignorada; `CLIENT` vazio, `STATUS` desconhecido,
+  valor maior que o limite do campo ou chave repetida no arquivo → erro na
+  linha (não grava aquela linha, segue com as outras).
+- **Célula vazia** numa vaga existente apaga o valor do campo; coluna
+  ausente na planilha não mexe no campo; comissão nunca vem da planilha.
+
+| STATUS na planilha | No sistema | Priority na planilha | No sistema |
+|---|---|---|---|
+| `OPEN` | Aberta (Open) | `Urgent` | Alta (High) |
+| `CLOSE` / `CLOSED` | Fechada (Closed) | `Active` | Média (Medium) |
+| `ON-HOLD` / `ON HOLD` / `HOLD` / `PAUSED` | Pausada (On-Hold) | `Low priority` | Baixa (Low) |
+| vazio | vaga nova: Aberta; existente: mantém | vazio ou outro texto | vaga nova: Média; existente: mantém |
+
+Reabrir uma vaga pela planilha (de Pausada/Fechada para Aberta) aplica a
+mesma regra da reativação manual: candidatos em triagem, entrevista ou
+proposta passam para "concluído".
+
 ## Estrutura do projeto
 
 Camadas do backend, dependência sempre numa direção só: `api/` (HTTP) →
-`core/`/`schemas/` (regra de negócio e contrato) → `db/` (persistência).
+`services/` (regra de negócio reaproveitada entre rotas, ex.: importação da
+planilha e reabertura de vaga) → `core/`/`schemas/` (regra transversal e
+contrato) → `db/` (persistência).
 Nenhuma rota faz SQL direto — sempre via SQLAlchemy async, sessão injetada
 por `Depends(get_db)`.
 
@@ -184,7 +219,8 @@ Todas sob o prefixo `/api`:
 | Prefixo | O que expõe |
 |---|---|
 | `/api/auth/*` | `login` (rate limit 5/min), `refresh` (10/min), `me` |
-| `/api/vagas/*` | Listagem paginada, criação, detalhe, atualização, mudança de `status` e de `prioridade` |
+| `/api/vagas/*` | Listagem paginada (`page_size` até 500), criação, detalhe, atualização, mudança de `status` e de `prioridade` |
+| `POST /api/vagas/importar` | Importa a planilha .xlsx do cliente (admin/developer). `multipart/form-data`: `file` (.xlsx, até 10 MB), `projeto_id`, `dry_run` (`true` = só pré-visualiza). Erros: 400 (não é .xlsx, arquivo ilegível, sem colunas ROLE/CLIENT), 403, 404 (projeto), 413 (> 10 MB). Resposta: `{dry_run, aba, criadas, atualizadas, ignoradas, erros: [{linha, motivo}], itens: [{linha, codigo, cargo, cliente, acao}]}` |
 | `/api/candidatos/*` | Listagem, detalhe, criação, mudança de estágio no pipeline |
 | `/api/projetos-parceiros/*` | Listagem e criação |
 | `/api/dashboard/stats` | Estatísticas agregadas para o painel |
@@ -209,11 +245,35 @@ independente de quais papéis a rota pediu.
 
 ## Testes
 
-Não há suíte de testes automatizados neste momento — nem `pytest` no
-backend (`requirements.txt` não inclui), nem specs reais no frontend (só o
-`app.spec.ts` padrão gerado pelo Angular CLI, sem cobertura de feature).
-Validação hoje é manual: `ng build` + navegar nas telas, e checar a resposta
-das rotas via `/docs` (Swagger, disponível fora de produção).
+### Backend (pytest)
+
+Pré-requisito: o Postgres do Docker de pé (`docker compose up -d` em
+`backend/`). Uma vez só, instale as dependências de teste:
+
+```bash
+cd backend
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+```
+
+Rodar a suíte (comando único):
+
+```bash
+cd backend
+.venv\Scripts\python -m pytest
+```
+
+Não precisa de setup manual: o `tests/conftest.py` cria o banco
+`globalrecruit_test` no mesmo Postgres (porta 5434) se ele não existir, roda
+`alembic upgrade head` nele e executa cada teste dentro de uma transação
+revertida no fim — o banco de desenvolvimento (`globalrecruit`) nunca é
+tocado. Para usar outro banco, defina `TEST_DATABASE_URL`.
+
+### Frontend (Vitest)
+
+```bash
+cd globalRecruit
+npx ng test
+```
 
 ## Convenções de clean code do projeto
 

@@ -13,3 +13,7 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/mcp.json
 .idea/
+
+# Claude Code — worktrees e config local de cada máquina não são versionados
+.claude/worktrees/
+.claude/settings.local.json
