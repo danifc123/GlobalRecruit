@@ -35,6 +35,7 @@ const VAGA_API = {
   status: 'aberta',
   created_at: '2026-11-06T10:00:00Z',
   candidatos_count: 2,
+  traducoes: { requisitos: 'C1 e B2', data_inicio: 'O quanto antes', faixa_salarial: 'negociável' },
 };
 
 describe('VagasService', () => {
@@ -70,6 +71,7 @@ describe('VagasService', () => {
       jdNome: 'jd.pdf',
       jdUrl: 'https://exemplo.com/jd.pdf',
       candidatosCount: 2,
+      traducoes: { requisitos: 'C1 e B2', dataInicio: 'O quanto antes', faixaSalarial: 'negociável' },
     });
   });
 

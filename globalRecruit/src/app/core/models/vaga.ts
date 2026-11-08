@@ -1,6 +1,18 @@
 export type Prioridade = 'baixa' | 'media' | 'alta';
 export type StatusVaga = 'aberta' | 'pausada' | 'fechada';
 
+// campos com tradução automática PT-BR (spec traducao-vagas, decisões P1–P3)
+export const CAMPOS_TRADUZIVEIS = [
+  'requisitos',
+  'beneficios',
+  'realocacao',
+  'modalidade',
+  'dataInicio',
+  'faixaSalarial',
+] as const;
+export type CampoTraduzivel = (typeof CAMPOS_TRADUZIVEIS)[number];
+export type TraducoesVaga = Partial<Record<CampoTraduzivel, string>>;
+
 export interface Vaga {
   id: string;
   projetoId: string;
@@ -31,6 +43,8 @@ export interface Vaga {
   status: StatusVaga;
   createdAt: string;
   candidatosCount: number;
+  // só campos com tradução válida para o texto atual; vazio = sem tradução
+  traducoes: TraducoesVaga;
 }
 
 export interface VagaPage {

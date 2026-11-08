@@ -15,7 +15,9 @@ import { Candidato, ESTAGIO_LABELS, ESTAGIO_ORDEM, Estagio } from '@app/core/mod
 import { getInitials } from '@app/shared/utils/initials';
 import { diasDesde, tempoRelativo } from '@app/shared/utils/relative-time';
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
-import { VagaInfo } from './vaga-info/vaga-info';
+import { LanguageService } from '@app/core/i18n/language.service';
+import { temTraducaoExibida, vagaNoIdioma } from '@app/core/i18n/vaga-no-idioma';
+import { type EstadoTraducao, VagaInfo } from './vaga-info/vaga-info';
 import { VagaStatusSelect } from './vaga-status-select/vaga-status-select';
 
 const DIAS_PARADO_ALERTA = 10;
@@ -35,6 +37,7 @@ export class VagaDetalhe {
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly quickCreate = inject(QuickCreateService);
   private readonly auth = inject(AuthService);
+  private readonly language = inject(LanguageService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly getInitials = getInitials;
@@ -42,6 +45,20 @@ export class VagaDetalhe {
   protected readonly tempoRelativo = tempoRelativo;
 
   protected readonly vaga = signal<Vaga | null>(null);
+  // "Ver original": vale para a vaga aberta; volta a mostrar a tradução ao
+  // abrir outra vaga (ver effect no construtor)
+  protected readonly verOriginal = signal(false);
+  // vaga no idioma do site (spec traducao-vagas); a edição usa sempre vaga()
+  protected readonly vagaExibida = computed(() => {
+    const vaga = this.vaga();
+    if (!vaga) return null;
+    return this.verOriginal() ? vaga : vagaNoIdioma(vaga, this.language.language());
+  });
+  protected readonly estadoTraducao = computed<EstadoTraducao>(() => {
+    const vaga = this.vaga();
+    if (!vaga || !temTraducaoExibida(vaga, this.language.language())) return 'nenhuma';
+    return this.verOriginal() ? 'original' : 'traduzida';
+  });
   protected readonly projetoNome = signal<string | null>(null);
   protected readonly candidatos = signal<Candidato[]>([]);
   protected readonly loading = signal(true);
@@ -83,6 +100,7 @@ export class VagaDetalhe {
 
       this.loading.set(true);
       this.error.set(false);
+      this.verOriginal.set(false);
 
       forkJoin({
         vaga: this.vagasService.get(id),
@@ -110,6 +128,10 @@ export class VagaDetalhe {
   // "/vagas-ativas" no histórico do navegador
   protected closePanel(): void {
     this.router.navigate(['/vagas-ativas']);
+  }
+
+  protected alternarOriginal(): void {
+    this.verOriginal.update((valor) => !valor);
   }
 
   protected editar(): void {

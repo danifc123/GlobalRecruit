@@ -7,6 +7,7 @@ import {
   AcaoImportacao,
   ResultadoImportacao,
   StatusVaga,
+  TraducoesVaga,
   Vaga,
   VagaCreate,
   VagaPage,
@@ -39,6 +40,7 @@ interface VagaApi {
   status: StatusVaga;
   created_at: string;
   candidatos_count: number;
+  traducoes?: Record<string, string>;
 }
 
 interface VagaPageApi {
@@ -56,6 +58,25 @@ interface ResultadoImportacaoApi {
   ignoradas: number;
   erros: { linha: number; motivo: string }[];
   itens: { linha: number; codigo: string | null; cargo: string | null; cliente: string | null; acao: AcaoImportacao }[];
+}
+
+// a API devolve as chaves em snake_case (nome da coluna)
+const CAMPO_TRADUZIVEL_DA_API: Record<string, keyof TraducoesVaga> = {
+  requisitos: 'requisitos',
+  beneficios: 'beneficios',
+  realocacao: 'realocacao',
+  modalidade: 'modalidade',
+  data_inicio: 'dataInicio',
+  faixa_salarial: 'faixaSalarial',
+};
+
+function toTraducoes(api: Record<string, string> | undefined): TraducoesVaga {
+  const traducoes: TraducoesVaga = {};
+  for (const [campoApi, texto] of Object.entries(api ?? {})) {
+    const campo = CAMPO_TRADUZIVEL_DA_API[campoApi];
+    if (campo) traducoes[campo] = texto;
+  }
+  return traducoes;
 }
 
 function toVaga(api: VagaApi): Vaga {
@@ -86,6 +107,7 @@ function toVaga(api: VagaApi): Vaga {
     status: api.status,
     createdAt: api.created_at,
     candidatosCount: api.candidatos_count,
+    traducoes: toTraducoes(api.traducoes),
   };
 }
 

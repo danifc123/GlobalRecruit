@@ -29,6 +29,8 @@ import { ProjetosParceirosService } from '@app/core/data/projetos-parceiros.serv
 import { QuickCreateService } from '@app/core/ui/quick-create.service';
 import { TopbarActionsService } from '@app/core/ui/topbar-actions.service';
 import { TranslatePipe } from '@app/core/i18n/translate.pipe';
+import { LanguageService } from '@app/core/i18n/language.service';
+import { vagaNoIdioma } from '@app/core/i18n/vaga-no-idioma';
 import { Vaga, VagaCreate } from '@app/core/models/vaga';
 import { ProjetoParceiro } from '@app/core/models/projeto-parceiro';
 import { ImportarPlanilha } from './importar-planilha/importar-planilha';
@@ -126,6 +128,7 @@ function opcional(valor: string): string | undefined {
 export class VagasAtivas {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly language = inject(LanguageService);
   private readonly vagasService = inject(VagasService);
   private readonly projetosService = inject(ProjetosParceirosService);
   private readonly quickCreate = inject(QuickCreateService);
@@ -350,6 +353,11 @@ export class VagasAtivas {
 
   protected selecionarTipoSalario(valor: string): void {
     this.form.controls.tipoSalario.setValue(valor);
+  }
+
+  /** Vaga no idioma do site: em PT, campos com tradução automática (spec traducao-vagas). */
+  protected exibida(vaga: Vaga): Vaga {
+    return vagaNoIdioma(vaga, this.language.language());
   }
 
   /** "País · Localização" com só o que existir (ex.: "Portugal · Lisbon"). */

@@ -102,9 +102,9 @@
             <td [attr.data-label]="'Cargo' | translate">{{ vaga.cargo }}</td>
             <td [attr.data-label]="'Idioma' | translate">{{ vaga.idioma ?? '—' }}</td>
             <td [attr.data-label]="'País' | translate">{{ paisComLocalizacao(vaga) || '—' }}</td>
-            <td [attr.data-label]="'Modalidade' | translate">{{ vaga.modalidade ? (vaga.modalidade | translate) : '—' }}</td>
+            <td [attr.data-label]="'Modalidade' | translate">{{ exibida(vaga).modalidade ? (exibida(vaga).modalidade | translate) : '—' }}</td>
             <td [attr.data-label]="'Headcount' | translate">{{ vaga.headcount ?? '—' }}</td>
-            <td [attr.data-label]="'Salário' | translate">{{ vaga.faixaSalarial ?? vaga.salario ?? '—' }}</td>
+            <td [attr.data-label]="'Salário' | translate">{{ exibida(vaga).faixaSalarial ?? vaga.salario ?? '—' }}</td>
             <td [attr.data-label]="'Comissão' | translate">{{ vaga.comissao ?? '—' }}</td>
             <td [attr.data-label]="'Prioridade' | translate">{{ vaga.prioridade | translate }}</td>
             <td [attr.data-label]="'Ações' | translate" class="vagas__actions" (click)="$event.stopPropagation()">
