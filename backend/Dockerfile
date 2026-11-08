@@ -12,7 +12,10 @@ RUN useradd --create-home appuser
 USER appuser
 
 EXPOSE 8000
-# forma shell (não exec) de propósito -- plataformas tipo Railway injetam
-# $PORT em runtime, e só a forma shell expande variável de ambiente;
-# ${PORT:-8000} cai pra 8000 rodando local sem essa variável definida
-CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# forma shell (não exec) de propósito -- plataformas tipo Render/Railway
+# injetam $PORT em runtime, e só a forma shell expande variável de ambiente;
+# ${PORT:-8000} cai pra 8000 rodando local sem essa variável definida.
+# `alembic upgrade head` antes de subir: aplica migration pendente a cada
+# deploy (idempotente -- sem migration nova não faz nada), já que o plano
+# grátis do Render não tem shell nem pre-deploy command
+CMD alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
