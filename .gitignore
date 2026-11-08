@@ -17,3 +17,6 @@ Thumbs.db
 # Claude Code — worktrees e config local de cada máquina não são versionados
 .claude/worktrees/
 .claude/settings.local.json
+
+# guia de deploy pessoal (variaveis, contas) -- fica so local
+docs/DEPLOY_PRODUCAO.md
