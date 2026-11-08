@@ -17,5 +17,6 @@ EXPOSE 8000
 # ${PORT:-8000} cai pra 8000 rodando local sem essa variável definida.
 # `alembic upgrade head` antes de subir: aplica migration pendente a cada
 # deploy (idempotente -- sem migration nova não faz nada), já que o plano
-# grátis do Render não tem shell nem pre-deploy command
-CMD alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# grátis do Render não tem shell nem pre-deploy command. `seed_admin --env`
+# cria o primeiro admin a partir de ADMIN_EMAIL/ADMIN_PASSWORD, se definidas
+CMD alembic upgrade head && python -m app.seed_admin --env && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
