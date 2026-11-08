@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  // backend no Railway (serviço "GlobalRecruit", root directory backend/)
-  apiUrl: 'https://stunning-stillness-production-804f.up.railway.app/api',
+  // backend no Render (Web Service, root directory backend/, runtime Docker);
+  // o CORS_ORIGINS de lá precisa ter a URL do front na Vercel
+  apiUrl: 'https://globalrecruit.onrender.com/api',
 };
