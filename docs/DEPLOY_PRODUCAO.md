@@ -1,88 +1,121 @@
-# Subir para produção e entregar ao cliente
+# Deploy em produção — Neon + Render + Vercel
 
-Checklist do que fazer no Railway depois das entregas de **importação da
-planilha** (PR #15), **tradução automática PT-BR** (PR #16) e
-**arquivamento no OpenSpec** (PR #17), que já estão na `main`.
-
-Estado validado na `main` antes do merge: 121 testes do backend (pytest),
-29 testes do frontend (vitest), `ng build` e `npm run lint` passando.
-
-> ⚠️ **Urgente se o Railway faz deploy automático da `main`:** o backend novo
-> espera as colunas das migrations `0007` e `0008`. Até `alembic upgrade head`
-> rodar no banco de produção, as telas de vagas podem dar erro 500. Faça o
-> passo 2 primeiro.
-
-## 1. Variáveis de ambiente do serviço backend (Railway → serviço → Variables)
-
-| Variável | Valor | Novo? |
+| Parte | Onde | O que é |
 |---|---|---|
-| `DATABASE_URL` | `postgresql+asyncpg://...` do Postgres do Railway (trocar `postgresql://` por `postgresql+asyncpg://`) | já existia |
-| `JWT_SECRET` | segredo forte (`python -c "import secrets; print(secrets.token_urlsafe(64))"`) | já existia |
-| `CORS_ORIGINS` | `https://front-production-dac0.up.railway.app` (ou o domínio final do cliente) | já existia |
-| `ENVIRONMENT` | `production` | já existia |
-| `DEEPL_API_KEY` | chave da conta DeepL **do cliente** (opcional: vazio = sem tradução, o sistema funciona normalmente) | **novo** |
-| `DEEPL_API_URL` | `https://api-free.deepl.com` (plano Free) ou `https://api.deepl.com` (Pro) | **novo** |
+| Banco | **Neon** (Postgres) | só a connection string |
+| Backend (FastAPI) | **Render** — Web Service | pasta `backend/` |
+| Frontend (Angular) | **Vercel** | pasta `globalRecruit/` |
 
-## 2. Migrations do banco (0007 e 0008)
+> 🔒 A connection string do Neon contém a senha do banco. Ela só vai no
+> painel do Render (variável `DATABASE_URL`) e no `.env` local — **nunca** no
+> Git nem em chat. Se ela já vazou, troque a senha no Neon (Roles → Reset
+> password) e atualize no Render.
 
-O `Dockerfile` não roda migration sozinho. Duas opções:
+## 1. Neon (banco)
 
-- **Recomendado (fica automático):** Railway → serviço backend → Settings →
-  Deploy → **Pre-deploy Command** = `alembic upgrade head`. Depois clique em
-  *Redeploy*.
-- **Manual, uma vez:** com a CLI do Railway logada no projeto, dentro de
-  `backend/`:
+Neon → projeto → **Connect** → copiar a connection string. Pode colar
+exatamente como o Neon mostra
+(`postgresql://...neon.tech/neondb?sslmode=require&channel_binding=require`):
+o backend converte sozinho para o formato do driver (`postgresql+asyncpg://...?ssl=require`).
 
-  ```bash
-  railway run alembic upgrade head
-  ```
+Recomendado: desligar a opção **Connection pooling** no Neon antes de copiar
+(o host fica sem `-pooler`). Funciona com pooler também, mas a conexão
+direta evita qualquer surpresa com prepared statements do asyncpg.
 
-Conferir: `GET /health` responde e a tela de Vagas abre sem erro.
+As tabelas são criadas automaticamente no primeiro deploy do backend
+(`alembic upgrade head` roda antes do servidor subir — ver `backend/Dockerfile`).
 
-## 3. Primeira tradução das vagas (só se configurou o DeepL)
+## 2. Render (backend)
 
-Vagas novas e vagas alteradas por importação são traduzidas sozinhas em
-segundo plano. Para traduzir de uma vez as vagas que já estavam no banco:
+Render → **New → Web Service** → conectar o repositório `danifc123/GlobalRecruit`.
 
-```bash
-railway run python -m app.traduzir_vagas
+| Campo | Valor |
+|---|---|
+| Branch | `main` |
+| Root Directory | `backend` |
+| Runtime / Language | **Docker** (usa o `backend/Dockerfile`) |
+| Health Check Path | `/health` |
+
+Se preferir o runtime **Python** em vez de Docker:
+Build Command `pip install -r requirements.txt` e
+Start Command `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+
+### Variáveis de ambiente (Render → serviço → Environment)
+
+| Variável | Valor | Obrigatória |
+|---|---|---|
+| `DATABASE_URL` | connection string do Neon (passo 1) | ✅ |
+| `JWT_SECRET` | texto aleatório longo — gerar com `python -c "import secrets; print(secrets.token_urlsafe(64))"` (ou botão *Generate* do Render) | ✅ |
+| `ENVIRONMENT` | `production` | ✅ |
+| `CORS_ORIGINS` | URL do front na Vercel, **sem barra no final**, ex.: `https://globalrecruit.vercel.app`. Mais de uma: separar por vírgula | ✅ |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` (padrão) | opcional |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | `7` (padrão) | opcional |
+| `JWT_ALGORITHM` | `HS256` (padrão) | opcional |
+| `DEEPL_API_KEY` | chave da API DeepL (tradução PT-BR das vagas). Vazio = sem tradução, resto funciona | opcional |
+| `DEEPL_API_URL` | `https://api-free.deepl.com` (Free) ou `https://api.deepl.com` (Pro) | opcional |
+
+`PORT` **não** precisa criar — o Render injeta sozinho.
+
+Conferir depois do deploy: abrir `https://<seu-backend>.onrender.com/health`
+→ deve responder `{"status":"ok"}`. (No plano grátis o primeiro acesso depois
+de um tempo parado demora ~1 min: o serviço "acorda".)
+
+## 3. Vercel (frontend)
+
+Vercel → **Add New → Project** → importar `danifc123/GlobalRecruit`.
+
+| Campo | Valor |
+|---|---|
+| Root Directory | `globalRecruit` |
+| Framework Preset | **Other** (o `globalRecruit/vercel.json` já define build, saída e rotas) |
+| Build / Output / Install | deixar em branco (vem do `vercel.json`) |
+| Environment Variables | **nenhuma** |
+
+O front é publicado como site estático (`dist/globalRecruit/browser`), com
+todas as rotas caindo no `index.csr.html` — por isso F5 em `/vagas-ativas/123`
+não dá 404.
+
+**A URL do backend fica no código**, não em variável da Vercel:
+`globalRecruit/src/environments/environment.prod.ts` → `apiUrl` =
+`https://<seu-backend>.onrender.com/api`. Trocou o backend de lugar → editar
+essa linha, commit na `main` e a Vercel republica sozinha.
+
+## 4. Ordem certa
+
+1. Render com as variáveis (pode pôr `CORS_ORIGINS` provisório) → deploy → `/health` ok.
+2. `apiUrl` do `environment.prod.ts` apontando pro Render → commit na `main`.
+3. Vercel → deploy → pegar a URL final.
+4. Voltar no Render e acertar `CORS_ORIGINS` com a URL exata da Vercel → *Save* (redeploya).
+
+Sintoma clássico de `CORS_ORIGINS` errado: o login no site dá "erro de
+conexão", mas o `/health` do backend abre normal no navegador.
+
+## 5. Primeiro acesso e contas do cliente
+
+O plano grátis do Render não tem terminal, então o primeiro admin é criado
+**do seu PC**, apontando para o banco do Neon:
+
+```powershell
+cd backend
+.venv\Scripts\activate
+$env:DATABASE_URL = "<connection string do Neon>"
+python -m app.seed_admin
 ```
 
-## 4. Frontend
+(`seed_admin` pede email e senha no terminal. Sem o `$env:` ele usaria o
+banco local do `.env`.) Se o DeepL estiver configurado, o mesmo vale para
+traduzir de uma vez as vagas já existentes: `python -m app.traduzir_vagas`.
 
-Nenhuma variável nova. A URL da API fica em
-`globalRecruit/src/environments/environment.prod.ts`. Se o backend mudar de
-domínio (ex.: projeto recriado na conta do cliente), atualize `apiUrl` ali,
-faça commit e redeploy do serviço do front.
+Depois, logado no site como admin:
 
-## 5. Vincular as contas do cliente
+1. **Projetos** → criar o projeto parceiro (ex.: "DS Recruitment Solutions").
+2. **Usuários** → criar a conta de cada pessoa do cliente — `admin` para quem
+   gerencia, `recruiter` para recrutador, vinculando o recrutador ao projeto.
+3. **Vagas ativas → Importar planilha** → escolher o projeto, enviar o `.xlsx`
+   da "Recruiter View", conferir a pré-visualização e confirmar.
+   Reimportar depois só atualiza as vagas, não duplica.
 
-**Infraestrutura (para o cliente ser o dono e pagar):**
-
-1. **Railway:** convidar o cliente para o workspace ou transferir o projeto
-   para o workspace dele (Project Settings → Transfer project). Se ele
-   recriar o projeto do zero, refaça os passos 1–4 e atualize
-   `apiUrl` / `CORS_ORIGINS`.
-2. **DeepL:** o cliente cria a conta de API em <https://www.deepl.com/pro-api>,
-   gera a chave e cola em `DEEPL_API_KEY` direto no Railway. A chave nunca
-   vai para o Git nem por chat.
-3. **GitHub:** se o deploy passar a sair de um repositório dele, conectar o
-   repositório no serviço (Settings → Source) apontando para a branch `main`.
-
-**Usuários no sistema:**
-
-1. Primeiro admin (só se o banco de produção for novo):
-   `railway run python -m app.seed_admin` (pede email e senha no terminal).
-2. Logado como admin: **Projetos** → criar o projeto parceiro
-   (ex.: "DS Recruitment Solutions").
-3. **Usuários** → criar a conta de cada pessoa do cliente: `admin` para quem
-   gerencia, `recruiter` para recrutador, vinculando o recrutador aos
-   projetos que ele pode ver.
-4. **Vagas ativas → Importar planilha** → escolher o projeto, enviar o
-   `.xlsx` da "Recruiter View", conferir a pré-visualização e confirmar.
-   Reimportar a planilha depois só atualiza as vagas, não duplica.
-
-## Mapeamentos da planilha (para explicar ao cliente)
+### Mapeamentos da planilha (para explicar ao cliente)
 
 - **Status:** OPEN → Open · CLOSE/CLOSED → Closed · ON-HOLD/HOLD → On-Hold
 - **Priority:** Urgent → High · Active → Medium · Low priority → Low
